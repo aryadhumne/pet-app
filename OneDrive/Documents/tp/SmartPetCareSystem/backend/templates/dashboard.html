@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Welcome, {{ user.username }}!</h2>
+
+<form action="{{ url_for('add_pet') }}" method="POST" class="row g-3 mb-5">
+  <div class="col-md-3"><input type="text" name="name" placeholder="Pet Name" class="form-control" required></div>
+  <div class="col-md-3"><input type="text" name="species" placeholder="Species" class="form-control" required></div>
+  <div class="col-md-3"><input type="text" name="breed" placeholder="Breed" class="form-control"></div>
+  <div class="col-md-2"><input type="number" name="age" placeholder="Age" class="form-control"></div>
+  <div class="col-md-1"><button type="submit" class="btn btn-dark w-100">Add</button></div>
+</form>
+
+<h4>Your Pets</h4>
+<div class="row">
+  {% for pet in user.pets %}
+    <div class="col-md-3">
+      <div class="card pet-card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">{{ pet.name }}</h5>
+          <p class="card-text">{{ pet.species }} | {{ pet.breed }} | Age: {{ pet.age }}</p>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <p>No pets added yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

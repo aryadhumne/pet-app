@@ -1,166 +1,115 @@
-/* ========================
-   Body & Fonts
-======================== */
+/* ===== GLOBAL BODY + BACKGROUND ===== */
 body {
-  background: linear-gradient(to right, #dbeafe, #bfdbfe); /* Light blue gradient */
-  min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
-  color: #0f172a; /* Dark text */
   margin: 0;
   padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background: url("https://media.istockphoto.com/id/2148798138/photo/collage-of-domestic-animal-group-together.jpg?s=612x612&w=0&k=20&c=9Pcg1H4YQYSQ1EK_9fMf2paRqVimnFGTXJdt_lXKSQc=") no-repeat center center fixed;
+  background-size: cover;
+  color: #1e3a8a; /* Deep Blue for general text */
 }
 
-/* ========================
-   Navbar
-======================== */
-.navbar {
-  background: linear-gradient(to right, #1e3a8a, #2563eb); /* Dark blue gradient */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+/* ===== OVERLAY BACKGROUND ===== */
+.overlay {
+  background-color: rgba(255, 255, 255, 0.8);
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.navbar-brand {
-  font-weight: bold;
+/* ===== NAVBAR ===== */
+nav {
+  background-color: #1e3a8a !important; /* Deep Blue */
+  padding: 10px 20px;
+}
+
+nav a {
   color: white !important;
+  font-weight: 500;
+  margin-right: 10px;
+  text-decoration: none;
 }
 
-.navbar .btn-outline-light {
-  margin-left: 0.5rem;
+nav a:hover {
+  color: #a5b4fc !important; /* Light Blue hover */
 }
 
-/* ========================
-   Form Containers (Login/Register)
-======================== */
-.form-container {
-  background: white;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 450px;
-  margin: 60px auto;
-  border-top: 5px solid #2563eb; /* Blue top border */
-}
-
-.form-control:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 5px #2563eb;
-}
-
-.btn-dark {
-  background-color: #2563eb;
-  border: none;
-}
-
-.btn-dark:hover {
-  background-color: #1e3a8a;
-}
-
-/* ========================
-   Dashboard & Pet Cards
-======================== */
-.card-pet {
-  background: white;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  margin-bottom: 1.5rem;
-  border-left: 5px solid #2563eb;
-}
-
-.card-pet h5 {
-  font-weight: 600;
-  color: #1e3a8a;
-}
-
-.card-pet p {
-  margin: 0.3rem 0;
-  color: #0f172a;
-}
-
-.btn-primary {
-  background-color: #2563eb;
-  border: none;
-}
-
-.btn-primary:hover {
-  background-color: #1e3a8a;
-}
-
-/* ========================
-   Shop Page Items
-======================== */
-.shop-item {
-  background: white;
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+/* ===== LOGIN CONTAINER ===== */
+.container {
   text-align: center;
-  border-top: 5px solid #2563eb;
+  background-color: rgba(240, 248, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(30, 64, 175, 0.5);
+  padding: 40px 60px;
 }
 
-.shop-item h5 {
-  color: #1e3a8a;
-  font-weight: 600;
+h1 {
+  color: #1e40af; /* Darker Blue */
+  font-size: 32px;
+  margin-bottom: 30px;
 }
 
-.shop-item p {
-  color: #0f172a;
-}
-
-/* ========================
-   Doctor Finder Page
-======================== */
-.doctor-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  border-left: 5px solid #2563eb;
-}
-
-.doctor-card h5 {
-  font-weight: 600;
+/* ===== INPUT FIELDS ===== */
+.form-box input {
+  width: 250px;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #3b82f6;
+  border-radius: 10px;
+  font-size: 16px;
   color: #1e3a8a;
 }
 
-.doctor-card p {
-  margin: 0.3rem 0;
-  color: #0f172a;
+.form-box input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
 }
 
-/* ========================
-   Alerts / Flash Messages
-======================== */
-.alert-info {
-  background-color: #bfdbfe;
-  color: #1e3a8a;
-  border: 1px solid #2563eb;
-  border-radius: 8px;
-  text-align: center;
-}
-
-/* ========================
-   Footer
-======================== */
-.footer {
-  background: linear-gradient(to right, #1e3a8a, #2563eb);
+/* ===== BUTTON ===== */
+button {
+  background-color: #3b82f6; /* Bright Blue */
   color: white;
-  padding: 1rem 0;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #2563eb; /* Dark Blue Hover */
+  transform: scale(1.05);
+}
+
+/* ===== LINKS ===== */
+a {
+  color: #1e3a8a;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #2563eb;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background-color: #1e3a8a;
+  color: white;
+  padding: 15px 0;
   text-align: center;
+  font-size: 14px;
 }
 
-/* ========================
-   Utility Classes
-======================== */
-.text-center {
-  text-align: center;
+footer span {
+  color: #f87171; /* Heart red */
 }
-
-.mt-5 {
-  margin-top: 3rem !important;
+.backgroundblue{
+  background-color:#1e3a8a !important;
+  background: #1e3a8a !important;
 }
-
-.mb-3 {
-  margin-bottom: 1rem !important;
-}
+body { display: flex; flex-direction: column; min-height: 100vh; }
+.container { flex: 1; }

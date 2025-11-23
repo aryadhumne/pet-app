@@ -1,20 +1,33 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session # type: ignore
-from flask_sqlalchemy import SQLAlchemy # type: ignore
-from werkzeug.security import generate_password_hash, check_password_hash # type: ignore
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
 import os
+from urllib.parse import quote_plus
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "your-secret-key"
 
+# ----------------------
 # Database Config
+# ----------------------
+# URL-encode the password to handle special characters
+db_password = quote_plus("admin@123")  # Replace with your actual password
+db_user = "petuser"
+db_host = "localhost"
+db_port = "5432"
+db_name = "smartpetdb"
+
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
     "DATABASE_URL",
-    "sqlite:///petcare.db"   # fallback for testing
+    f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 db = SQLAlchemy(app)
 
+# ----------------------
 # Models
+# ----------------------
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
@@ -29,7 +42,9 @@ class Pet(db.Model):
     age = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
+# ----------------------
 # Routes
+# ----------------------
 @app.route("/")
 def home():
     return render_template("base.html")
@@ -85,6 +100,9 @@ def doctor_finder():
 def shop():
     return render_template("shop.html")
 
+# ----------------------
+# Run App
+# ----------------------
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

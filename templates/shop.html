@@ -1,26 +1,89 @@
 {% extends "base.html" %}
 {% block content %}
 <h2 class="text-center mb-4">Pet Shop</h2>
+
 <div class="row">
+
+  <!-- Pet Food -->
   <div class="col-md-4">
     <div class="card product-card">
       <img src="{{ url_for('static', filename='images/food.webp') }}" class="card-img-top" alt="Pet Food">
       <div class="card-body text-center">
         <h5 class="card-title">Pet Food</h5>
         <p>Nutritious and healthy meals for your pets.</p>
-        <button class="btn backgroundblue">Buy Now</button>
+        <a href="https://www.google.com/search?q=pet+food" 
+           target="_blank"
+           class="btn backgroundblue">
+           Buy Now
+        </a>
       </div>
     </div>
   </div>
+
+  <!-- Pet Toys -->
   <div class="col-md-4">
     <div class="card product-card">
       <img src="{{ url_for('static', filename='images/toys.webp') }}" class="card-img-top" alt="Pet Toys">
       <div class="card-body text-center">
         <h5 class="card-title">Pet Toys</h5>
         <p>Keep your pets active and happy.</p>
-        <button class="btn backgroundblue">Buy Now</button>
+        <a href="https://www.google.com/search?q=pet+toys" 
+           target="_blank"
+           class="btn backgroundblue">
+           Buy Now
+        </a>
       </div>
     </div>
   </div>
+
+  <!-- Pet Skincare -->
+  <div class="col-md-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/petskin.avif') }}" class="card-img-top" alt="Pet Skincare">
+      <div class="card-body text-center">
+        <h5 class="card-title">Pet Skincare</h5>
+        <p>Shampoos and grooming products for shiny coats.</p>
+        <a href="https://www.google.com/search?q=pet+skincare+products" 
+           target="_blank"
+           class="btn backgroundblue">
+           Buy Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pet Medicines -->
+  <div class="col-md-4 mt-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/petmed.webp') }}" class="card-img-top" alt="Pet Medicines">
+      <div class="card-body text-center">
+        <h5 class="card-title">Pet Medicines</h5>
+        <p>Essential medicines and health supplies.</p>
+        <a href="https://www.google.com/search?q=pet+medicines" 
+           target="_blank"
+           class="btn backgroundblue">
+           Buy Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pet Clothes -->
+  <div class="col-md-4 mt-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/petcloth.jpeg') }}" class="card-img-top" alt="Pet Clothes">
+      <div class="card-body text-center">
+        <h5 class="card-title">Pet Clothes</h5>
+        <p>Comfortable and stylish clothes for pets.</p>
+        <a href="https://www.google.com/search?q=pet+clothes" 
+           target="_blank"
+           class="btn backgroundblue">
+           Buy Now
+        </a>
+      </div>
+    </div>
+  </div>
+
 </div>
+
 {% endblock %}

@@ -10,8 +10,7 @@ app.secret_key = "your-secret-key"
 # ----------------------
 # Database Config
 # ----------------------
-# URL-encode the password to handle special characters
-db_password = quote_plus("admin@123")  # Replace with your actual password
+db_password = quote_plus("admin@123")
 db_user = "petuser"
 db_host = "localhost"
 db_port = "5432"
@@ -34,6 +33,7 @@ class User(db.Model):
     password = db.Column(db.String(200))
     pets = db.relationship("Pet", backref="owner", lazy=True)
 
+
 class Pet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -49,6 +49,7 @@ class Pet(db.Model):
 def home():
     return render_template("base.html")
 
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -58,6 +59,7 @@ def login():
             return redirect(url_for("dashboard"))
         flash("Invalid login")
     return render_template("login.html")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -70,12 +72,14 @@ def register():
         return redirect(url_for("login"))
     return render_template("register.html")
 
+
 @app.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
     user = User.query.get(session["user_id"])
     return render_template("dashboard.html", user=user)
+
 
 @app.route("/add_pet", methods=["POST"])
 def add_pet():
@@ -92,13 +96,42 @@ def add_pet():
     db.session.commit()
     return redirect(url_for("dashboard"))
 
+
+# ----------------------
+# PET PROFILE ROUTE
+# ----------------------
+@app.route("/pet/<int:pet_id>")
+def pet_profile(pet_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    pet = Pet.query.get_or_404(pet_id)
+
+    # Breed information
+    breed_info = {
+        "Labrador": "Friendly and energetic. Needs exercise and proper grooming.",
+        "German Shepherd": "Loyal, strong, and intelligent. Great for protection.",
+        "Persian Cat": "Calm, gentle, and requires daily fur care.",
+        "Siamese Cat": "Very vocal, social, and affectionate."
+    }
+
+    info = breed_info.get(
+        pet.breed,
+        "General Care: Provide regular food, grooming, health checkups, and affection."
+    )
+
+    return render_template("pet_profile.html", pet=pet, info=info)
+
+
 @app.route("/doctor_finder")
 def doctor_finder():
     return render_template("doctor_finder.html")
 
+
 @app.route("/shop")
 def shop():
     return render_template("shop.html")
+
 
 # ----------------------
 # Run App

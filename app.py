@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
+import math
 from urllib.parse import quote_plus
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
@@ -11,7 +12,7 @@ app.secret_key = "your-secret-key"
 # Database Config
 # ----------------------
 db_password = quote_plus("admin@123")
-db_user = "petuser"
+db_user = "postgres"
 db_host = "localhost"
 db_port = "5432"
 db_name = "smartpetdb"
@@ -25,14 +26,13 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 # ----------------------
-# Models
+# MODELS
 # ----------------------
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(200))
     pets = db.relationship("Pet", backref="owner", lazy=True)
-
 
 class Pet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -42,8 +42,27 @@ class Pet(db.Model):
     age = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
+# NEW: Clinic Model
+class Clinic(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(150))
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+
 # ----------------------
-# Routes
+# Distance Function
+# ----------------------
+def calculate_distance(lat1, lon1, lat2, lon2):
+    R = 6371  # Earth radius in km
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * \
+        math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
+
+# ----------------------
+# ROUTES
 # ----------------------
 @app.route("/")
 def home():
@@ -107,7 +126,6 @@ def pet_profile(pet_id):
 
     pet = Pet.query.get_or_404(pet_id)
 
-    # Breed information
     breed_info = {
         "Labrador": "Friendly and energetic. Needs exercise and proper grooming.",
         "German Shepherd": "Loyal, strong, and intelligent. Great for protection.",
@@ -123,6 +141,9 @@ def pet_profile(pet_id):
     return render_template("pet_profile.html", pet=pet, info=info)
 
 
+# ----------------------
+# DOCTOR FINDER PAGE
+# ----------------------
 @app.route("/doctor_finder")
 def doctor_finder():
     return render_template("doctor_finder.html")
@@ -132,6 +153,24 @@ def doctor_finder():
 def shop():
     return render_template("shop.html")
 
+
+# ----------------------
+# NEW: Count Clinics Within 20 KM
+# ----------------------
+@app.route("/clinics_within_20km")
+def clinics_within_20km():
+    user_lat = float(request.args.get("lat"))
+    user_lon = float(request.args.get("lon"))
+
+    clinics = Clinic.query.all()
+    count = 0
+
+    for c in clinics:
+        distance = calculate_distance(user_lat, user_lon, c.latitude, c.longitude)
+        if distance <= 20:
+            count += 1
+
+    return {"clinics_within_20km": count}
 
 # ----------------------
 # Run App

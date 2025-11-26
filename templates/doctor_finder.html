@@ -1,10 +1,93 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="text-center mb-4">Find Nearby Veterinarians</h2>
-<div class="text-center">
-  <iframe 
-    src="https://www.google.com/maps?q=nearby+veterinarian&output=embed" 
-    width="100%" height="500" 
-    style="border:0;" allowfullscreen></iframe>
-</div>
+
+<h2 class="text-center mb-3">Nearby Pet Clinics (Within 20 KM)</h2>
+<p class="text-center text-muted">Location permission is required to find clinics near you.</p>
+
+<div id="map" style="height: 500px; width: 100%; border-radius: 10px;"></div>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+// Initialize map
+var map = L.map('map').setView([20.5937, 78.9629], 5);
+
+// Add OpenStreetMap tiles
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Ask for user location
+window.onload = function() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(loadClinics, locationDenied, { enableHighAccuracy: true });
+    } else {
+        alert("Your device does not support location services.");
+    }
+};
+
+function loadClinics(position) {
+    let userLat = position.coords.latitude;
+    let userLng = position.coords.longitude;
+
+    // Move map to user
+    map.setView([userLat, userLng], 13);
+
+    // User Marker
+    L.marker([userLat, userLng]).addTo(map)
+        .bindPopup("<b>You are here</b>").openPopup();
+
+    // 🔵 Add 20km Circle
+    L.circle([userLat, userLng], {
+        radius: 20000,           // 20 km
+        color: "blue",
+        fillColor: "#3fa0ff",
+        fillOpacity: 0.2
+    }).addTo(map);
+
+    // Overpass Query (veterinary clinics within 20km)
+    let query = `
+        [out:json];
+        (
+            node["amenity"="veterinary"](around:20000, ${userLat}, ${userLng});
+            way["amenity"="veterinary"](around:20000, ${userLat}, ${userLng});
+            relation["amenity"="veterinary"](around:20000, ${userLat}, ${userLng});
+        );
+        out center;
+    `;
+
+    fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        body: query
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.elements || data.elements.length === 0) {
+            alert("No pet clinics found within 20 KM.");
+            return;
+        }
+
+        data.elements.forEach(place => {
+            let lat = place.lat || place.center?.lat;
+            let lon = place.lon || place.center?.lon;
+
+            if (lat && lon) {
+                L.marker([lat, lon]).addTo(map)
+                .bindPopup(<b>Pet Clinic</b><br>Within 20 KM);
+            }
+        });
+    })
+    .catch(err => alert("Error loading clinics: " + err));
+}
+
+function locationDenied() {
+    alert("⚠ Location Permission Denied.\nPlease allow GPS to find nearby clinics.");
+}
+
+</script>
+
 {% endblock %}

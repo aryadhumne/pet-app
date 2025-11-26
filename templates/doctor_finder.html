@@ -1,93 +1,130 @@
-{% extends "base.html" %}
-{% block content %}
 
-<h2 class="text-center mb-3">Nearby Pet Clinics (Within 20 KM)</h2>
-<p class="text-center text-muted">Location permission is required to find clinics near you.</p>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nearby Pet Clinics</title>
 
-<div id="map" style="height: 500px; width: 100%; border-radius: 10px;"></div>
+    <!-- Leaflet Map Library (NO API KEY REQUIRED) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        .clinic-popup {
+            font-size: 14px;
+        }
+        .clinic-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<h2 style="text-align:center; padding:10px;">Nearby Pet Clinics (Within 20 KM)</h2>
+<div id="map"></div>
 
 <script>
-// Initialize map
-var map = L.map('map').setView([20.5937, 78.9629], 5);
-
-// Add OpenStreetMap tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
-// Ask for user location
-window.onload = function() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(loadClinics, locationDenied, { enableHighAccuracy: true });
-    } else {
-        alert("Your device does not support location services.");
-    }
-};
-
-function loadClinics(position) {
-    let userLat = position.coords.latitude;
-    let userLng = position.coords.longitude;
-
-    // Move map to user
-    map.setView([userLat, userLng], 13);
-
-    // User Marker
-    L.marker([userLat, userLng]).addTo(map)
-        .bindPopup("<b>You are here</b>").openPopup();
-
-    // 🔵 Add 20km Circle
-    L.circle([userLat, userLng], {
-        radius: 20000,           // 20 km
-        color: "blue",
-        fillColor: "#3fa0ff",
-        fillOpacity: 0.2
-    }).addTo(map);
-
-    // Overpass Query (veterinary clinics within 20km)
-    let query = `
-        [out:json];
-        (
-            node["amenity"="veterinary"](around:20000, ${userLat}, ${userLng});
-            way["amenity"="veterinary"](around:20000, ${userLat}, ${userLng});
-            relation["amenity"="veterinary"](around:20000, ${userLat}, ${userLng});
-        );
-        out center;
-    `;
-
-    fetch("https://overpass-api.de/api/interpreter", {
-        method: "POST",
-        body: query
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (!data.elements || data.elements.length === 0) {
-            alert("No pet clinics found within 20 KM.");
-            return;
+    // ------------------------
+    //  SAMPLE PET CLINIC DATA
+    // (Use your Flask database clinics here)
+    // ------------------------
+    const clinics = [
+        {
+            name: "Happy Paws Pet Clinic",
+            lat: 18.5204,
+            lon: 73.8567,
+            address: "Pune Camp, Maharashtra"
+        },
+        {
+            name: "Pet Life Hospital",
+            lat: 18.5074,
+            lon: 73.8077,
+            address: "Kothrud, Pune"
+        },
+        {
+            name: "Blue Cross Pet Clinic",
+            lat: 18.5800,
+            lon: 73.9250,
+            address: "Viman Nagar, Pune"
         }
+    ];
 
-        data.elements.forEach(place => {
-            let lat = place.lat || place.center?.lat;
-            let lon = place.lon || place.center?.lon;
+    // Haversine distance formula
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
 
-            if (lat && lon) {
-                L.marker([lat, lon]).addTo(map)
-                .bindPopup(<b>Pet Clinic</b><br>Within 20 KM);
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    }
+
+    // Initialize Map
+    var map = L.map('map');
+
+    // Ask for user's location
+    navigator.geolocation.getCurrentPosition(function (pos) {
+        let userLat = pos.coords.latitude;
+        let userLon = pos.coords.longitude;
+
+        // Center map on user
+        map.setView([userLat, userLon], 12);
+
+        // Add map tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(map);
+
+        // Marker for user
+        L.marker([userLat, userLon])
+            .addTo(map)
+            .bindPopup("You are here")
+            .openPopup();
+
+        // 20 KM CIRCLE
+        L.circle([userLat, userLon], {
+            radius: 20000,
+            color: "blue",
+            fillColor: "#80bfff",
+            fillOpacity: 0.2
+        }).addTo(map);
+
+        // Show clinics within 20 km
+        clinics.forEach(clinic => {
+            let dist = calculateDistance(userLat, userLon, clinic.lat, clinic.lon);
+
+            if (dist <= 20) {
+                L.marker([clinic.lat, clinic.lon])
+                    .addTo(map)
+                    .bindPopup(`
+                        <div class="clinic-popup">
+                            <div class="clinic-title">${clinic.name}</div>
+                            <div>${clinic.address}</div>
+                            <div><b>Distance:</b> ${dist.toFixed(2)} km</div>
+                        </div>
+                    `);
             }
         });
-    })
-    .catch(err => alert("Error loading clinics: " + err));
-}
 
-function locationDenied() {
-    alert("⚠ Location Permission Denied.\nPlease allow GPS to find nearby clinics.");
-}
+    }, function (err) {
+        alert("Location permission denied. Please allow it to show nearby clinics.");
+    });
 
 </script>
 
-{% endblock %}
+</body>
+</html>

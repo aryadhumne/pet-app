@@ -68,21 +68,29 @@ h1 {
 }
 
 /* ===== BUTTON ===== */
-button {
-  background-color: #3b82f6; /* Bright Blue */
-  color: white;
-  padding: 10px 20px;
+.navbar-btn {
+  background: #1e3a8a;
+  color: #1f4cb4;
+  padding: 8px 16px;
+  border-radius: 8px;
   border: none;
-  border-radius: 12px;
-  font-size: 18px;
+  margin: 4px;
   cursor: pointer;
-  transition: 0.3s;
+  font-weight: 600;
+  transition: 0.2s ease-in-out;
 }
 
-button:hover {
-  background-color: #2563eb; /* Dark Blue Hover */
-  transform: scale(1.05);
+/* Hover effect like other buttons */
+.navbar-btn:hover {
+  background: #1e3a8a;
 }
+
+/* Active button (Pets / AgriPets selected) */
+.navbar-btn.active {
+  background: white;
+  color: #1e3a8a;
+}
+
 
 /* ===== LINKS ===== */
 a {
@@ -113,3 +121,29 @@ footer span {
 }
 body { display: flex; flex-direction: column; min-height: 100vh; }
 .container { flex: 1; }
+
+ .nav-btn {
+  background: #1e3a8a;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid white;
+  margin: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
+
+/* Hover effect for all buttons */
+.nav-btn:hover {
+  background: #1e3a8a;
+}
+
+/* Active button (selected tab) */
+.nav-btn.active {
+  background: #1e3a8a;
+  color: #ffffff;
+}
+
+

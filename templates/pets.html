@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pets</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7ff;
+      padding: 20px;
+    }
+
+    /* ---------------- NAVBAR ---------------- */
+    .navbar {
+      background-color: #1f4cb4;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* --- FIX: All nav buttons same style --- */
+    .nav-btn {
+      background: #ffffff !important;
+      color: #1f4cb4 !important;
+      border: none !important;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background: #e7e7e7 !important;
+    }
+
+    /* Remove any automatic active blue */
+    .nav-btn.active,
+    .nav-btn.selected,
+    .nav-btn.current {
+      background: #ffffff !important;
+      color: #1f4cb4 !important;
+    }
+
+    /* Logout red */
+    .logout {
+      background: #d9534f !important;
+      color: white !important;
+    }
+
+    /* ---------------- PAGE CONTENT ---------------- */
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #1f4cb4;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="logo-text">🐾 Smart AgriPet Care</div>
+
+    <div class="nav-buttons">
+      <a href="Dashboard.html"><button class="nav-btn">Dashboard</button></a>
+      <a href="Shop.html"><button class="nav-btn">Shop</button></a>
+      <a href="DoctorFinder.html"><button class="nav-btn">Doctor Finder</button></a>
+      <a href="Pets.html"><button class="nav-btn">Pets</button></a>
+      <a href="AgriPets.html"><button class="nav-btn">AgriPets</button></a>
+      <a href="Logout.html"><button class="nav-btn logout">Logout</button></a>
+    </div>
+  </div>
+
+  <!-- PAGE CONTENT -->
+  <div class="container">
+    <h2>Pets Section</h2>
+    <p>Welcome to the Pets page!</p>
+  </div>
+
+</body>
+</html>   separate this code in html and css

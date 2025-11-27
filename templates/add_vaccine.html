@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-3">Add Vaccine for {{ pet.name }}</h2>
+
+<form method="POST" 
+      action="{{ url_for('add_vaccine', pet_id=pet.id) }}" 
+      class="card p-4 mt-3 shadow-sm">
+
+    <label class="fw-bold">Vaccine Name</label>
+    <input type="text" name="vaccine_name" class="form-control" required>
+
+    <label class="mt-3 fw-bold">Last Given Date</label>
+    <input type="date" name="last_given_date" class="form-control" required>
+
+    <label class="mt-3 fw-bold">Next Due Date</label>
+    <input type="date" name="next_due_date" class="form-control" required>
+
+    <div class="mt-4">
+        <button class="btn btn-success">Save Vaccine</button>
+
+        <a href="{{ url_for('pet_profile', pet_id=pet.id) }}"
+           class="btn btn-secondary ms-2">
+           Back to Profile
+        </a>
+    </div>
+
+</form>
+
+{% endblock %}

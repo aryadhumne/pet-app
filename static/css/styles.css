@@ -2,10 +2,14 @@
 body {
   margin: 0;
   padding: 0;
+  padding-bottom: 80px;   /* ✅ SPACE FOR BOTTOM NAVBAR */
   font-family: 'Poppins', sans-serif;
   background: url("https://media.istockphoto.com/id/2148798138/photo/collage-of-domestic-animal-group-together.jpg?s=612x612&w=0&k=20&c=9Pcg1H4YQYSQ1EK_9fMf2paRqVimnFGTXJdt_lXKSQc=") no-repeat center center fixed;
   background-size: cover;
   color: #1e3a8a; /* Deep Blue for general text */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* ===== OVERLAY BACKGROUND ===== */
@@ -18,9 +22,9 @@ body {
   align-items: center;
 }
 
-/* ===== NAVBAR ===== */
+/* ===== NAVBAR (TOP BRAND + BOTTOM TABS) ===== */
 nav {
-  background-color: #1e3a8a !important; /* Deep Blue */
+  background-color: #1e3a8a !important;
   padding: 10px 20px;
 }
 
@@ -32,20 +36,22 @@ nav a {
 }
 
 nav a:hover {
-  color: #a5b4fc !important; /* Light Blue hover */
+  color: #a5b4fc !important;
 }
 
-/* ===== LOGIN CONTAINER ===== */
+/* ===== CONTAINER (MAIN CONTENT) ===== */
 .container {
   text-align: center;
   background-color: rgba(240, 248, 255, 0.9);
   border-radius: 20px;
   box-shadow: 0 0 15px rgba(30, 64, 175, 0.5);
   padding: 40px 60px;
+  flex: 1;   /* ✅ PUSHES FOOTER DOWN */
 }
 
+/* ===== HEADINGS ===== */
 h1 {
-  color: #1e40af; /* Darker Blue */
+  color: #1e40af;
   font-size: 32px;
   margin-bottom: 30px;
 }
@@ -69,7 +75,7 @@ h1 {
 
 /* ===== BUTTON ===== */
 button {
-  background-color: #3b82f6; /* Bright Blue */
+  background-color: #3b82f6;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -80,7 +86,7 @@ button {
 }
 
 button:hover {
-  background-color: #2563eb; /* Dark Blue Hover */
+  background-color: #2563eb;
   transform: scale(1.05);
 }
 
@@ -102,14 +108,15 @@ footer {
   padding: 15px 0;
   text-align: center;
   font-size: 14px;
+  margin-top: auto;   /* ✅ STAYS ABOVE BOTTOM NAV */
 }
 
 footer span {
-  color: #f87171; /* Heart red */
+  color: #f87171;
 }
-.backgroundblue{
-  background-color:#1e3a8a !important;
+
+/* ===== BRAND BLUE CLASS ===== */
+.backgroundblue {
+  background-color: #1e3a8a !important;
   background: #1e3a8a !important;
 }
-body { display: flex; flex-direction: column; min-height: 100vh; }
-.container { flex: 1; }

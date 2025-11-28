@@ -1,14 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import os, math
 from urllib.parse import quote_plus
-from datetime import datetime, timedelta
-
-# ✅ SMS TOOLS
-from twilio.rest import Client
+from datetime import datetime, timedelta, date
+import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 
+# ---------------------- ✅ APP CONFIG
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "your-secret-key"
 
@@ -26,19 +25,33 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
-# ---------------------- ✅ TWILIO CONFIG (PASTE YOUR VALUES)
-TWILIO_SID = "PASTE_SID"
-TWILIO_AUTH = "PASTE_AUTH"
-TWILIO_PHONE = "+1234567890"
+# ---------------------- ✅ FAST2SMS CONFIG
+FAST2SMS_API_KEY = "PASTE_YOUR_FAST2SMS_API_KEY_HERE"
 
-client = Client(TWILIO_SID, TWILIO_AUTH)
+def send_sms(phone, message):
+    try:
+        requests.post(
+            "https://www.fast2sms.com/dev/bulkV2",
+            json={
+                "route": "q",
+                "message": message,
+                "language": "english",
+                "numbers": phone
+            },
+            headers={
+                "authorization": FAST2SMS_API_KEY,
+                "Content-Type": "application/json"
+            }
+        )
+    except Exception as e:
+        print("SMS Failed:", e)
 
 # ---------------------- ✅ MODELS
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(200))
-    phone = db.Column(db.String(15))  # ✅ MOBILE NUMBER
+    phone = db.Column(db.String(15))
     pets = db.relationship("Pet", backref="owner", lazy=True)
 
 class Pet(db.Model):
@@ -72,10 +85,10 @@ def calculate_distance(lat1, lon1, lat2, lon2):
         math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
-# ---------------------- ✅ ROUTES
+# ---------------------- ✅ AUTH ROUTES
 @app.route("/")
 def home():
-    return render_template("base.html")
+    return redirect(url_for("dashboard")) if "user_id" in session else render_template("base.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -90,18 +103,24 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        hashed_pw = generate_password_hash(request.form["password"])
         user = User(
             username=request.form["username"],
-            password=hashed_pw,
-            phone=request.form["phone"]
+            password=generate_password_hash(request.form["password"]),
+            phone=request.form.get("phone")
         )
         db.session.add(user)
         db.session.commit()
-        flash("Account created! Please login.")
+        flash("Account created!")
         return redirect(url_for("login"))
     return render_template("register.html")
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("Logged out successfully")
+    return redirect(url_for("login"))
+
+# ---------------------- ✅ DASHBOARD
 @app.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
@@ -109,23 +128,31 @@ def dashboard():
     user = User.query.get(session["user_id"])
     return render_template("dashboard.html", user=user)
 
-@app.route("/add_pet", methods=["POST"])
-def add_pet():
+# ---------------------- ✅ PET PAGE (ADD + VIEW)
+@app.route("/pet", methods=["GET", "POST"])
+def pet():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    pet = Pet(
-        name=request.form["name"],
-        species=request.form["species"],
-        breed=request.form["breed"],
-        age=request.form["age"],
-        user_id=session["user_id"]
-    )
+    user = User.query.get(session["user_id"])
 
-    db.session.add(pet)
-    db.session.commit()
-    return redirect(url_for("dashboard"))
+    if request.method == "POST":
+        pet = Pet(
+            name=request.form["name"],
+            species=request.form["species"],
+            breed=request.form["breed"],
+            age=int(request.form["age"]),
+            user_id=user.id
+        )
+        db.session.add(pet)
+        db.session.commit()
+        flash("Pet added successfully!")
+        return redirect(url_for("pet"))
 
+    pets = Pet.query.filter_by(user_id=user.id).all()
+    return render_template("pet.html", pets=pets)
+
+# ---------------------- ✅ PET PROFILE
 @app.route("/pet/<int:pet_id>")
 def pet_profile(pet_id):
     if "user_id" not in session:
@@ -133,84 +160,79 @@ def pet_profile(pet_id):
 
     pet = Pet.query.get_or_404(pet_id)
     vaccines = Vaccine.query.filter_by(pet_id=pet.id).all()
+    today = date.today()
 
-    return render_template(
-        "pet_profile.html",
-        pet=pet,
-        vaccines=vaccines
-    )
+    return render_template("pet_profile.html", pet=pet, vaccines=vaccines, now=today)
 
+# ---------------------- ✅ ADD VACCINE
 @app.route("/add_vaccine/<int:pet_id>", methods=["GET", "POST"])
 def add_vaccine(pet_id):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
     pet = Pet.query.get_or_404(pet_id)
 
     if request.method == "POST":
-        new_vaccine = Vaccine(
+        vaccine = Vaccine(
             vaccine_name=request.form["vaccine_name"],
-            last_given_date=datetime.strptime(request.form["last_given_date"], "%Y-%m-%d"),
-            next_due_date=datetime.strptime(request.form["next_due_date"], "%Y-%m-%d"),
+            last_given_date=datetime.strptime(request.form["last_given_date"], "%Y-%m-%d").date(),
+            next_due_date=datetime.strptime(request.form["next_due_date"], "%Y-%m-%d").date(),
             pet_id=pet.id
         )
-
-        db.session.add(new_vaccine)
+        db.session.add(vaccine)
         db.session.commit()
-
-        flash("Vaccine added successfully!")
+        flash("Vaccine added!")
         return redirect(url_for("pet_profile", pet_id=pet.id))
 
     return render_template("add_vaccine.html", pet=pet)
 
-# ---------------------- ✅ DOCTOR
-@app.route("/doctor_finder")
-def doctor_finder():
-    return render_template("doctor_finder.html")
-
+# ---------------------- ✅ EXTRA PAGES
 @app.route("/shop")
 def shop():
     return render_template("shop.html")
 
+@app.route("/agripet")
+def agripet():
+    return render_template("Agripet.html")
+
+@app.route("/health")
+def health():
+    return render_template("health.html")
+
+@app.route("/doctor_finder")
+def doctor_finder():
+    return render_template("doctor_finder.html")
+
+# ---------------------- ✅ CLINIC API
 @app.route("/clinics_within_20km")
 def clinics_within_20km():
-    user_lat = float(request.args.get("lat"))
-    user_lon = float(request.args.get("lon"))
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
 
+    if not lat or not lon:
+        return jsonify({"error": "Missing lat/lon"}), 400
+
+    user_lat, user_lon = float(lat), float(lon)
     count = 0
+
     for c in Clinic.query.all():
-        if calculate_distance(user_lat, user_lon, c.latitude, c.longitude) <= 20:
-            count += 1
+        if c.latitude and c.longitude:
+            if calculate_distance(user_lat, user_lon, c.latitude, c.longitude) <= 20:
+                count += 1
 
-    return {"clinics_within_20km": count}
+    return jsonify({"clinics_within_20km": count})
 
-# ---------------------- ✅ AUTO SMS REMINDER SYSTEM
+# ---------------------- ✅ AUTO SMS REMINDER
 def send_vaccine_reminders():
-    today = datetime.today().date()
-    reminder_day = today + timedelta(days=1)
+    reminder_day = date.today() + timedelta(days=1)
+    vaccines = Vaccine.query.filter(Vaccine.next_due_date == reminder_day).all()
 
-    vaccines = Vaccine.query.filter_by(next_due_date=reminder_day).all()
-
-    for vaccine in vaccines:
-        pet = vaccine.pet
-        owner = pet.owner
-
-        message = f"""
-Reminder!
-
-Pet: {pet.name}
-Vaccine: {vaccine.vaccine_name}
-Due Date: {vaccine.next_due_date}
-"""
-
-        client.messages.create(
-            body=message,
-            from_=TWILIO_PHONE,
-            to=owner.phone
-        )
+    for v in vaccines:
+        if v.pet and v.pet.owner and v.pet.owner.phone:
+            send_sms(
+                v.pet.owner.phone,
+                f"Reminder! Pet: {v.pet.name}, Vaccine: {v.vaccine_name}, Due: {v.next_due_date}"
+            )
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(send_vaccine_reminders, 'interval', hours=24)
+scheduler.add_job(send_vaccine_reminders, 'interval', hours=24, id="vaccine_job", replace_existing=True)
 scheduler.start()
 
 # ---------------------- ✅ RUN APP

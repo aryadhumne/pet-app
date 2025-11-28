@@ -41,7 +41,7 @@
                     <td>{{ v.last_given_date }}</td>
                     <td>{{ v.next_due_date }}</td>
                     <td>
-                        {% if v.next_due_date <= now %}
+                        {% if v.is_overdue %}
                             <span class="badge bg-danger">Overdue</span>
                         {% else %}
                             <span class="badge bg-warning text-dark">Upcoming</span>

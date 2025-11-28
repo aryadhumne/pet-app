@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Health{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Pet Health Dashboard</h2>
+<p class="text-center mb-5">Track vaccinations, diets, and health checkups for your pets.</p>
+
+<div class="row justify-content-center">
+    <div class="col-md-4 mb-4">
+        <div class="product-card">
+            <h5>Vaccinations</h5>
+            <p>Track your pet's vaccination history.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="product-card">
+            <h5>Diet & Nutrition</h5>
+            <p>Recommended diet based on pet type and age.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="product-card">
+            <h5>Health Checkups</h5>
+            <p>Schedule and monitor vet appointments.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

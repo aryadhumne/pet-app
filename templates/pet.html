@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="text-center mb-4">My Pets</h2>
+
+<!-- ✅ ADD PET FORM -->
+<div class="card p-3 mb-4">
+    <h4>Add New Pet</h4>
+
+    <form method="POST">
+        <div class="row">
+            <div class="col-md-3">
+                <input type="text" name="name" class="form-control" placeholder="Pet Name" required>
+            </div>
+
+            <div class="col-md-3">
+                <input type="text" name="species" class="form-control" placeholder="Species" required>
+            </div>
+
+            <div class="col-md-3">
+                <input type="text" name="breed" class="form-control" placeholder="Breed" required>
+            </div>
+
+            <div class="col-md-2">
+                <input type="number" name="age" class="form-control" placeholder="Age" required>
+            </div>
+
+            <div class="col-md-1">
+                <button class="btn btn-primary">Add</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- ✅ PET LIST -->
+<div class="row">
+    {% for pet in pets %}
+    <div class="col-md-4">
+        <div class="card p-3 mb-3 shadow">
+            <h5>{{ pet.name }}</h5>
+            <p>Species: {{ pet.species }}</p>
+            <p>Breed: {{ pet.breed }}</p>
+            <p>Age: {{ pet.age }}</p>
+
+            <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="btn btn-sm btn-success">
+                View Profile
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

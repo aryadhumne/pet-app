@@ -50,6 +50,7 @@ def send_sms(phone, message):
 # ---------------------- ✅ MODELS
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+<<<<<<< HEAD
 
     # Username must be unique + required
     username = db.Column(db.String(100), unique=True, nullable=False)
@@ -61,6 +62,11 @@ class User(db.Model):
     phone = db.Column(db.String(15), nullable=True)
 
     # Relationship with pets
+=======
+    username = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(200))
+    phone = db.Column(db.String(15))
+>>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f
     pets = db.relationship("Pet", backref="owner", lazy=True)
 
 
@@ -98,11 +104,15 @@ def calculate_distance(lat1, lon1, lat2, lon2):
 # ---------------------- ✅ AUTH ROUTES
 @app.route("/")
 def home():
+<<<<<<< HEAD
     if "user_id" in session:
         return redirect(url_for("dashboard"))
     else:
         return redirect(url_for("login"))  # redirect to login page
 
+=======
+    return redirect(url_for("dashboard")) if "user_id" in session else render_template("base.html")
+>>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -117,6 +127,7 @@ def login():
 @app.route('/register', methods=["GET", "POST"])
 def register():
     if request.method == "POST":
+<<<<<<< HEAD
         username = request.form.get("username")
         email = request.form.get("email")
         password = request.form.get("password")
@@ -128,6 +139,17 @@ def register():
 
         return redirect("/login")
 
+=======
+        user = User(
+            username=request.form["username"],
+            password=generate_password_hash(request.form["password"]),
+            phone=request.form.get("phone")
+        )
+        db.session.add(user)
+        db.session.commit()
+        flash("Account created!")
+        return redirect(url_for("login"))
+>>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f
     return render_template("register.html")
 
 @app.route("/logout")
@@ -216,6 +238,7 @@ def health():
 def doctor_finder():
     return render_template("doctor_finder.html")
 
+<<<<<<< HEAD
 @app.route('/agrishop')
 def agrishop():
     return render_template('agrishop.html')
@@ -818,6 +841,8 @@ def rooster_details(name):
 
 
 
+=======
+>>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f
 # ---------------------- ✅ CLINIC API
 @app.route("/clinics_within_20km")
 def clinics_within_20km():
@@ -837,10 +862,13 @@ def clinics_within_20km():
 
     return jsonify({"clinics_within_20km": count})
 
+<<<<<<< HEAD
 
 
 
 
+=======
+>>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f
 # ---------------------- ✅ AUTO SMS REMINDER
 def send_vaccine_reminders():
     reminder_day = date.today() + timedelta(days=1)

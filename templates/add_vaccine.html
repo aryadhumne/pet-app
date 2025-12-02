@@ -1,6 +1,8 @@
 <!-- templates/add_vaccine.html -->
 {% extends "base.html" %}
+
 {% block content %}
+<<<<<<< HEAD
 <div class="container mt-5">
     <h2>Add Vaccination</h2>
     <form method="POST" action="{{ url_for('vaccination') }}">
@@ -33,3 +35,20 @@
     </form>
 </div>
 {% endblock %}
+=======
+<h2>Add Vaccine for {{ pet.name }}</h2>
+
+<form method="POST">
+    <label>Vaccine Name:</label>
+    <input type="text" name="vaccine_name" required><br><br>
+
+    <label>Last Given Date:</label>
+    <input type="date" name="last_given_date" required><br><br>
+
+    <label>Next Due Date:</label>
+    <input type="date" name="next_due_date" required><br><br>
+
+    <button type="submit">Add Vaccine</button>
+</form>
+{% endblock %}
+>>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f

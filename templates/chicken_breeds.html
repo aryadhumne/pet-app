@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="breed-container">
+    <h2 class="title">Chicken Breeds</h2>
+
+    {% for chicken in chicken_list %}
+    <div class="breed-card">
+        <img src="{{ url_for('static', filename='images/' ~ chicken.image) }}" alt="{{ chicken.name }}">
+        <h3>{{ chicken.name }}</h3>
+        <a class="info-btn" href="/agribreed_details/chicken/{{ chicken.name | replace(' ', '-') }}">
+            View Info
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+/* 🚫 Fully remove border / outline from everything */
+* {
+    border: none !important;
+    outline: none !important;
+}
+
+.breed-container {
+    width: 90%;
+    margin: auto;
+    padding-top: 20px;
+}
+
+.title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #1e3a8a;
+}
+
+.breed-card {
+    background: white;
+    margin: 15px auto;
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+.breed-card img {
+    width: 100%;             /* ↔ full width */
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+.info-btn {
+    background: #1e3a8a;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 12px;
+    text-decoration: none;
+    font-size: 15px;
+}
+</style>
+
+{% endblock %}

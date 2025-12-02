@@ -32,3 +32,5 @@ class Pet(db.Model):
 
     # optional: link to user
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    
+    

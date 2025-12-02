@@ -1,77 +1,34 @@
-# routes.py
-from flask import Blueprint, render_template, url_for, redirect, current_app, request
-from models import db, Pet
-from sqlalchemy import asc
+from werkzeug.utils import secure_filename
+from flask import flash, redirect, url_for, request, current_app
 import os
 
-bp = Blueprint('main', _name_)
+@bp.route("/upload_pet_photo/<int:pet_id>", methods=["POST"])
+def upload_pet_photo(pet_id):
 
-# Breed info dictionary - extend as needed
-BREED_INFO = {
-    "Golden Retriever": {
-        "type": "Dog",
-        "size": "Large",
-        "care": "High exercise needs, regular brushing. Prone to hip dysplasia.",
-        "image_hint": "golden_retriever.webp"
-    },
-    "German Shepherd": {
-        "type": "Dog",
-        "size": "Large",
-        "care": "Intelligent and active. Needs training and socialization.",
-        "image_hint": "german_shepherd.webp"
-    },
-    "Persian": {
-        "type": "Cat",
-        "size": "Medium",
-        "care": "Long coat needs frequent grooming.",
-        "image_hint": "persian_cat.webp"
-    },
-    "Local Cow": {
-        "type": "Cow",
-        "size": "Large",
-        "care": "Dairy breed care, milking schedule and nutrition important.",
-        "image_hint": "cow.webp"
-    },
-    # Add other breeds used by your users...
-}
+    if "photo" not in request.files:
+        flash("No file selected", "danger")
+        return redirect(url_for("main.pet_profile", pet_id=pet_id))
 
-def get_breed_info(breed_name):
-    if not breed_name:
-        return None
-    return BREED_INFO.get(breed_name, {
-        "type": "Unknown",
-        "size": "Unknown",
-        "care": "No breed-specific info available",
-        "image_hint": None
-    })
+    file = request.files["photo"]
 
-@bp.route('/')
-def index():
-    # redirect to dashboard
-    return redirect(url_for('main.dashboard'))
+    if file.filename == "":
+        flash("No selected file", "danger")
+        return redirect(url_for("main.pet_profile", pet_id=pet_id))
 
-@bp.route('/dashboard')
-def dashboard():
-    """
-    Dashboard shows top bar with pet accounts (all pets for now or current_user's pets)
-    """
-    # If you use flask-login: import current_user and filter by current_user.id
-    # from flask_login import current_user
-    if 'user_id' in request.args:
-        # optional: show pets for a specific user (debug)
-        user_id = request.args.get('user_id')
-        pets = Pet.query.filter_by(user_id=user_id).order_by(asc(Pet.created_at)).all()
-    else:
-        # default: show all pets (or change to current_user.pets if using auth)
-        pets = Pet.query.order_by(asc(Pet.created_at)).all()
+    # ✅ Create upload folder if not exists
+    upload_folder = os.path.join(current_app.root_path, "static/uploads")
+    os.makedirs(upload_folder, exist_ok=True)
 
-    return render_template('dashboard.html', pets=pets)
+    # ✅ Secure filename
+    filename = secure_filename(f"pet_{pet_id}.jpg")
+    filepath = os.path.join(upload_folder, filename)
 
-@bp.route('/pet/<int:pet_id>')
-def pet_profile(pet_id):
-    """
-    Show a single pet's profile and breed info
-    """
+    file.save(filepath)
+
+    # ✅ Save image name to DB
     pet = Pet.query.get_or_404(pet_id)
-    breed_info = get_breed_info(pet.breed)
-    return render_template('pet_profile.html', pet=pet, breed_info=breed_info)
+    pet.profile_image = filename
+    db.session.commit()
+
+    flash("Profile photo uploaded successfully!", "success")
+    return redirect(url_for("main.pet_profile", pet_id=pet_id))

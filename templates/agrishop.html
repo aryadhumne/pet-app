@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    body {
+       body {
+    background: 
+        linear-gradient(to bottom right, rgba(238,243,255,0.85), rgba(220,231,255,0.85)),
+        url("https://media.istockphoto.com/id/2148798138/photo/collage-of-domestic-animal-group-together.jpg?s=612x612&w=0&k=20&c=9Pcg1H4YQYSQ1EK_9fMf2paRqVimnFGTXJdt_lXKSQc=")
+        no-repeat center center fixed;
+    background-size: cover;
+    padding-bottom: 40px;
+    overflow-x: hidden;
+    font-family: 'Poppins', sans-serif;
+}
+
+    }
+
+    h2 {
+        color: #1f3c88;
+        font-weight: 700;
+        margin-bottom: 40px;
+    }
+
+    /* Product Card */
+    .product-card {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: none;
+        transition: 0.3s;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(5px);
+        margin-bottom: 35px;
+    }
+
+    .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+    }
+
+    .product-card img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+    }
+
+    .product-card .card-title {
+        font-weight: 600;
+        color: #1f3c88;
+        font-size: 20px;
+        margin-bottom: 8px;
+    }
+
+    .product-card p {
+        color: #4b4b4b;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    /* Buy Button */
+    .backgroundblue {
+        background-color: #1f3c88 !important;
+        color: #ffffff !important;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        font-size: 15px;
+        transition: 0.25s;
+    }
+
+    .backgroundblue:hover {
+        background-color: #162d66 !important;
+        transform: scale(1.06);
+        color: #ffffff !important;
+    }
+</style>
+
+<h2 class="text-center mb-4">🌿 AgriPet Shop 🌿</h2>
+
+<div class="row justify-content-center">
+
+  <!-- Seeds -->
+  <div class="col-md-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/seeds.jpg') }}" alt="Seeds">
+      <div class="card-body text-center">
+        <h5 class="card-title">Seeds</h5>
+        <p>High-quality crop and vegetable seeds.</p>
+        <a href="https://www.google.com/search?q=agriculture+seeds" target="_blank" class="btn backgroundblue">
+          Buy Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fertilizers -->
+  <div class="col-md-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/fertilizer.png') }}" alt="Fertilizer">
+      <div class="card-body text-center">
+        <h5 class="card-title">Fertilizers</h5>
+        <p>Soil health boosters for higher yield.</p>
+        <a href="https://www.google.com/search?q=best+fertilizers" target="_blank" class="btn backgroundblue">
+          Buy Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Livestock Care -->
+  <div class="col-md-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/livestock.jpeg') }}" alt="Livestock Care">
+      <div class="card-body text-center">
+        <h5 class="card-title">Livestock Care</h5>
+        <p>Products for cattle & poultry health.</p>
+        <a href="https://www.google.com/search?q=livestock+care+products" target="_blank" class="btn backgroundblue">
+          Buy Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agri Medicines -->
+  <div class="col-md-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/agrimedicine1.jpg') }}" alt="Agri Medicines">
+      <div class="card-body text-center">
+        <h5 class="card-title">Agri Medicines</h5>
+        <p>Essential crop protection and plant health solutions.</p>
+        <a href="https://www.google.com/search?q=agriculture+medicine" target="_blank" class="btn backgroundblue">
+          Buy Now
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

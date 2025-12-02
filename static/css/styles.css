@@ -2,10 +2,14 @@
 body {
   margin: 0;
   padding: 0;
+  padding-bottom: 80px;   /* ✅ SPACE FOR BOTTOM NAVBAR */
   font-family: 'Poppins', sans-serif;
   background: url("https://media.istockphoto.com/id/2148798138/photo/collage-of-domestic-animal-group-together.jpg?s=612x612&w=0&k=20&c=9Pcg1H4YQYSQ1EK_9fMf2paRqVimnFGTXJdt_lXKSQc=") no-repeat center center fixed;
   background-size: cover;
   color: #1e3a8a; /* Deep Blue for general text */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* ===== OVERLAY BACKGROUND ===== */
@@ -18,9 +22,9 @@ body {
   align-items: center;
 }
 
-/* ===== NAVBAR ===== */
+/* ===== NAVBAR (TOP BRAND + BOTTOM TABS) ===== */
 nav {
-  background-color: #1e3a8a !important; /* Deep Blue */
+  background-color: #1e3a8a !important;
   padding: 10px 20px;
 }
 
@@ -32,20 +36,22 @@ nav a {
 }
 
 nav a:hover {
-  color: #a5b4fc !important; /* Light Blue hover */
+  color: #a5b4fc !important;
 }
 
-/* ===== LOGIN CONTAINER ===== */
+/* ===== CONTAINER (MAIN CONTENT) ===== */
 .container {
   text-align: center;
   background-color: rgba(240, 248, 255, 0.9);
   border-radius: 20px;
   box-shadow: 0 0 15px rgba(30, 64, 175, 0.5);
   padding: 40px 60px;
+  flex: 1;   /* ✅ PUSHES FOOTER DOWN */
 }
 
+/* ===== HEADINGS ===== */
 h1 {
-  color: #1e40af; /* Darker Blue */
+  color: #1e40af;
   font-size: 32px;
   margin-bottom: 30px;
 }
@@ -68,29 +74,21 @@ h1 {
 }
 
 /* ===== BUTTON ===== */
-.navbar-btn {
-  background: #1e3a8a;
-  color: #1f4cb4;
-  padding: 8px 16px;
-  border-radius: 8px;
+button {
+  background-color: #3b82f6;
+  color: white;
+  padding: 10px 20px;
   border: none;
-  margin: 4px;
+  border-radius: 12px;
+  font-size: 18px;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s ease-in-out;
+  transition: 0.3s;
 }
 
-/* Hover effect like other buttons */
-.navbar-btn:hover {
-  background: #1e3a8a;
+button:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
 }
-
-/* Active button (Pets / AgriPets selected) */
-.navbar-btn.active {
-  background: white;
-  color: #1e3a8a;
-}
-
 
 /* ===== LINKS ===== */
 a {
@@ -110,41 +108,23 @@ footer {
   padding: 15px 0;
   text-align: center;
   font-size: 14px;
+  margin-top: auto;   /* ✅ STAYS ABOVE BOTTOM NAV */
 }
 
 footer span {
-  color: #f87171; /* Heart red */
+  color: #f87171;
 }
-.backgroundblue{
-  background-color:#1e3a8a !important;
+
+/* ===== BRAND BLUE CLASS ===== */
+.backgroundblue {
+  background-color: #1e3a8a !important;
   background: #1e3a8a !important;
 }
-body { display: flex; flex-direction: column; min-height: 100vh; }
-.container { flex: 1; }
-
- .nav-btn {
-  background: #1e3a8a;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid white;
-  margin: 4px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s ease-in-out;
+/* REMOVE BACKGROUND & SHADOW IN BREED PAGES */
+.breed-container .container,
+.container.breed-page {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
-
-/* Hover effect for all buttons */
-.nav-btn:hover {
-  background: #1e3a8a;
-}
-
-/* Active button (selected tab) */
-.nav-btn.active {
-  background: #1e3a8a;
-  color: #ffffff;
-}
-
-
-

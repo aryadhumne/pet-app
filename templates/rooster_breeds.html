@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="breed-container">
+    <h2 class="title">Rooster Breeds</h2>
+
+    {% for rooster in rooster_list %}
+    <div class="breed-card">
+        <img src="{{ url_for('static', filename='images/' ~ rooster.image) }}" alt="{{ rooster.name }}">
+        <h3>{{ rooster.name }}</h3>
+        <a class="info-btn" href="/agribreed_details/rooster/{{ rooster.name | replace(' ', '-') }}">
+            View Info
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+/* 🚫 Remove any default border / outline automatically */
+* {
+    border: none !important;
+    outline: none !important;
+}
+
+/* ----- Layout Styling ----- */
+.breed-container {
+    width: 90%;
+    margin: auto;
+    padding-top: 20px;
+}
+
+.title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #1e3a8a;
+}
+
+/* ----- Card for Each Breed ----- */
+.breed-card {
+    background: white;
+    margin: 15px auto;
+    width: 100%;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);   /* Soft shadow */
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+/* ----- Images ----- */
+.breed-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+
+/* ----- Button ----- */
+.info-btn {
+    background: #1e3a8a;
+    color: white;
+    padding: 10px 22px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 15px;
+    text-decoration: none;
+}
+</style>
+
+{% endblock %}

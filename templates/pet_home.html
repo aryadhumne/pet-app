@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="pet-home-wrapper">
+
+    <!-- ✅ HERO PET IMAGE SECTION -->
+    <div class="pet-hero">
+        <div class="brand-text animate-glow">🐾 Pets 🐾</div>
+
+        <!-- ✅ FEATURED PET IMAGE (FLOAT + HOVER FLOAT) -->
+        <img src="{{ url_for('static', filename='images/allp.webp') }}" class="hero-pet floating-pet">
+    </div>
+
+    <!-- ✅ BOTTOM ACTION CARD -->
+    <div class="action-card animate-slideup">
+
+        <h4 class="welcome-text animate-color">Happy Pets, Happy You</h4>
+        <p class="sub-text fade-in-delay">
+            Keep your pets healthy, active & cared with smart services.
+        </p>
+
+        <div class="action-buttons">
+
+            <!-- ✅ PET SHOP -->
+            <a href="{{ url_for('shop') }}" class="pet-action blue glow-hover">
+                🛒 Pet Shop
+            </a>
+
+            <!-- ✅ PET LIST -->
+            <a href="{{ url_for('pets_list') }}" class="pet-action green glow-hover">
+                🐾 Pets
+            </a>
+
+        </div>
+    </div>
+
+</div>
+
+<style>
+
+/* ✅ MAIN PAGE WRAPPER */
+.pet-home-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #eef4ff, #ffffff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ✅ HERO SECTION */
+.pet-hero {
+    position: relative;
+    width: 100%;
+    height: 55vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ✅ BRAND NAME BEHIND PET */
+.brand-text {
+    position: absolute;
+    top: 30px;
+    font-size: 32px;
+    font-weight: 800;
+    color: #6d28d9;
+    opacity: 0.8;
+    z-index: 1;
+}
+
+/* ✅ FEATURED PET IMAGE */
+.hero-pet {
+    height: 260px;
+    z-index: 2;
+    transition: 0.4s ease;
+}
+
+/* ✅ FLOATING UP-DOWN AUTO ANIMATION */
+@keyframes floatPet {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+.floating-pet {
+    animation: floatPet 3s ease-in-out infinite;
+}
+
+/* ✅ HOVER FLOAT BOOST */
+.hero-pet:hover {
+    transform: translateY(-25px) scale(1.05);
+}
+
+/* ✅ ACTION CARD */
+.action-card {
+    width: 92%;
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    margin-top: -40px;
+    border-radius: 26px;
+    padding: 25px 18px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+/* ✅ TEXT */
+.welcome-text {
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.sub-text {
+    font-size: 13px;
+    opacity: 0;
+    animation: fadeIn 1.5s forwards;
+    animation-delay: 0.6s;
+}
+
+/* ✅ BUTTON WRAPPER */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+/* ✅ BUTTON STYLE */
+.pet-action {
+    width: 120px;
+    padding: 12px 10px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 600;
+    color: white;
+    transition: 0.3s ease;
+}
+
+/* ✅ COLORS */
+.pet-action.blue {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.pet-action.green {
+    background: linear-gradient(135deg, #059669, #047857);
+}
+
+/* ✅ BUTTON HOVER GLOW */
+.glow-hover:hover {
+    transform: scale(1.12);
+    box-shadow: 0 0 20px rgba(255,255,255,0.6);
+}
+
+/* ✅ SLIDE UP CARD ANIMATION */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slideup {
+    animation: slideUp 1s ease forwards;
+}
+
+/* ✅ COLOR CHANGING HEADING */
+@keyframes colorGlow {
+    0% { color: #ffffff; }
+    25% { color: #ffd700; }
+    50% { color: #00e5ff; }
+    75% { color: #ff80ab; }
+    100% { color: #ffffff; }
+}
+
+.animate-color {
+    animation: colorGlow 3s linear infinite;
+}
+
+/* ✅ GLOWING BRAND TEXT */
+@keyframes glowPulse {
+    0% { text-shadow: 0 0 5px #7c3aed; }
+    50% { text-shadow: 0 0 20px #ec4899; }
+    100% { text-shadow: 0 0 5px #7c3aed; }
+}
+
+.animate-glow {
+    animation: glowPulse 2s infinite;
+}
+
+/* ✅ FADE IN */
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+</style>
+
+{% endblock %}

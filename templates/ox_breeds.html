@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- REMOVE bootstrap container white background -->
+<div class="breed-container">
+
+    <h2 class="title">Ox Breeds</h2>
+
+    {% for ox in ox_list %}
+    <div class="breed-card">
+        <img src="{{ url_for('static', filename='images/' ~ ox.image) }}" alt="{{ ox.name }}">
+        <h3>{{ ox.name }}</h3>
+
+        <!-- FIXED BUTTON (Proper Closing Tag) -->
+        <a class="info-btn" href="/agribreed_details/ox/{{ ox.name | replace(' ', '-') }}">View Info</a>
+    </div>
+    {% endfor %}
+
+</div>
+
+<style>
+/* MAIN WRAPPER */
+.breed-container {
+    width: 90%;
+    margin: auto;
+    padding-top: 20px;
+}
+
+/* TITLE */
+.title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #1e3a8a;
+}
+
+/* CARD CLEAN FIX */
+.breed-card {
+    background: white;
+    margin: 20px 0;               /* CLEAN GAP WITH NO BLACK LINE */
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: none !important;  /* REMOVED BLACK BORDER EFFECT */
+    text-align: center;
+    padding-bottom: 15px;         /* space for button */
+}
+
+/* IMAGE */
+.breed-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+/* BUTTON FIX */
+.info-btn {
+    background: #1e3a8a;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 12px;
+    text-decoration: none;
+}
+
+/* REMOVE ANY POSSIBLE SLIDER DOTS */
+.swiper-pagination,
+.swiper-pagination-bullet,
+.owl-dots,
+.owl-dot,
+.splide__pagination {
+    display: none !important;
+    opacity: 0 !important;
+}
+
+</style>
+
+{% endblock %}

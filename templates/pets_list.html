@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="main-wrapper">
+    <div class="pet-container animate-card">
+
+        <h3 class="title animate-title">Select Your<br>🐾Pet🐾</h3>
+
+        <div class="pet-grid">
+            {% for pet in pets %}
+            <a href="{{ url_for('breed_list', pet=pet) }}" class="pet-box glow-box">
+
+                <div class="pet-icon bounce-icon">
+                    {% if pet == 'Dog' %}🐶
+                    {% elif pet == 'Cat' %}🐱
+                    {% elif pet == 'Birds' %}🐦
+                    {% elif pet == 'Rabbit' %}🐰
+                    {% elif pet == 'Hamster' %}🐹
+                    {% elif pet == 'Fish' %}🐠
+                    {% elif pet == 'Turtle' %}🐢
+                    {% endif %}
+                </div>
+
+                <div class="pet-name">{{ pet }}</div>
+
+            </a>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+<style>
+
+/* ✅ Animated background gradient */
+.main-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 90px;
+    background: linear-gradient(270deg, #e0e7ff, #fdf2f8, #ecfeff);
+    background-size: 600% 600%;
+    animation: bgFlow 10s ease infinite;
+}
+
+@keyframes bgFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ✅ Main white container animation */
+.pet-container {
+    background: #f4f8ff;
+    width: 300px;
+    padding: 25px 15px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+/* ✅ Card entrance animation */
+@keyframes slideFade {
+    from { opacity: 0; transform: translateY(40px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-card {
+    animation: slideFade 0.6s ease forwards;
+}
+
+/* ✅ Animated gradient title */
+.title {
+    font-weight: bold;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #2563eb, #9333ea, #ec4899);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleFlow 4s linear infinite;
+}
+
+@keyframes titleFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ✅ Grid layout */
+.pet-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    justify-items: center;
+}
+
+/* ✅ Animated gradient boxes */
+.pet-box {
+    width: 85px;
+    height: 85px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+    transition: 0.3s ease;
+    background: linear-gradient(270deg, #5b2cff, #2f6bff, #06b6d4, #8b5cf6);
+    background-size: 400% 400%;
+    animation: boxGlow 6s ease infinite;
+}
+
+@keyframes boxGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ✅ Hover: bounce + neon glow */
+.pet-box:hover {
+    transform: translateY(-8px) scale(1.1);
+    box-shadow: 0 0 20px rgba(79,70,229,0.7);
+}
+
+/* ✅ Floating icon animation */
+.pet-icon {
+    font-size: 26px;
+    margin-bottom: 3px;
+}
+
+@keyframes floatIcon {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
+}
+
+.bounce-icon {
+    animation: floatIcon 2.5s ease-in-out infinite;
+}
+
+/* ✅ Text */
+.pet-name {
+    font-size: 12px;
+    font-weight: 600;
+    text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+}
+
+</style>
+
+{% endblock %}

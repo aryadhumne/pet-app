@@ -1,18 +1,35 @@
+<!-- templates/add_vaccine.html -->
 {% extends "base.html" %}
-
 {% block content %}
-<h2>Add Vaccine for {{ pet.name }}</h2>
+<div class="container mt-5">
+    <h2>Add Vaccination</h2>
+    <form method="POST" action="{{ url_for('vaccination') }}">
+        <div class="mb-3">
+            <label for="pets_id" class="form-label">Select Pet</label>
+            <select class="form-select" name="pets_id" required>
+                <option value="">-- Select Pet --</option>
+                {% for pet in pets %}
+                    <option value="{{ pets.id }}">{{ pets.name }} ({{ pets.species }})</option>
+                {% endfor %}
+            </select>
+        </div>
 
-<form method="POST">
-    <label>Vaccine Name:</label>
-    <input type="text" name="vaccine_name" required><br><br>
+        <div class="mb-3">
+            <label for="vaccine_name" class="form-label">Vaccine Name</label>
+            <input type="text" class="form-control" name="vaccine_name" required>
+        </div>
 
-    <label>Last Given Date:</label>
-    <input type="date" name="last_given_date" required><br><br>
+        <div class="mb-3">
+            <label for="last_given_date" class="form-label">Last Given Date</label>
+            <input type="date" class="form-control" name="last_given_date" required>
+        </div>
 
-    <label>Next Due Date:</label>
-    <input type="date" name="next_due_date" required><br><br>
+        <div class="mb-3">
+            <label for="next_due_date" class="form-label">Next Due Date</label>
+            <input type="date" class="form-control" name="next_due_date" required>
+        </div>
 
-    <button type="submit">Add Vaccine</button>
-</form>
+        <button type="submit" class="btn btn-primary">Add Vaccination</button>
+    </form>
+</div>
 {% endblock %}

@@ -1,90 +1,202 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2 class="mb-4">Welcome, {{ user.username }}!</h2>
+<div class="container-fluid p-0" style="min-height:120vh; background: linear-gradient(to bottom, #f0f4ff, #ffe6f0);">
 
-<!-- ✅ ADD PET FORM -->
-<form action="{{ url_for('pet') }}" method="POST" class="row g-3 mb-5">
-  <div class="col-md-3">
-    <input type="text" name="name" placeholder="Pet Name" class="form-control" required>
+  <!-- WELCOME SECTION -->
+  <div class="text-center px-3 mb-5 animate-fadein" style="animation-delay:0.2s;">
+    <h4 class="fw-bold rainbow-text">Welcome, {{ user.username }}!</h4>
+    <p class="text-muted small">Manage your pets easily</p>
   </div>
-  <div class="col-md-3">
-    <input type="text" name="species" placeholder="Species" class="form-control" required>
-  </div>
-  <div class="col-md-3">
-    <input type="text" name="breed" placeholder="Breed" class="form-control">
-  </div>
-  <div class="col-md-2">
-    <input type="number" name="age" placeholder="Age" class="form-control">
-  </div>
-  <div class="col-md-1">
-    <button type="submit" class="btn btn-primary w-100">Add</button>
-  </div>
-</form>
 
-<!-- ✅ TOP BAR FOR PET ACCOUNTS -->
-<div class="pet-topbar mb-4 p-3"
-     style="overflow-x:auto; white-space:nowrap; background:#f8f9fa; border-radius:8px;">  
+  <!-- ADD PET CARD -->
+  <div class="mx-auto mb-5 p-4 shadow-lg animate-fadein"
+       style="max-width:400px; background:#dbe9ff; border-radius:20px; animation-delay:0.4s;">
 
-  {% for pet in user.pets %}
-    <a href="{{ url_for('pet_profile', pet_id=pet.id) }}"
-       style="display:inline-block; margin-right:18px; text-decoration:none; color:#000;">
-      <div style="width:90px; text-align:center;">
-        <div style="width:65px; height:65px; background:#e6e6e6;
-                    border-radius:50%; display:flex; align-items:center;
-                    justify-content:center; font-size:24px; font-weight:bold;">
-          {{ pet.name[0] }}
-        </div>
-        <small style="font-weight:600;">{{ pet.name }}</small>
+    <div class="text-center pt-4">
+      <img src="{{ url_for('static', filename='images/allp.webp') }}"
+           width="120" class="rounded-circle shadow mb-3 animate-fadein">
+    </div>
+
+    <h5 class="text-center fw-bold mb-4 rainbow-text">Add a New Pet</h5>
+
+    <form action="{{ url_for('add_pet') }}" method="POST" class="row g-3">
+      <div class="col-12">
+        <input type="text" name="name" placeholder="Pet Name"
+               class="form-control rounded-pill text-center shadow-sm" required>
       </div>
-    </a>
-  {% else %}
-    <p class="text-muted">No pets added yet.</p>
-  {% endfor %}
+      <div class="col-12">
+        <input type="text" name="species" placeholder="Species"
+               class="form-control rounded-pill text-center shadow-sm" required>
+      </div>
+      <div class="col-12">
+        <input type="text" name="breed" placeholder="Breed"
+               class="form-control rounded-pill text-center shadow-sm" required>
+      </div>
+      <div class="col-12">
+        <input type="number" name="age" placeholder="Age"
+               class="form-control rounded-pill text-center shadow-sm" required>
+      </div>
+      <div class="col-12">
+        <button class="btn w-100 rounded-pill fw-bold shadow-sm glowing-btn animate-bounce">
+          Add Pet
+        </button>
+      </div>
+    </form>
+  </div>
 
-</div>
+  <!-- YOUR PETS TITLE -->
+  <h5 class="text-center mt-4 fw-bold mb-3 rainbow-text animate-fadein" style="animation-delay:0.6s;">
+    ❤ Your Beloved Pets ❤
+  </h5>
 
-<!-- ✅ PET LIST -->
-<h4 class="mb-3">Your Pets</h4>
+  <!-- PET LIST -->
+  <div class="row px-3">
+    {% for pet in user.pets %}
+    <div class="col-md-4 col-sm-6 col-12 mb-4 animate-fadein"
+         style="animation-delay:{{ loop.index * 0.15 }}s;">
+      <div class="p-3 shadow-sm text-center pet-card rainbow-shadow">
 
-<div class="row">
+        <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" style="text-decoration:none;">
+          <div class="pet-circle mx-auto {% if not pet.photo %}rainbow-border{% endif %}">
+            {% if pet.photo %}
+              <img src="{{ url_for('static', filename='uploads/' + pet.photo) }}" style="object-fit:cover;">
+            {% else %}
+              <span class="pet-letter">{{ pet.name[0]|upper }}</span>
+            {% endif %}
+          </div>
+        </a>
 
-  {% for pet in user.pets %}
-  <div class="col-md-3">
+        <h6 class="mt-3 fw-bold rainbow-text animate-text">{{ pet.name }}</h6>
 
-    <div class="card pet-card mb-4 shadow-sm">
-      <div class="card-body">
-
-        <h5 class="card-title">{{ pet.name }}</h5>
-
-        <p class="card-text">
-          {{ pet.species }} | {{ pet.breed }} | Age: {{ pet.age }}
-        </p>
-
-        <!-- ✅ VACCINE COUNT -->
-        <p class="text-muted mb-2">
-          Vaccines: {{ pet.vaccines|length if pet.vaccines else 0 }}
-        </p>
-
-        <!-- ✅ BUTTONS -->
+        <!-- VIEW PROFILE -->
         <a href="{{ url_for('pet_profile', pet_id=pet.id) }}"
-           class="btn btn-primary btn-sm">
-           View Profile
+           class="btn btn-sm rounded-pill mt-2 glowing-btn animate-bounce-slow">
+          View Profile
         </a>
 
-        <a href="{{ url_for('add_vaccine', pet_id=pet.id) }}"
-           class="btn btn-success btn-sm ms-1">
-           + Add Vaccine
-        </a>
+        <!-- ✅ DELETE PET BUTTON -->
+        <button type="button"
+                class="btn btn-sm rounded-pill w-100 delete-btn shadow-sm mt-2"
+                onclick="openDeleteModal({{ pet.id }}, '{{ pet.name }}')">
+          🗑 Delete Pet
+        </button>
 
       </div>
     </div>
-
+    {% else %}
+      <p class="text-center fw-bold mt-3" style="color:#0b2c5d;">
+        No pets added yet. Add your first pet above!
+      </p>
+    {% endfor %}
   </div>
-  {% else %}
-    <p class="text-muted">No pets added yet.</p>
-  {% endfor %}
-
 </div>
+
+<!-- ✅ DELETE CONFIRMATION MODAL -->
+<div id="deleteModal" class="delete-modal">
+  <div class="delete-box">
+    <h5 class="fw-bold text-danger mb-2">Delete Pet Account</h5>
+    <p id="deleteText" class="mb-4"></p>
+
+    <form id="deleteForm" method="POST">
+      <div class="d-flex justify-content-between gap-3">
+        <button type="button" class="btn btn-secondary w-50" onclick="closeDeleteModal()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-danger w-50 fw-bold">
+          Delete
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+@keyframes fadeInUp {
+  0% { opacity:0; transform: translateY(20px); }
+  100% { opacity:1; transform: translateY(0); }
+}
+.animate-fadein { animation: fadeInUp 0.6s forwards; opacity:0; }
+
+.pet-card {
+  background: linear-gradient(135deg, #fdfbfb, #ebedfa);
+  border-radius: 15px;
+  padding: 15px;
+  transition: 0.3s;
+}
+
+.pet-circle {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  display:flex; align-items:center; justify-content:center;
+}
+
+.pet-circle img { width:100%; height:100%; object-fit:cover; }
+
+.pet-letter { font-size:48px; font-weight:900; color:#0b2c5d; }
+
+.rainbow-text { animation: rainbowText 5s infinite; }
+@keyframes rainbowText {
+  0%{color:red;} 25%{color:orange;} 50%{color:blue;} 75%{color:violet;} 100%{color:red;}
+}
+
+.glowing-btn {
+  background: linear-gradient(45deg, #ff5f6d, #ffc371, #47d1ff, #a4508b);
+  background-size: 400% 400%;
+  animation: gradientBG 8s infinite;
+  color:white; border:none;
+}
+
+@keyframes gradientBG {
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* ✅ DELETE BUTTON */
+.delete-btn {
+  background: linear-gradient(45deg, #ff1e56, #ff6b6b, #ff8e53);
+  color: white;
+  border: none;
+  font-weight: bold;
+}
+
+/* ✅ MODAL */
+.delete-modal {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: rgba(0,0,0,0.45);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.delete-box {
+  background:white;
+  padding:25px;
+  border-radius:20px;
+  width:90%;
+  max-width:350px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,0.3);
+}
+</style>
+
+<script>
+function openDeleteModal(petId, petName) {
+  document.getElementById("deleteText").innerHTML =
+    `Do you really want to delete the account of <b>${petName}</b>? This action cannot be undone.`;
+
+  document.getElementById("deleteForm").action = `/delete_pet/${petId}`;
+  document.getElementById("deleteModal").style.display = "flex";
+}
+
+function closeDeleteModal() {
+  document.getElementById("deleteModal").style.display = "none";
+}
+</script>
 
 {% endblock %}

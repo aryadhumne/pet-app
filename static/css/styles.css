@@ -120,3 +120,11 @@ footer span {
   background-color: #1e3a8a !important;
   background: #1e3a8a !important;
 }
+/* REMOVE BACKGROUND & SHADOW IN BREED PAGES */
+.breed-container .container,
+.container.breed-page {
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}

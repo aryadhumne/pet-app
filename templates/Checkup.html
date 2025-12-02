@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Health Checkup</h2>
+    <div class="section-box">
+        <form method="POST">
+            <div class="mb-3">
+                <label>Date</label>
+                <input type="date" name="date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Weight (kg)</label>
+                <input type="number" name="weight" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Temperature (°C)</label>
+                <input type="number" name="temperature" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Next Checkup Date</label>
+                <input type="date" name="next_checkup" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Checkup</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

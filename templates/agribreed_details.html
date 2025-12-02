@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="text-center">{{ breed_name }}</h2>
+
+    <div class="text-center">
+        <img src="{{ url_for('static', filename='images/' + info.image) }}" 
+             alt="{{ breed_name }}" 
+             style="width:200px; border-radius:10px;">
+    </div>
+
+    <div class="mt-4">
+        <p><strong>Origin:</strong> {{ info.origin }}</p>
+        <p><strong>Reproductive Age</strong> {{ info.reproductive_age }}</p>
+        <p><strong>Lifespan:</strong> {{ info.lifespan }}</p>
+         <p><strong>Breeding Cycle</strong> {{ info.breeding_cycle }}</p>
+          <p><strong>Information</strong> {{ info.info}}</p>
+        <p><strong>Common Diseases:</strong> {{ info.common_diseases }}</p>
+        <p><strong>Climate:</strong> {{ info.climate }}</p>
+        <p><strong>Suitable For:</strong> {{ info.suitable_for }}</p>
+    </div>
+
+</div>
+{% endblock %}

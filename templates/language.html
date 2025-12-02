@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Select Country & Language</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 20px;
+            background: #fff;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-box {
+            border: 1px solid #ccc;
+            padding: 12px 20px;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .option-box:hover,
+        .active {
+            border-color: #0072ff;
+            background: #eaf6ff;
+        }
+
+        .flag {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to right, #00c6ff, #0072ff);
+            border: none;
+            color: white;
+            font-size: 20px;
+            border-radius: 30px;
+            margin-top: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ✅ COUNTRY SELECTION -->
+    <div class="title">🌍 Choose Country</div>
+
+    <div class="option-box country" onclick="selectCountry('India', this)">
+        <img src="https://flagcdn.com/w40/in.png" class="flag">
+        India
+    </div>
+
+    <div class="option-box country" onclick="selectCountry('Pakistan', this)">
+        <img src="https://flagcdn.com/w40/pk.png" class="flag">
+        Pakistan
+    </div>
+
+    <div class="option-box country" onclick="selectCountry('Saudi Arabia', this)">
+        <img src="https://flagcdn.com/w40/sa.png" class="flag">
+        Saudi Arabia
+    </div>
+
+    <div class="option-box country" onclick="selectCountry('UAE', this)">
+        <img src="https://flagcdn.com/w40/ae.png" class="flag">
+        UAE
+    </div>
+
+    <!-- ✅ LANGUAGE SELECTION -->
+    <div class="title" style="margin-top: 40px;">🔤 Choose Language</div>
+
+    <div class="option-box language" onclick="selectLanguage('en', this)">
+        <img src="https://flagcdn.com/w40/gb.png" class="flag">
+        English
+    </div>
+
+    <div class="option-box language" onclick="selectLanguage('mr', this)">
+        <img src="https://flagcdn.com/w40/in.png" class="flag">
+        मराठी
+    </div>
+
+    <div class="option-box language" onclick="selectLanguage('hi', this)">
+        <img src="https://flagcdn.com/w40/in.png" class="flag">
+        हिंदी
+    </div>
+
+    <button class="btn" onclick="proceed()">Proceed</button>
+
+    <script>
+        let selectedCountry = null;
+        let selectedLanguage = null;
+
+        function selectCountry(country, element) {
+            selectedCountry = country;
+            localStorage.setItem("user_country", country);
+
+            document.querySelectorAll(".country").forEach(box => {
+                box.classList.remove("active");
+            });
+
+            element.classList.add("active");
+        }
+
+        function selectLanguage(lang, element) {
+            selectedLanguage = lang;
+            localStorage.setItem("app_language", lang);
+
+            document.querySelectorAll(".language").forEach(box => {
+                box.classList.remove("active");
+            });
+
+            element.classList.add("active");
+        }
+
+        function proceed() {
+            if (!selectedCountry) {
+                alert("Please select a country");
+                return;
+            }
+
+            if (!selectedLanguage) {
+                alert("Please select a language");
+                return;
+            }
+
+            // ✅ REDIRECT TO LOGIN PAGE ONLY AFTER SELECTION
+            window.location.href = "/login";
+        }
+    </script>
+
+</body>
+</html>

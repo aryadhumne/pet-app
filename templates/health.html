@@ -1,120 +1,176 @@
 {% extends "base.html" %}
-<<<<<<< HEAD
 {% block content %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background: url('https://media.istockphoto.com/id/2148798138/photo/collage-animals.jpg') no-repeat center center fixed;
-            background-size: cover;
-            color: #1e3a8a;
-            min-height: 100vh;
-        }
+<div class="health-wrapper">
 
-        .health-card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 30px;
-            margin: 30px auto;
-            text-align: center;
-            max-width: 400px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-            transition: transform 0.3s ease;
-        }
+    <!-- ✅ PAGE TITLE -->
+    <h2 class="health-title animate-fade">
+        🩺 Pet Health Care
+    </h2>
 
-        .health-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.3);
-        }
+    <p class="health-subtitle animate-fade-delay">
+        Complete health support for your beloved pet 🐾
+    </p>
 
-        .health-card img {
-            width: 100px;
-            margin: 10px 0;
-        }
+    <!-- ✅ HEALTH IMAGE -->
+    <div class="health-image animate-float">
+        <img src="{{ url_for('static', filename='images/h2.jpg') }}" alt="Pet Health">
+    </div>
 
-        /* Interactive Buttons */
-        .health-card .btn {
-            margin: 8px;
-            padding: 12px 25px;
-            font-size: 1rem;
-            border-radius: 30px;
-            transition: all 0.3s ease;
-        }
+    <!-- ✅ HEALTH OPTIONS CARD -->
+    <div class="health-card animate-slideup">
 
-        .health-card .btn-primary {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            border: none;
-        }
+        <h4 class="card-title">Manage Your Pet's Health</h4>
+        <p class="card-subtitle">
+            Vaccinations • Diet Plans • Regular Checkups
+        </p>
 
-        .health-card .btn-primary:hover {
-            background: linear-gradient(135deg, #3b82f6, #1e3a8a);
-            transform: scale(1.05);
-        }
+        <div class="health-buttons">
 
-        .health-card .btn-primary:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2) inset;
-        }
-    </style>
-</head>
+            <a href="{{ url_for('add_vaccine') }}" class="health-btn blue">
+                💉 Vaccination
+            </a>
 
-<body>
-    
-        <h2 class="text-center mb-4">Health</h2>
+            <a href="{{ url_for('health_checkup') }}" class="health-btn green">
+                🩺 Health Checkup
+            </a>
 
-        <div class="text-center">
-            <img src="{{ url_for('static', filename='images/Pet_Helath.png') }}"  alt="Health Image" class="img-fluid">
-        </div>
+            <a href="{{ url_for('diet_plan') }}" class="health-btn orange">
+                🥗 Diet Plan
+            </a>
 
-        
-        <div class="health-card">
-            <h4>Manage Your Pet's Health</h4>
-            <p>Vaccinations, Diet Plan & Checkups</p>
-
-            <a href="{{ url_for('pet') }}" class="btn btn-primary">Vaccination</a>
-            <a href="{{ url_for('diet_plan') }}" class="btn btn-primary">Diet Plan</a>
-            <a href="{{ url_for('health_checkup') }}" class="btn btn-primary">Health Checkup</a>
         </div>
     </div>
-</body>
-</html>
 
-{% endblock %}
-=======
-{% block title %}Health{% endblock %}
-
-{% block content %}
-<h2 class="text-center mb-4">Pet Health Dashboard</h2>
-<p class="text-center mb-5">Track vaccinations, diets, and health checkups for your pets.</p>
-
-<div class="row justify-content-center">
-    <div class="col-md-4 mb-4">
-        <div class="product-card">
-            <h5>Vaccinations</h5>
-            <p>Track your pet's vaccination history.</p>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="product-card">
-            <h5>Diet & Nutrition</h5>
-            <p>Recommended diet based on pet type and age.</p>
-        </div>
-    </div>
-    <div class="col-md-4 mb-4">
-        <div class="product-card">
-            <h5>Health Checkups</h5>
-            <p>Schedule and monitor vet appointments.</p>
-        </div>
-    </div>
 </div>
+
+<!-- ✅ ✅ STYLES -->
+<style>
+
+.health-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, #eef6ff, #ffffff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ✅ TITLES */
+.health-title {
+    font-weight: 800;
+    color: #1e3a8a;
+    margin-top: 10px;
+}
+
+.health-subtitle {
+    font-size: 13px;
+    color: #555;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* ✅ IMAGE */
+.health-image img {
+    width: 170px;
+    margin-bottom: 15px;
+}
+
+/* ✅ FLOAT ANIMATION */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* ✅ GLASS CARD */
+.health-card {
+    width: 95%;
+    max-width: 400px;
+    background: rgba(255,255,255,0.95);
+    border-radius: 24px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* ✅ CARD TEXT */
+.card-title {
+    font-weight: 700;
+    color: #1e3a8a;
+}
+
+.card-subtitle {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* ✅ BUTTON LAYOUT */
+.health-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ✅ HEALTH BUTTONS */
+.health-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 30px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+/* ✅ BUTTON COLORS */
+.health-btn.blue {
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+.health-btn.green {
+    background: linear-gradient(135deg, #059669, #047857);
+}
+
+.health-btn.orange {
+    background: linear-gradient(135deg, #fb923c, #f97316);
+}
+
+/* ✅ BUTTON HOVER */
+.health-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 20px rgba(0,0,0,0.25);
+}
+
+/* ✅ FADE IN */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade {
+    animation: fadeIn 0.8s forwards;
+}
+
+.animate-fade-delay {
+    animation: fadeIn 1.5s forwards;
+}
+
+/* ✅ SLIDE CARD */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slideup {
+    animation: slideUp 1s ease forwards;
+}
+
+</style>
+
 {% endblock %}
->>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f

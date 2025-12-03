@@ -8,7 +8,7 @@
         <div class="brand-text animate-glow">🐾 Pets 🐾</div>
 
         <!-- ✅ FEATURED PET IMAGE (FLOAT + HOVER FLOAT) -->
-        <img src="{{ url_for('static', filename='images/allp.webp') }}" class="hero-pet floating-pet">
+        <img src="{{ url_for('static', filename='images/a4.jpg') }}" class="hero-pet floating-pet">
     </div>
 
     <!-- ✅ BOTTOM ACTION CARD -->
@@ -22,14 +22,19 @@
         <div class="action-buttons">
 
             <!-- ✅ PET SHOP -->
-            <a href="{{ url_for('shop') }}" class="pet-action blue glow-hover">
-                🛒 Pet Shop
-            </a>
+        <div class="action-buttons">
 
-            <!-- ✅ PET LIST -->
-            <a href="{{ url_for('pets_list') }}" class="pet-action green glow-hover">
-                🐾 Pets
-            </a>
+    <!-- ✅ PET SHOP -->
+    <a href="{{ url_for('shop') }}" class="pet-action blue glow-hover">
+        🛒 Pet Shop
+    </a>
+
+    <!-- ✅ PET LIST (FIXED) -->
+    <a href="{{ url_for('pets_list') }}" class="pet-action green glow-hover">
+        🐾 Pets
+    </a>
+
+</div>
 
         </div>
     </div>
@@ -99,6 +104,7 @@
     border-radius: 26px;
     padding: 25px 18px;
     text-align: center;
+    height:100;
     color: white;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3);
 }

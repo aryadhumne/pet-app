@@ -10,6 +10,7 @@
             {% for pet in pets %}
             <a href="{{ url_for('breed_list', pet=pet) }}" class="pet-box glow-box">
 
+
                 <div class="pet-icon bounce-icon">
                     {% if pet == 'Dog' %}🐶
                     {% elif pet == 'Cat' %}🐱

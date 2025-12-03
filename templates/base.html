@@ -14,7 +14,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<<<<<<< HEAD
+
 
     <!-- 🔹 Logout Popup CSS -->
     <style>
@@ -68,17 +68,12 @@
         }
     </style>
 
-=======
->>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f
 </head>
 
 <body>
 
-<<<<<<< HEAD
-<!-- ✅ BRAND HEADER -->
-=======
-<!-- ✅ BRAND HEADER (NO NAV BUTTONS HERE NOW) -->
->>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f
+
+
 <nav class="navbar navbar-dark backgroundblue">
     <div class="container-fluid justify-content-center">
         <span class="navbar-brand fw-bold">Smart AgriPet Care</span>
@@ -102,11 +97,8 @@
     {% endblock %}
 </div>
 
-<<<<<<< HEAD
-<footer class="footer backgroundblue text-light text-center py-3 mt-5">
-    <p>© 2025 Smart Agri PetCare | Designed with ❤</p>
-</footer>
-=======
+
+
 <!-- ✅ BOTTOM NAVIGATION BAR -->
 {% if session.get('user_id') %}
 <nav class="navbar navbar-dark backgroundblue fixed-bottom">
@@ -114,11 +106,14 @@
 <a class="nav-link text-white text-center" href="{{ url_for('dashboard') }}">🏠<br>Home</a>
 
 
-<a class="nav-link text-white text-center" href="{{ url_for('health') }}">❤<br>Health</a>
 
-<a class="nav-link text-white text-center" href="{{ url_for('shop') }}">🐾<br>Pet</a>
+
+<a class="nav-link text-white text-center" href="{{ url_for('pet_home') }}">🐾<br>Pet</a>
+
+
 
 <a class="nav-link text-white text-center" href="{{ url_for('agripet') }}">🌾<br>AgriPet</a>
+<a class="nav-link text-white text-center" href="{{ url_for('health') }}">❤<br>Health</a>
 
 <a class="nav-link text-white text-center" href="{{ url_for('doctor_finder') }}">👨‍⚕<br>Doctor</a>
 
@@ -128,27 +123,9 @@
 
 <!-- ✅ FOOTER -->
 
->>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f
 
-<!-- ✅ BOTTOM NAVIGATION BAR -->
-{% if session.get('user_id') %}
-<nav class="navbar navbar-dark backgroundblue fixed-bottom">
-  <div class="container-fluid d-flex justify-content-around text-center">
 
-<a class="nav-link text-white text-center" href="{{ url_for('dashboard') }}">🏠<br>Home</a>
-<a class="nav-link text-white text-center" href="{{ url_for('health') }}">❤<br>Health</a>
-<a class="nav-link text-white text-center" href="{{ url_for('shop') }}">🐾<br>Pet</a>
-<a class="nav-link text-white text-center" href="{{ url_for('agripet') }}">🌾<br>AgriPet</a>
-<a class="nav-link text-white text-center" href="{{ url_for('doctor_finder') }}">👨‍⚕<br>Doctor</a>
 
-<!-- 🔹 NEW LOGOUT BUTTON (Popup Trigger) -->
-<a class="nav-link text-danger text-center" onclick="openLogoutPopup()">
-    🚪<br>Logout
-</a>
-
-</div>
-</nav>
-{% endif %}
 
 <!-- 🔹 Logout Popup HTML -->
 <div id="logoutPopup" class="popup-overlay">

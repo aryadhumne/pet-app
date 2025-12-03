@@ -3,7 +3,7 @@
 <div class="container mt-4">
     <h2 class="text-center">Health Checkup</h2>
     <div class="section-box">
-        <form method="POST">
+        <form id="healthCheckupForm">
             <div class="mb-3">
                 <label>Date</label>
                 <input type="date" name="date" class="form-control" required>
@@ -22,6 +22,31 @@
             </div>
             <button type="submit" class="btn btn-primary">Save Checkup</button>
         </form>
+        <div id="statusMessage" class="mt-3"></div>
     </div>
 </div>
+
+<script>
+document.getElementById("healthCheckupForm").addEventListener("submit", function(e){
+    e.preventDefault(); // prevent form from submitting normally
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    fetch("{{ url_for('health_checkup') }}", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const msgDiv = document.getElementById("statusMessage");
+        if(data.success){
+            msgDiv.innerHTML = '<div class="alert alert-success">Checkup saved successfully!</div>';
+            form.reset(); // optional: clear form
+        } else {
+            msgDiv.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
+        }
+    })
+});
+</script>
 {% endblock %}

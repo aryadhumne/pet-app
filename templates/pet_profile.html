@@ -1,109 +1,174 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- ✅ PET IMAGE DISPLAY -->
-<div class="text-center mt-3">
+<div class="container-fluid py-5 pet-bg">
+
+  <!-- 🐾 PROFILE IMAGE -->
+  <div class="text-center mb-3 pet-avatar-wrap">
 
     {% if pet.photo %}
         <img src="{{ url_for('static', filename='uploads/' + pet.photo) }}"
-             class="rounded-circle shadow"
-             width="130"
-             height="130"
-             style="object-fit: cover;">
+             class="rounded-circle shadow pet-avatar"
+             width="140"
+             height="140">
     {% else %}
         <img src="{{ url_for('static', filename='uploads/default.jpg') }}"
-             class="rounded-circle shadow"
-             width="130"
-             height="130"
-             style="object-fit: cover;">
+             class="rounded-circle shadow pet-avatar"
+             width="140"
+             height="140">
     {% endif %}
 
-</div>
+    <!-- Paw Badge -->
+    <div class="paw-badge">🐾</div>
 
-<!-- ✅ PET IMAGE UPLOAD FORM -->
-<form method="POST"
-      enctype="multipart/form-data"
-      action="{{ url_for('upload_pet_photo', pet_id=pet.id) }}"
-      class="text-center mt-2">
+  </div>
 
-    <input type="file" name="photo" class="form-control mb-2" accept="image/*" required>
+  <!-- ✅ IMAGE UPLOAD -->
+  <form method="POST"
+        enctype="multipart/form-data"
+        action="{{ url_for('upload_pet_photo', pet_id=pet.id) }}"
+        class="text-center mb-4">
 
-    <button type="submit" class="btn btn-outline-primary btn-sm">
-        Upload Photo
+    <input type="file" name="photo" class="form-control mb-2 w-75 mx-auto" accept="image/*" required>
+
+    <button type="submit" class="btn pet-btn-outline btn-sm">
+        Upload Pet Photo
     </button>
-</form>
+  </form>
 
-<!-- ✅ PET PROFILE TITLE -->
-<h2 class="mb-3 mt-3 text-center text-primary">
+  <!-- ✅ PROFILE TITLE -->
+  <h3 class="text-center pet-title mb-4">
     {{ pet.name }}'s Profile
-</h2>
+  </h3>
 
-<div class="card mt-3 p-3 text-center">
+  <!-- ✅ PROFILE CARD -->
+  <div class="card pet-card shadow-lg p-4 mx-auto">
 
-    <h4>{{ pet.name }}</h4>
-    <p><strong>Species:</strong> {{ pet.species }}</p>
-    <p><strong>Breed:</strong> {{ pet.breed }}</p>
-    <p><strong>Age:</strong> {{ pet.age }} years</p>
+    <h4 class="fw-bold text-primary mb-3">{{ pet.name }}</h4>
 
-<<<<<<< HEAD
-=======
-    <hr>
+    <div class="row text-start px-3 pet-info">
 
-    <h4>Breed Information</h4>
-    <p>{{ info }}</p>
+      <div class="col-6 mb-2"><strong>Species</strong></div>
+      <div class="col-6 mb-2">{{ pet.species }}</div>
 
-    <hr>
+      <div class="col-6 mb-2"><strong>Breed</strong></div>
+      <div class="col-6 mb-2">{{ pet.breed }}</div>
 
-    <!-- ✅ VACCINE SECTION -->
-    <div class="d-flex justify-content-between align-items-center">
-        <h4>Vaccination Records</h4>
-        <a href="{{ url_for('add_vaccine', pet_id=pet.id) }}" class="btn btn-success btn-sm">
-            + Add Vaccine
-        </a>
+      <div class="col-6 mb-2"><strong>Age</strong></div>
+      <div class="col-6 mb-2">{{ pet.age }} years</div>
+
     </div>
 
-    {% if vaccines %}
-        <table class="table table-bordered mt-3">
-            <thead class="table-light">
-                <tr>
-                    <th>Vaccine Name</th>
-                    <th>Last Given</th>
-                    <th>Next Due</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for v in vaccines %}
-                <tr>
-                    <td>{{ v.vaccine_name }}</td>
-                    <td>{{ v.last_given_date }}</td>
-                    <td>{{ v.next_due_date }}</td>
-                    <td>
-                        {% if v.is_overdue %}
-                            <span class="badge bg-danger">Overdue</span>
-                        {% else %}
-                            <span class="badge bg-warning text-dark">Upcoming</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p class="text-muted mt-2">No vaccines added for this pet yet.</p>
-    {% endif %}
+    <hr class="pet-divider">
 
->>>>>>> b9b17d9ee7b2f43ee8e379ae657ae42cdf85896f
-    <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">
-        Back to Dashboard
+    <h6 class="text-secondary fw-semibold">🐕 Breed Information</h6>
+    <p class="text-muted small pet-info-box">{{ info }}</p>
+
+    <!-- ✅ BACK BUTTON -->
+    <a href="{{ url_for('dashboard') }}" class="btn pet-btn mt-3">
+        ← Back to Dashboard
     </a>
 
-    <div class="text-center mt-4">
-        <img src="{{ url_for('static', filename='images/cute.jpeg') }}"
-             width="180"
-             class="rounded shadow">
+    <!-- ✅ PET THEME FOOTER -->
+    <div class="text-center mt-4 pet-footer">
+        <img src="{{ url_for('static', filename='images/cutie.webp') }}"
+             width="170"
+             class="rounded shadow-sm">
+        <p class="small text-muted mt-2">Your pet, your responsibility 🐾</p>
     </div>
 
+  </div>
+
 </div>
+
+<!-- ✅ PET THEME + MINIMAL COLOR CSS -->
+<style>
+
+.pet-bg {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f5f9ff, #eef4fb);
+}
+
+/* ✅ Avatar */
+.pet-avatar-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.pet-avatar {
+  object-fit: cover;
+  border: 4px solid #dbe7f6;
+  background: white;
+}
+
+
+
+/* ✅ Title */
+.pet-title {
+  color: #325ea8;
+  font-weight: 600;
+}
+
+/* ✅ Card */
+.pet-card {
+  max-width: 470px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff, #f7fbff);
+  animation: fadeUp 0.6s ease;
+}
+
+/* ✅ Info text */
+.pet-info {
+  font-size: 15px;
+}
+
+.pet-info-box {
+  background: #f4f7fc;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+/* ✅ Divider */
+.pet-divider {
+  border-top: 1px dashed #cfd8ea;
+}
+
+/* ✅ Buttons */
+.pet-btn {
+  background: linear-gradient(135deg, #082e87ff, #6ea8ff);
+  color: white;
+  border: none;
+  transition: 0.3s ease;
+}
+
+.pet-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+}
+
+.pet-btn-outline {
+  border: 1px dashed #6d0eacff;
+  color: #51297fff;
+  background: transparent;
+}
+
+/* ✅ Footer */
+.pet-footer img {
+  animation: floatPet 3s ease-in-out infinite;
+}
+
+/* ✅ Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatPet {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+
+</style>
 
 {% endblock %}

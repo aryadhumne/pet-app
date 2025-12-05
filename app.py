@@ -7,6 +7,8 @@ from datetime import datetime, timedelta, date
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from werkzeug.utils import secure_filename
+from flask import request, session
+
 
 
 
@@ -17,15 +19,24 @@ app.secret_key = "your-secret-key"
 
 # Directory to store uploaded pet photos
 app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
+UPLOAD_FOLDER = os.path.join('static', 'uploads')
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Make sure the folder exists
 if not os.path.exists(app.config["UPLOAD_FOLDER"]):
     os.makedirs(app.config["UPLOAD_FOLDER"])
 
+@app.before_request
+def store_previous_url():
+    if request.endpoint and request.endpoint != "static":
+        session['prev_url'] = request.referrer
 
 # ---------------------- DATABASE CONFIG
 db_password = quote_plus("admin@123")
-db_user = "postgres"
+db_user = "petuser"
 db_host = "localhost"
 db_port = "5432"
 db_name = "smartpetdb"
@@ -60,13 +71,16 @@ class User(db.Model):
 
 class Pet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    species = db.Column(db.String(100))
-    breed = db.Column(db.String(100))
-    age = db.Column(db.Integer)
-    photo = db.Column(db.String(200))
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    vaccines = db.relationship("Vaccine", backref="pet", lazy=True)
+    name = db.Column(db.String(50), nullable=False)
+    species = db.Column(db.String(50), nullable=False)
+    breed = db.Column(db.String(50), nullable=False)
+    age = db.Column(db.Integer, nullable=False)
+    
+    # ✅ Add this column
+    photo = db.Column(db.String(100), nullable=True)
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
 
 class Vaccine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -470,6 +484,402 @@ pets_data = {
 
 
 }
+#AGRI PETS DETAILS
+agripets_data = {
+    "Buffalo": {
+        "Murrah": {
+            "image": "murrahbuffalo.jpg",
+            "origin": "Haryana – Rohtak, Hisar",
+            "reproductive_age": "30–36 months",
+            "lifespan": "15–20 years",
+            "breeding_cycle": "Estrus: 21 days, Heat: 12–18 hrs",
+            "gestation_period": "310–315 days",
+            "info": "World’s highest milk-yielding buffalo breed.",
+            "common_diseases": "Mastitis, FMD",
+            "climate": "Hot–humid",
+            "suitable_for": "Commercial dairy farms"
+        },
+        "Jaffarabadi": {
+            "image": "jaffarabadi.jpg",
+            "origin": "Saurashtra (Gujarat)",
+            "reproductive_age": "36–42 months",
+            "lifespan": "18–22 years",
+            "breeding_cycle": "Estrus: 21 days",
+            "gestation_period": "310–320 days",
+            "info": "Largest Indian buffalo breed with heavy body.",
+            "common_diseases": "Trypanosomiasis",
+            "climate": "Dry & semi-humid",
+            "suitable_for": "Medium dairy farms"
+        },
+        "Surti": {
+            "image": "Surti.jpg",
+            "origin": "Surat & Baroda (Gujarat)",
+            "reproductive_age": "30–36 months",
+            "lifespan": "12–18 years",
+            "breeding_cycle": "Estrus: 21 days",
+            "gestation_period": "310–315 days",
+            "info": "Small-sized buffalo with high fat milk.",
+            "common_diseases": "FMD",
+            "climate": "Hot–dry",
+            "suitable_for": "Home dairy"
+        },
+        "Mehsana": {
+            "image": "Mehsana.jpg",
+            "origin": "Mehsana district (Gujarat)",
+            "reproductive_age": "30–36 months",
+            "lifespan": "15–20 years",
+            "breeding_cycle": "Estrus: 21 days",
+            "gestation_period": "310–315 days",
+            "info": "Cross of Murrah × Surti with good milk.",
+            "common_diseases": "Foot rot",
+            "climate": "Hot & semi-humid",
+            "suitable_for": "Medium-scale dairy farms"
+        }
+    },
+    "Cow": {
+        "Sahiwal": {
+            "image": "Sahiwalcow.jpg",
+            "origin": "Punjab (India–Pakistan border)",
+            "reproductive_age": "30–36 months",
+            "lifespan": "15–20 years",
+            "breeding_cycle": "Estrus: 21 days",
+            "gestation_period": "280–285 days",
+            "info": "Sahiwal cows are known for high milk fat and heat tolerance.",
+            "common_diseases": "Tick fever",
+            "climate": "Hot & humid",
+            "suitable_for": "Commercial dairy farms"
+        },
+        "Holstein Friesian": {
+            "image": "Holstein.jpg",
+            "origin": "Netherlands",
+            "reproductive_age": "15–18 months",
+            "lifespan": "10–12 years",
+            "breeding_cycle": "Estrus: 21 days",
+            "gestation_period": "280 days",
+            "info": "World's highest milk-producing breed.",
+            "common_diseases": "Mastitis",
+            "climate": "Cool–moderate",
+            "suitable_for": "Large dairy farms"
+        },
+        "Jersey": {
+            "image": "Jerseycow.jpg",
+            "origin": "Jersey Island (UK)",
+            "reproductive_age": "15–18 months",
+            "lifespan": "12–15 years",
+            "breeding_cycle": "Estrus: 21 days",
+            "gestation_period": "278–280 days",
+            "info": "Jersey cows give high-fat milk, ideal for ghee and butter.",
+            "common_diseases": "Milk fever",
+            "climate": "Moderate climate",
+            "suitable_for": "Small & medium dairy farms"
+        },
+        "Rathi": {
+            "image": "Rathicow.jpg",
+            "origin": "Rajasthan",
+            "reproductive_age": "30–36 months",
+            "lifespan": "12–15 years",
+            "breeding_cycle": "Estrus: 21 days",
+            "gestation_period": "280–285 days",
+            "info": "Rathi cows are hardy and drought-tolerant with good milk yield.",
+            "common_diseases": "FMD",
+            "climate": "Hot–dry regions",
+            "suitable_for": "Desert & dry areas"
+        }
+    },
+    "Ox": {
+        "Kangayam": {
+    "image": "Kangayam.jpg",
+    "origin": "Tamil Nadu – Kangayam region",
+    "reproductive_age": "30–36 months",
+    "lifespan": "15–18 years",
+    "breeding_cycle": "Estrus: 21 days",
+    "gestation_period": "280–285 days",
+    "info": "Well-known draught ox breed, strong and hardy.",
+    "common_diseases": "Foot rot, tick infestations",
+    "climate": "Hot–dry",
+    "suitable_for": "Ploughing, draught work"
+},
+ 
+ "Khillari": {
+    "image": "khillari.jpg",
+    "origin": "Maharashtra & Karnataka, India",
+    "reproductive_age": "3–4 years",
+    "lifespan": "15–18 years",
+    "breeding_cycle": "Estrus: 21 days",
+    "gestation_period": "280–285 days",
+    "info": "Khillari oxen are strong draught animals, known for plowing fields and pulling carts.",
+    "common_diseases": "Foot-and-mouth disease, bloat",
+    "climate": "Tropical to semi-arid regions",
+    "suitable_for": "Agricultural work, heavy draft purposes"
+},
+"Ongole": {
+    "image": "Ongole.jpg",
+    "origin": "Andhra Pradesh, India",
+    "reproductive_age": "3–4 years",
+    "lifespan": "15–20 years",
+    "breeding_cycle": "Estrus: 21 days",
+    "gestation_period": "280–285 days",
+    "info": "Ongole oxen are large, strong draught animals, also used in crossbreeding for improving cattle breeds.",
+    "common_diseases": "FMD (Foot-and-mouth disease), mastitis",
+    "climate": "Tropical and semi-arid regions",
+    "suitable_for": "Agricultural work, plowing, and heavy draft purposes"
+},
+"Malvi": {
+    "image": "Malvi.jpg",
+    "origin": "Madhya Pradesh, India",
+    "reproductive_age": "3–4 years",
+    "lifespan": "15–18 years",
+    "breeding_cycle": "Estrus: 21 days",
+    "gestation_period": "280–285 days",
+    "info": "Malvi oxen are hardy draught animals, well-suited for plowing and other agricultural activities in semi-arid regions.",
+    "common_diseases": "Tick-borne diseases, bloat",
+    "climate": "Tropical and semi-arid regions",
+    "suitable_for": "Agricultural work, medium to heavy draft purposes"
+}
+},
+    "Camel": {
+    "Bikaneri": {
+        "image": "Bikaneri.jpg",
+        "origin": "Bikaner, Rajasthan, India",
+        "reproductive_age": "3–4 years",
+        "lifespan": "40–50 years",
+        "breeding_cycle": "Estrus: 21–24 days",
+        "gestation_period": "12–13 months",
+        "info": "Bikaneri camels are strong and hardy, mainly used for transport, milk, and agricultural work in desert regions.",
+        "common_diseases": "Trypanosomiasis, tick infestations",
+        "climate": "Arid desert regions",
+        "suitable_for": "Transport, milk production, desert agriculture"
+    },
+    "Jaisalmeri": {
+        "image": "Jalsalmeri.jpg",
+        "origin": "Jaisalmer, Rajasthan, India",
+        "reproductive_age": "3–4 years",
+        "lifespan": "40–50 years",
+        "breeding_cycle": "Estrus: 21–24 days",
+        "gestation_period": "12–13 months",
+        "info": "Jaisalmeri camels are prized for their endurance, speed, and milk yield; often used in races and long desert journeys.",
+        "common_diseases": "Tick-borne diseases, bloat",
+        "climate": "Arid desert regions",
+        "suitable_for": "Racing, transport, milk production"
+    },
+    "Kachchi": {
+        "image": "Kalchchi.jpg",
+        "origin": "Kutch region, Gujarat, India",
+        "reproductive_age": "3–4 years",
+        "lifespan": "40–50 years",
+        "breeding_cycle": "Estrus: 21–24 days",
+        "gestation_period": "12–13 months",
+        "info": "Kachchi camels are strong draught animals, used for carrying loads, plowing, and milk production in harsh climates.",
+        "common_diseases": "Tick infestations, respiratory infections",
+        "climate": "Semi-arid to arid regions",
+        "suitable_for": "Agriculture, transport, milk production"
+    }
+},
+
+"Horse": {
+    "Marwari": {
+        "image": "marwari.jpg",
+        "origin": "Rajasthan, India",
+        "reproductive_age": "3–4 years",
+        "lifespan": "25–30 years",
+        "breeding_cycle": "Estrus: 21 days",
+        "gestation_period": "11 months",
+        "info": "Marwari horses are known for their inward-curving ears, endurance, and agility. They are often used in ceremonial events and light cavalry.",
+        "common_diseases": "Colic, laminitis",
+        "climate": "Arid and semi-arid regions",
+        "suitable_for": "Riding, ceremonial use, endurance riding"
+    },
+    "Kathiawari": {
+        "image": "kathiawari.jpg",
+        "origin": "Gujarat, India",
+        "reproductive_age": "3–4 years",
+        "lifespan": "25–30 years",
+        "breeding_cycle": "Estrus: 21 days",
+        "gestation_period": "11 months",
+        "info": "Kathiawari horses are hardy, drought-resistant, and used for riding and light draft work. They have a characteristic concave profile and strong legs.",
+        "common_diseases": "Colic, equine influenza",
+        "climate": "Semi-arid regions",
+        "suitable_for": "Riding, light draft work, endurance"
+    },
+    "Indian Thoroughbred": {
+        "image": "thoroughbred.jpg",
+        "origin": "Imported and bred in India",
+        "reproductive_age": "3–4 years",
+        "lifespan": "25–30 years",
+        "breeding_cycle": "Estrus: 21 days",
+        "gestation_period": "11 months",
+        "info": "Indian Thoroughbreds are primarily bred for racing and competitive sports. They are fast, athletic, and have a sleek build.",
+        "common_diseases": "Laminitis, respiratory infections",
+        "climate": "Moderate climate",
+        "suitable_for": "Racing, sports, show jumping"
+    }
+},
+
+   "Donkey": {
+    "Indian Wild Donkey": {
+        "image": "donkey1.jpg",
+        "origin": "Rajasthan, Gujarat, India",
+        "reproductive_age": "2–3 years",
+        "lifespan": "20–25 years",
+        "breeding_cycle": "Estrus: 21 days",
+        "gestation_period": "11–12 months",
+        "info": "Indian Wild Donkeys are hardy and drought-resistant. They are mainly used for light transport in desert and semi-arid regions.",
+        "common_diseases": "Hoof infections, parasitic infestations",
+        "climate": "Arid and semi-arid regions",
+        "suitable_for": "Light transport, agricultural work"
+    },
+    "Ghudkhur": {
+        "image": "ghudkhur1.jpg",
+        "origin": "India (general domestic breed)",
+        "reproductive_age": "2–3 years",
+        "lifespan": "20–25 years",
+        "breeding_cycle": "Estrus: 21 days",
+        "gestation_period": "11–12 months",
+        "info": "Ghudkhur donkeys are domesticated donkeys used for carrying loads, carts, and light agricultural tasks. They are known for endurance and adaptability.",
+        "common_diseases": "Hoof problems, colic",
+        "climate": "Tropical to semi-arid regions",
+        "suitable_for": "Transport, farming, pack animal"
+    }
+},
+
+   "Sheep": {
+    "Deccani": {
+        "image": "deccani.jpeg",
+        "origin": "Deccan Plateau, India",
+        "reproductive_age": "8–12 months",
+        "lifespan": "10–12 years",
+        "breeding_cycle": "Estrus: 17–20 days",
+        "gestation_period": "145–150 days",
+        "info": "Deccani sheep are hardy, drought-tolerant, and raised for meat, coarse wool, and milk in semi-arid regions.",
+        "common_diseases": "Peste des petits ruminants (PPR), foot rot",
+        "climate": "Semi-arid to arid regions",
+        "suitable_for": "Meat, coarse wool, and milk production"
+    },
+      "Nali": {
+        "image": "nali.jpg",
+        "origin": "Rajasthan, India",
+        "reproductive_age": "8–12 months",
+        "lifespan": "10–12 years",
+        "breeding_cycle": "Estrus: 17–20 days",
+        "gestation_period": "145–150 days",
+        "info": "Nali sheep are primarily raised for high-quality mutton. They are medium-sized and well-adapted to arid regions.",
+        "common_diseases": "PPR, sheep pox",
+        "climate": "Arid and semi-arid regions",
+        "suitable_for": "Meat production"
+    },
+    "Chokla": {
+        "image": "chokla.jpg",
+        "origin": "Rajasthan, India",
+        "reproductive_age": "8–12 months",
+        "lifespan": "10–12 years",
+        "breeding_cycle": "Estrus: 17–20 days",
+        "gestation_period": "145–150 days",
+        "info": "Chokla sheep are known for their fine carpet-quality wool. They are medium-sized and thrive in arid climates.",
+        "common_diseases": "PPR, foot rot",
+        "climate": "Arid and semi-arid regions",
+        "suitable_for": "Wool and meat production"
+    }
+},
+
+  "Pig": {
+    "Ghoongroo": {
+        "image": "ghoongroo.jpg",
+        "origin": "India (local breed, mainly North India)",
+        "reproductive_age": "6–8 months",
+        "lifespan": "10–12 years",
+        "breeding_cycle": "Estrus: 21 days",
+        "gestation_period": "114 days",
+        "info": "Ghoongroo pigs are hardy, medium-sized, and raised for meat. They adapt well to local climates and small-scale farming.",
+        "common_diseases": "Swine fever, parasites",
+        "climate": "Tropical and subtropical regions",
+        "suitable_for": "Meat production, small-scale farming"
+    },
+    "Hampshire": {
+        "image": "hampshire.jpg",
+        "origin": "United States (bred in India)",
+        "reproductive_age": "6–8 months",
+        "lifespan": "10–12 years",
+        "breeding_cycle": "Estrus: 21 days",
+        "gestation_period": "114 days",
+        "info": "Hampshire pigs are large, fast-growing, and known for lean meat. They are popular in commercial pig farming.",
+        "common_diseases": "Swine fever, respiratory infections",
+        "climate": "Moderate climates",
+        "suitable_for": "Commercial meat production"
+    }
+},
+
+    "Chicken": {
+    "Giriraja": {
+        "image": "giriraja.jpg",
+        "origin": "Karnataka, India",
+        "reproductive_age": "5–6 months",
+        "lifespan": "6–8 years",
+        "breeding_cycle": "Egg-laying: daily",
+        "gestation_period": "21 days (incubation period)",
+        "info": "Giriraja chickens are dual-purpose, good for both meat and eggs. They are hardy and adapt well to free-range farming.",
+        "common_diseases": "Newcastle disease, coccidiosis",
+        "climate": "Tropical and subtropical regions",
+        "suitable_for": "Egg production, meat, backyard farming"
+    },
+     "Kadaknath": {
+        "image": "K1.jpg",
+        "origin": "Madhya Pradesh, India",
+        "reproductive_age": "5–6 months",
+        "lifespan": "6–8 years",
+        "breeding_cycle": "Egg-laying: daily",
+        "gestation_period": "21 days (incubation period)",
+        "info": "Kadaknath chickens are famous for black meat, high protein content, and disease resistance. Suitable for both backyard and commercial farming.",
+        "common_diseases": "Newcastle disease, parasites",
+        "climate": "Tropical and subtropical regions",
+        "suitable_for": "Meat, egg production, backyard farming"
+    },
+    "Aseel": {
+        "image": "a2.jpg",
+        "origin": "India (crossbred variety)",
+        "reproductive_age": "5–6 months",
+        "lifespan": "6–8 years",
+        "breeding_cycle": "Egg-laying: daily",
+        "gestation_period": "21 days (incubation period)",
+        "info": "Aseen chickens are hardy and fast-growing, primarily raised for meat and moderate egg production.",
+        "common_diseases": "Newcastle disease, coccidiosis",
+        "climate": "Tropical and subtropical regions",
+        "suitable_for": "Meat and backyard egg production"
+    }
+},
+
+   "Rooster": {
+    "Aseel Rooster": {
+        "image": "aseel_rooster.jpg",
+        "origin": "Punjab, India",
+        "reproductive_age": "5–6 months",
+        "lifespan": "6–8 years",
+        "breeding_cycle": "Daily mating possible",
+        "gestation_period": "21 days (incubation for eggs)",
+        "info": "Aseel roosters are muscular, hardy, and known for their aggressive behavior. Often used for breeding and cockfighting in traditional settings.",
+        "common_diseases": "Newcastle disease, parasites",
+        "climate": "Tropical and subtropical regions",
+        "suitable_for": "Breeding, backyard farming, cockfighting (traditional)"
+    },
+
+    "Giriraja": {
+    "image": "giriraj_rooster.jpg",
+    "origin": "India (Developed in Karnataka, Andhra Pradesh, and Tamil Nadu)",
+    "reproductive_age": "5–6 months",
+    "lifespan": "5–7 years",
+    "breeding_cycle": "Year-round under proper management",
+    "gestation_period": "Not applicable (fertilizes eggs; incubation ~21 days for chicks)",
+    "info": "Giriraja roosters are dual-purpose males used for breeding and meat. They are hardy, have strong mating ability, and are active foragers. Known for good fertility rates in backyard and semi-intensive systems.",
+    "common_diseases": "Newcastle Disease, Fowl Pox, Marek's Disease (preventable with vaccination and hygiene)",
+    "climate": "Tropical and subtropical climates; tolerates heat and humidity well",
+    "suitable_for": "Backyard breeding, small-scale poultry farms, free-range and semi-intensive systems"
+}
+
+}
+
+    
+}
+
+
 
 # ---------------------- UTILITIES
 def calculate_distance(lat1, lon1, lat2, lon2):
@@ -550,7 +960,7 @@ def pet_home():
     user = db.session.get(User, session["user_id"])
     return render_template("pet_home.html", user=user)
 
-@app.route("/add-pet", methods=["POST"])
+@app.route('/add_pet', methods=['GET','POST'])
 def add_pet():
     name = request.form.get("name")
     species = request.form.get("species")
@@ -580,11 +990,10 @@ def upload_pet_photo(pet_id):
     return "No file uploaded", 400
 
 
-@app.route("/pet/<int:pet_id>")
+@app.route('/pet/<int:pet_id>')
 def pet_profile(pet_id):
     pet = Pet.query.get_or_404(pet_id)
-    vaccines = Vaccine.query.filter_by(pet_id=pet.id).all()
-    return render_template("pet_profile.html", pet=pet, vaccines=vaccines)
+    return render_template('pet_profile.html', pet=pet)
 
 @app.route('/add_vaccine', methods=['GET', 'POST'])
 def add_vaccine():
@@ -614,11 +1023,10 @@ def health_checkup():
     
     user = db.session.get(User, session["user_id"])
     pets = user.pets if user else []
-    
-    # You can add any logic here like upcoming vaccine reminders, health tips, etc.
+
     return render_template("Checkup.html", user=user, pets=pets)
 
-# ---------------------- ✅ DIET PLAN PAGE
+    
 @app.route("/diet_plan")
 def diet_plan():
     if "user_id" not in session:
@@ -627,8 +1035,198 @@ def diet_plan():
     user = db.session.get(User, session["user_id"])
     pets = user.pets if user else []
     
-    # You can add diet plan logic here for each pet species/breed
     return render_template("diet_plan.html", user=user, pets=pets)
+
+
+# ---------------------- ✅ GENERATE DIET PLAN (POST API)
+@app.route("/generate_diet_plan", methods=["POST"])
+def generate_diet_plan():
+
+    data = request.get_json()
+
+    species = data.get("species")
+    weight = float(data.get("weight", 0))
+    age_years = int(data.get("ageYears", 0))
+    health = (data.get("healthIssue") or "").lower()
+
+
+    # =====================================================
+    #  BASE DIET DICTIONARY FOR ALL YOUR ANIMALS
+    # =====================================================
+    diets = {
+
+        # ---------------- PET ANIMALS -------------------
+        "Dog": {
+            "morning": f"{weight * 8:.0f}g boiled chicken + rice",
+            "afternoon": f"{weight * 5:.0f}g dry kibble",
+            "evening": f"{weight * 8:.0f}g eggs + rice",
+            "water": f"{weight * 50:.0f} ml/day"
+        },
+
+        "Cat": {
+            "morning": f"{weight * 6:.0f}g wet food",
+            "afternoon": f"{weight * 4:.0f}g kibble",
+            "evening": f"{weight * 5:.0f}g fish or chicken",
+            "water": f"{weight * 40:.0f} ml/day"
+        },
+
+        "Rabbit": {
+            "morning": f"{weight * 8:.0f}g pellets",
+            "afternoon": f"{weight * 5:.0f}g vegetables",
+            "evening": f"{weight * 6:.0f}g hay",
+            "water": f"{weight * 100:.0f} ml/day"
+        },
+
+        "Birds": {
+            "morning": f"{weight * 4:.0f}g seeds",
+            "afternoon": f"{weight * 3:.0f}g fruits",
+            "evening": f"{weight * 3:.0f}g grains",
+            "water": f"{weight * 30:.0f} ml/day"
+        },
+
+        "Fish": {
+            "morning": f"{weight * 2:.0f}g pellets",
+            "afternoon": f"{weight * 1:.0f}g flakes",
+            "evening": f"{weight * 2:.0f}g worms",
+            "water": "Clean tank water daily"
+        },
+         "Hamster": {
+            "morning": f"{weight * 5:.0f}g mix feed",
+            "afternoon": f"{weight * 2:.0f}g nuts",
+            "evening": f"{weight * 3:.0f}g vegetables",
+            "water": f"{weight * 25:.0f} ml/day"
+        },
+
+        # ---------------- AGRIPET ANIMALS -------------------
+        "Cow": {
+            "morning": f"{weight * 0.025:.1f} kg green fodder",
+            "afternoon": f"{weight * 0.010:.1f} kg dry fodder",
+            "evening": f"{weight * 0.020:.1f} kg silage",
+            "water": f"{weight * 4:.0f} liters/day"
+        },
+
+        "Buffalo": {
+            "morning": f"{weight * 0.030:.1f} kg green fodder",
+            "afternoon": f"{weight * 0.015:.1f} kg dry feed",
+            "evening": f"{weight * 0.020:.1f} kg silage",
+            "water": f"{weight * 5:.0f} liters/day"
+        },
+
+        "Ox": {
+            "morning": f"{weight * 0.020:.1f} kg fodder",
+            "afternoon": f"{weight * 0.012:.1f} kg dry feed",
+            "evening": f"{weight * 0.018:.1f} kg grains",
+            "water": f"{weight * 4:.0f} liters/day"
+        },
+
+        "Camel": {
+            "morning": f"{weight * 0.015:.1f} kg dry shrubs",
+            "afternoon": f"{weight * 0.008:.1f} kg grains",
+            "evening": f"{weight * 0.012:.1f} kg grass",
+            "water": "Drinks once every 2–3 days (30–40 liters)"
+        },
+
+        "Horse": {
+            "morning": f"{weight * 0.012:.1f} kg oats",
+            "afternoon": f"{weight * 0.010:.1f} kg hay",
+            "evening": f"{weight * 0.015:.1f} kg grains",
+            "water": f"{weight * 5:.0f} liters/day"
+        },
+
+        "Donkey": {
+            "morning": f"{weight * 0.015:.1f} kg hay",
+            "afternoon": f"{weight * 0.010:.1f} kg grass",
+            "evening": f"{weight * 0.012:.1f} kg grains",
+            "water": f"{weight * 3:.0f} liters/day"
+        },
+
+        "Goat": {
+            "morning": f"{weight * 0.030:.1f} kg green fodder",
+            "afternoon": f"{weight * 0.015:.1f} kg dry feed",
+            "evening": f"{weight * 0.020:.1f} kg grains",
+            "water": f"{weight * 0.5:.1f} liters/day"
+        },
+
+        "Sheep": {
+            "morning": f"{weight * 0.025:.1f} kg fodder",
+            "afternoon": f"{weight * 0.012:.1f} kg dry feed",
+            "evening": f"{weight * 0.018:.1f} kg grains",
+            "water": f"{weight * 0.4:.1f} liters/day"
+        },
+
+        "Pig": {
+            "morning": f"{weight * 0.030:.1f} kg grains",
+            "afternoon": f"{weight * 0.020:.1f} kg pellets",
+            "evening": f"{weight * 0.025:.1f} kg vegetables",
+            "water": f"{weight * 4:.0f} liters/day"
+        },
+
+        "Chicken": {
+            "morning": f"{weight * 15:.0f}g layer feed",
+            "afternoon": f"{weight * 10:.0f}g grains",
+            "evening": f"{weight * 12:.0f}g protein mix",
+            "water": f"{weight * 60:.0f} ml/day"
+        },
+
+        "Rooster": {
+            "morning": f"{weight * 12:.0f}g grains",
+            "afternoon": f"{weight * 8:.0f}g seeds",
+            "evening": f"{weight * 10:.0f}g protein feed",
+            "water": f"{weight * 50:.0f} ml/day"
+        }
+    }
+    # -------- Species Not Found -------
+    if species not in diets:
+        return jsonify({
+            "morning": "",
+            "afternoon": "",
+            "evening": "",
+            "water": "",
+            "notes": "Diet not available for this animal"
+        })
+
+    # Start with base
+    diet = diets[species].copy()
+
+    # =====================================================
+    # AGE BASED DIET CHANGES
+    # =====================================================
+    if age_years < 1:
+        diet["notes"] = "Young animal – increase protein by 20%"
+        diet["morning"] += " (extra protein)"
+        diet["evening"] += " (extra protein)"
+
+    # =====================================================
+    # HEALTH CONDITION DIET CHANGES
+    # =====================================================
+    if "fever" in health:
+        diet["notes"] = "Soft diet recommended"
+        diet["morning"] = "Warm soup + soft food"
+        diet["evening"] = "Electrolytes + digestible food"
+
+    if "diarrhea" in health:
+        diet["notes"] = "ORS + boiled rice recommended"
+        diet["morning"] = "Boiled rice + curd"
+        diet["evening"] = "ORS + soft diet"
+
+    if "obesity" in health or "fat" in health:
+        diet["notes"] = "Low calorie diet required"
+        diet["evening"] = "Fiber rich vegetables"
+
+    if "pregnant" in health:
+        diet["notes"] = "High calcium + protein diet required"
+        diet["afternoon"] += " + calcium supplement"
+
+    if "weak" in health:
+        diet["notes"] = "High protein recovery diet"
+        diet["morning"] += " + vitamins"
+
+    # Default Note
+    if "notes" not in diet:
+        diet["notes"] = "Healthy balanced diet."
+
+    return jsonify(diet)
+
 
 @app.route("/health")
 def health():
@@ -657,6 +1255,211 @@ def breed_list(pet):
 def breed_info(pet, breed):
     info = pets_data.get(pet, {}).get(breed)
     return render_template("breed_info.html", pet=pet, breed=breed, info=info)
+
+
+
+
+@app.route('/agrishop')
+def agrishop():
+    return render_template('agrishop.html')
+
+@app.route("/agripets")
+def agripets():
+    return render_template("agripets.html")
+
+
+@app.route("/cow_breeds")
+def cow_breeds():
+    cow_list = [
+        {
+            "name": "Sahiwal","image": "Sahiwalcow.jpg",
+        },
+        {
+            "name": "Holstein Friesian", "image": "Holstein.jpg",
+        },
+        {
+            "name": "Jersey", "image": "jerseycow.jpg"
+        },
+        {
+            "name": "Rathi","image": "Rathicow.jpg"
+        }
+    ]
+    
+    return render_template("cow_breeds.html", cow_list=cow_list)
+
+@app.route("/buffalo_breeds")
+def buffalo_breeds():
+    buffalo_list = [
+        {"name": "Murrah", "image": "murrahbuffalo.jpg"},
+        {"name": "Jaffarabadi", "image": "jaffarabadi.jpg"},
+        {"name": "Surti", "image": "Surti.jpg"},
+        {"name": "Mehsana", "image": "Mehsana.jpg"}
+    ]
+    return render_template("buffalo_breeds.html", buffalo_list=buffalo_list)
+
+
+@app.route("/ox_breeds")
+def ox_breeds():
+    ox_list = [
+        {"name": "Kangayam", "image": "Kangayam.jpg"},
+        {"name": "Khillari", "image": "khillari.jpg"},
+        {"name": "Ongole", "image": "Ongole.jpg"},
+        {"name": "Malvi", "image": "Malvi.jpg"}
+    ]
+    return render_template("ox_breeds.html", ox_list=ox_list)
+@app.route("/camel_breeds")
+def camel_breeds():
+    camel_list = [
+        {"name": "Bikaneri", "image": "Bikaneri.jpg"},
+        {"name": "Jaisalmeri", "image": "jalsalmeri.jpg"},
+        {"name": "Kachchi", "image": "Kalchchi.jpg"}
+        
+    ]
+    return render_template("camel_breeds.html", camel_list=camel_list)
+
+@app.route("/horse_breeds")
+def horse_breeds():
+    horse_list = [
+        {"name": "Marwari", "image": "marwari.jpg"},
+        {"name": "Kathiawari", "image": "kathiawari.jpg"},
+        {"name": "Indian Thoroughbred", "image": "thoroughbred.jpg"}
+    ]
+    return render_template("horse_breeds.html", horse_list=horse_list)
+
+@app.route("/donkey_breeds")
+def donkey_breeds():
+    donkey_list = [
+        {"name": "Indian Wild Donkey", "image": "donkey1.jpg"},
+        {"name": "Ghudkhur", "image": "ghudkhur1.jpg"}
+    ]
+    return render_template("donkey_breeds.html", donkey_list=donkey_list)
+
+
+@app.route("/sheep_breeds")
+def sheep_breeds():
+    sheep_list = [
+        {"name": "Deccani", "image": "deccani.jpeg"},
+        {"name": "Nali", "image": "nali.jpg"},
+        {"name": "Chokla", "image": "chokla.jpg"}
+    ]
+    return render_template("sheep_breeds.html", sheep_list=sheep_list)
+
+@app.route("/pig_breeds")
+def pig_breeds():
+    pig_list = [
+        {"name": "Ghoongroo", "image": "ghoongroo.jpg"},
+        {"name": "Hampshire", "image": "hampshire.jpg"}
+    ]
+    return render_template("pig_breeds.html", pig_list=pig_list)
+@app.route("/chicken_breeds")
+def chicken_breeds():
+    chicken_list = [
+        {"name": "Giriraja", "image": "giriraja.jpg"},
+        {"name": "Kadaknath", "image": "k1.jpg"},
+        {"name": "Aseel", "image": "a2.jpg"}
+    ]
+    return render_template("chicken_breeds.html", chicken_list=chicken_list)
+
+@app.route("/rooster_breeds")
+def rooster_breeds():
+    rooster_list = [
+        {"name": "Aseel Rooster", "image": "aseel_rooster.jpg"},
+       {"name":"Giriraja","image": "giriraj_rooster.jpg"}
+    ]
+    return render_template("rooster_breeds.html", rooster_list=rooster_list)   
+
+
+# ===== AGRI BREED DETAIL ROUTES =====
+
+# Cow
+@app.route("/agribreed_details/cow/<name>")
+def cow_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Cow"].get(name)
+    if not info:
+        return f"Cow breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
+
+# Buffalo
+@app.route("/agribreed_details/buffalo/<name>")
+def buffalo_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Buffalo"].get(name)
+    if not info:
+        return f"Buffalo breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
+
+# Ox
+@app.route("/agribreed_details/ox/<name>")
+def ox_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Ox"].get(name)
+    if not info:
+        return f"Ox breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
+
+# Camel
+@app.route("/agribreed_details/camel/<name>")
+def camel_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Camel"].get(name)
+    if not info:
+        return f"Camel breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
+
+# Horse
+@app.route("/agribreed_details/horse/<name>")
+def horse_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Horse"].get(name)
+    if not info:
+        return f"Horse breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
+
+# Donkey
+@app.route("/agribreed_details/donkey/<name>")
+def donkey_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Donkey"].get(name)
+    if not info:
+        return f"Donkey breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
+
+# Sheep
+@app.route("/agribreed_details/sheep/<name>")
+def sheep_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Sheep"].get(name)
+    if not info:
+        return f"Sheep breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
+
+# Pig
+@app.route("/agribreed_details/pig/<name>")
+def pig_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Pig"].get(name)
+    if not info:
+        return f"Pig breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
+
+# Chicken
+@app.route("/agribreed_details/chicken/<name>")
+def chicken_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Chicken"].get(name)
+    if not info:
+        return f"Chicken breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
+
+# Rooster
+@app.route("/agribreed_details/rooster/<name>")
+def rooster_details(name):
+    name = name.replace("-", " ")
+    info = agripets_data["Rooster"].get(name)
+    if not info:
+        return f"Rooster breed '{name}' not found", 404
+    return render_template("agribreed_details.html", info=info, breed_name=name)
 
 # ---------------------- CLINIC API
 @app.route("/clinics_within_20km")
@@ -687,7 +1490,6 @@ def send_vaccine_reminders():
 scheduler = BackgroundScheduler()
 scheduler.add_job(send_vaccine_reminders, 'interval', hours=24, id="vaccine_job", replace_existing=True)
 scheduler.start()
-
 # ---------------------- RUN APP
 if __name__ == "__main__":
     with app.app_context():

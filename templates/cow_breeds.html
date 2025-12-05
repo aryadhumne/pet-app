@@ -1,60 +1,115 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="breed-container">
-    <h2 class="title">Cow Breeds</h2>
+<!-- Back Button -->
+<a href="{{ session.get('prev_url', url_for('home')) }}" class="back-btn">
+    🔙
+</a>
 
-    {% for cow in cow_list %}
-    <div class="breed-card">
-        <img src="{{ url_for('static', filename='images/' ~ cow.image) }}" alt="{{ cow.name }}">
-        <h3>{{ cow.name }}</h3>
-        <a class="info-btn" href="/agribreed_details/cow/{{ cow.name }}">View Info</a>
+<div class="outer-wrapper">
+    <div class="inner-box">
         
+        <h2 class="title">Cow Breeds</h2>
+
+        {% for cow in cow_list %}
+        <div class="breed-card">
+            <img src="{{ url_for('static', filename='images/' ~ cow.image) }}" alt="{{ cow.name }}">
+            
+            <h3 class="breed-name">{{ cow.name }}</h3>
+
+            <a class="info-btn" href="/agribreed_details/cow/{{ cow.name }}">View Info</a>
+        </div>
+        {% endfor %}
+
     </div>
-    {% endfor %}
 </div>
 
 <style>
-.breed-container {
-    width: 90%;
-    margin: auto;
-    padding-top: 20px;
+
+/* Outer Background Card (Dog Page सारखा) */
+.outer-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
+.inner-box {
+    width: 90%;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 25px;
+    padding: 20px 15px;
+    margin-top: 20px;
+    box-shadow: 0px 0px 25px rgba(105, 70, 255, 0.25);
+}
+
+/* Title */
 .title {
     text-align: center;
     font-size: 28px;
     margin-bottom: 20px;
-    color: #1e3a8a;
+    color: #c026d3; /* Pinkish same as Dog page */
+    font-weight: 600;
 }
 
+/* Breed Card */
 .breed-card {
     background: white;
-    margin: 15px auto;
-    width: 100%;
-    border-radius: 18px;
-    overflow: hidden;
+    border-radius: 22px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    margin: 15px auto;
+    overflow: hidden;
     text-align: center;
+    padding-bottom: 18px;
 }
 
+/* Breed Image */
 .breed-card img {
     width: 100%;
-    height: 220px;
+    height: 230px;
     object-fit: cover;
+    border-bottom: 1px solid #eee;
 }
 
-.info-btn {
-    background: #1e3a8a;
-    color: white;
-    padding: 8px 18px;
-    border-radius: 8px;
-    display: inline-block;
-    margin: 10px 0 15px 0;
-    text-decoration: none;
+/* Breed Name */
+.breed-name {
+    margin: 15px 0 8px;
+    font-size: 20px;
+    color: #1f2937;
+    font-weight: 600;
 }
+
+/* Gradient Button (Dog Page सारखा) */
+.info-btn {
+    background: linear-gradient(135deg, #22c55e, #3b82f6);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 6px;
+}
+
+/* Back Button */
+.back-btn {
+    position: fixed;
+    top: 65px;
+    left: 18px;
+    text-decoration: none;
+    font-size: 30px;
+    font-weight: 600;
+    color: #233b6c;
+    opacity: 0.9;
+    z-index: 99;
+    transition: 0.2s ease;
+}
+
+.back-btn:hover {
+    opacity: 1;
+    transform: translateX(-4px);
+}
+
 </style>
 
 {% endblock %}
-
-

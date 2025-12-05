@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
+<a href="{{ url_for('pet_home') }}" class="back-btn">
+     🔙 
+</a>
 
 <div class="main-wrapper">
     <div class="pet-container animate-card">
@@ -32,6 +35,23 @@
 </div>
 
 <style>
+    
+    /* Back Button */
+    .back-btn {
+        position: fixed;
+        top: 65px;
+        left: 18px;
+        text-decoration: none;
+        font-size: 30px;
+        font-weight: 600;
+        color: #233b6c;
+        opacity: 0.9;
+        transition: 0.2s ease;
+    }
+    .back-btn:hover {
+        opacity: 1;
+        transform: translateX(-4px);
+    }
 
 /* ✅ Animated background gradient */
 .main-wrapper {

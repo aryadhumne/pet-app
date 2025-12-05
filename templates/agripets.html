@@ -1,152 +1,193 @@
 {% extends "base.html" %}
 {% block content %}
 
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AgriPets</title>
-
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-    }
-
-body {
-    background: #f2f5ff;
-    overflow-x: hidden;
-}
-
-/* Header */
-.header {
-    background: #1f3c88;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    font-size: 22px;
-    font-weight: 600;
-    border-bottom-left-radius: 25px;
-    border-bottom-right-radius: 25px;
-}
-
-/* Background Image (Clear image + slight dark overlay) */
-.bg {
-    background: 
-        linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.25)),
-        url("https://media.istockphoto.com/id/2148798138/photo/collage-of-domestic-animal-group-together.jpg?s=612x612&w=0&k=20&c=9Pcg1H4YQYSQ1EK_9fMf2paRqVimnFGTXJdt_lXKSQc=")
-        no-repeat center center fixed;
-    background-size: cover;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-}
-
-/* Page Center Alignment */
-.page-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 78vh;
-}
-
-/* Main Card */
-.card {
-    background: rgba(255, 255, 255, 0.85);
-    width: 350px;
-    padding: 25px;
-    border-radius: 40px;
-    text-align: center;
-    box-shadow: 0px 3px 15px rgba(0,0,0,0.2);
-    backdrop-filter: blur(5px);
-}
-
-.card h2 {
-    font-size: 24px;
-    margin-bottom: 50px;
-    color: #1d2b53;
-}
-
-/* Grid */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-}
-
-/* Box Options */
-.box {
-    background: #1e3a8a;
-    color: white;
-    padding: 8px;
-    border-radius: 10px;
-    font-size: 14px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.box:hover {
-    transform: scale(1.05);
-    background: #1e3a8a;
-}
-</style>
-
-</head>
-
-<body>
-
-<!-- Background Image -->
-<div class="bg"></div>
-
-<div class="page-center">
-
-<!-- Main Card -->
-<div class="card">
-    <h2>Select Your AgriPet</h2>
-
-    <div class="grid">
-
-<a href="{{ url_for('cow_breeds') }}">
-    <div class="box">🐄<br> Cow</div>
+<!-- Back Button -->
+<a href="{{ url_for('agripet') }}" class="back-btn">
+    🔙
 </a>
-<a href="{{ url_for('buffalo_breeds') }}">
-    <div class="box">🐃<br> Buffalo</div>
-</a>
-<a href="{{ url_for('ox_breeds') }}">
-    <div class="box">🐂<br> Ox</div>
-</a>
-<a href="{{ url_for('camel_breeds') }}">
-    <div class="box">🐪<br> Camel</div>
-</a>
-<a href="{{ url_for('horse_breeds') }}">
-    <div class="box">🐎<br> Horse</div>
-</a>
-<a href="{{ url_for('donkey_breeds') }}">
-    <div class="box">🫏<br>Donkey</div>
-</a>
-<a href="{{ url_for('sheep_breeds') }}">
-    <div class="box">🐑<br> Sheep</div>
-</a>
-<a href="{{ url_for('pig_breeds') }}">
-    <div class="box">🐖<br> Pig</div>
-</a>
-<a href="{{ url_for('chicken_breeds') }}">
-    <div class="box">🐔<br> Chicken</div>
-</a>
-<a href="{{ url_for('rooster_breeds') }}">
-    <div class="box">🐓<br> Rooster</div>
-</a>
+
+<div class="main-wrapper">
+    <div class="pet-container animate-card">
+
+        <h3 class="title animate-title">Select Your<br>🌾AgriPet🌾</h3>
+
+        <div class="pet-grid">
+
+            <a href="{{ url_for('cow_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🐄</div>
+                <div class="pet-name">Cow</div>
+            </a>
+
+            <a href="{{ url_for('buffalo_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🐃</div>
+                <div class="pet-name">Buffalo</div>
+            </a>
+
+            <a href="{{ url_for('ox_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🐂</div>
+                <div class="pet-name">Ox</div>
+            </a>
+
+            <a href="{{ url_for('camel_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🐪</div>
+                <div class="pet-name">Camel</div>
+            </a>
+
+            <a href="{{ url_for('horse_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🐎</div>
+                <div class="pet-name">Horse</div>
+            </a>
+
+            <a href="{{ url_for('donkey_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🫏</div>
+                <div class="pet-name">Donkey</div>
+            </a>
+
+            <a href="{{ url_for('sheep_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🐑</div>
+                <div class="pet-name">Sheep</div>
+            </a>
+
+            <a href="{{ url_for('pig_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🐖</div>
+                <div class="pet-name">Pig</div>
+            </a>
+
+            <a href="{{ url_for('chicken_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🐔</div>
+                <div class="pet-name">Chicken</div>
+            </a>
+
+            <a href="{{ url_for('rooster_breeds') }}" class="pet-box glow-box">
+                <div class="pet-icon bounce-icon">🐓</div>
+                <div class="pet-name">Rooster</div>
+            </a>
+
+        </div>
 
     </div>
 </div>
-</div>
-</body>
-</html>
+
+<style>
+
+.main-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 90px;
+    background: linear-gradient(270deg, #e0e7ff, #fdf2f8, #ecfeff);
+    background-size: 600% 600%;
+    animation: bgFlow 10s ease infinite;
+}
+
+@keyframes bgFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.pet-container {
+    background: #f4f8ff;
+    width: 300px;
+    padding: 25px 15px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+@keyframes slideFade {
+    from { opacity: 0; transform: translateY(40px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-card { animation: slideFade 0.6s ease forwards; }
+
+.title {
+    font-weight: bold;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #2563eb, #9333ea, #ec4899);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleFlow 4s linear infinite;
+}
+@keyframes titleFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.pet-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    justify-items: center;
+}
+
+.pet-box {
+    width: 85px;
+    height: 85px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+    transition: 0.3s ease;
+    background: linear-gradient(270deg, #5b2cff, #2f6bff, #06b6d4, #8b5cf6);
+    background-size: 400% 400%;
+    animation: boxGlow 6s ease infinite;
+}
+
+@keyframes boxGlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.pet-box:hover {
+    transform: translateY(-8px) scale(1.1);
+    box-shadow: 0 0 20px rgba(79,70,229,0.7);
+}
+
+.pet-icon {
+    font-size: 26px;
+    margin-bottom: 3px;
+}
+
+@keyframes floatIcon {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
+}
+.bounce-icon {
+    animation: floatIcon 2.5s ease-in-out infinite;
+}
+
+.pet-name {
+    font-size: 12px;
+    font-weight: 600;
+    text-shadow: 0 1px 5px rgba(0,0,0,0.3);
+}
+
+/* Back Button */
+.back-btn {
+    position: fixed;
+    top: 65px;
+    left: 18px;
+    text-decoration: none;
+    font-size: 30px;
+    font-weight: 600;
+    color: #233b6c;
+    opacity: 0.9;
+    transition: 0.2s ease;
+}
+.back-btn:hover {
+    opacity: 1;
+    transform: translateX(-4px);
+}
+
+</style>
 
 {% endblock %}

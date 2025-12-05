@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+<a href="{{ url_for('pet_breeds') }}" class="back-btn">
+     🔙 
+</a>
+
 
 <div class="container mt-4">
     <h2 class="text-center">{{ breed }} ({{ pet }})</h2>
@@ -29,5 +33,24 @@
         </div>
     </div>
 </div>
+<style>
+    
+    /* Back Button */
+    .back-btn {
+        position: fixed;
+        top: 65px;
+        left: 18px;
+        text-decoration: none;
+        font-size: 30px;
+        font-weight: 600;
+        color: #233b6c;
+        opacity: 0.9;
+        transition: 0.2s ease;
+    }
+    .back-btn:hover {
+        opacity: 1;
+        transform: translateX(-4px);
+    }
+</style>
 
 {% endblock %}

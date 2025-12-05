@@ -1,34 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-center">Health Checkup</h2>
-    <div class="section-box">
+
+<!-- Back Button -->
+<a href="{{ url_for('health') }}" class="back-btn">🔙</a>
+
+<div class="page-wrapper">
+
+    <div class="health-card">
+        <h2 class="title">Health Checkup 🩺</h2>
+
         <form id="healthCheckupForm">
-            <div class="mb-3">
-                <label>Date</label>
-                <input type="date" name="date" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label>Weight (kg)</label>
-                <input type="number" name="weight" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label>Temperature (°C)</label>
-                <input type="number" name="temperature" class="form-control" required>
-            </div>
-            <div class="mb-3">
-                <label>Next Checkup Date</label>
-                <input type="date" name="next_checkup" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-primary">Save Checkup</button>
+
+            <label class="form-label">Date 📅</label>
+            <input type="date" name="date" class="form-control input-box" required>
+
+            <label class="form-label">Weight (kg) ⚖</label>
+            <input type="number" name="weight" class="form-control input-box" required>
+
+            <label class="form-label">Temperature (°C) 🌡</label>
+            <input type="number" name="temperature" class="form-control input-box" required>
+
+            <label class="form-label">Next Checkup Date 📅</label>
+            <input type="date" name="next_checkup" class="form-control input-box">
+
+            <button type="submit" class="save-btn">Save Checkup</button>
         </form>
-        <div id="statusMessage" class="mt-3"></div>
+
+        <div id="statusMessage" class="mt-2"></div>
+
     </div>
 </div>
 
+
 <script>
 document.getElementById("healthCheckupForm").addEventListener("submit", function(e){
-    e.preventDefault(); // prevent form from submitting normally
+    e.preventDefault();
 
     const form = e.target;
     const formData = new FormData(form);
@@ -37,16 +43,119 @@ document.getElementById("healthCheckupForm").addEventListener("submit", function
         method: "POST",
         body: formData
     })
-    .then(response => response.json())
+    .then(resp => resp.json())
     .then(data => {
-        const msgDiv = document.getElementById("statusMessage");
-        if(data.success){
-            msgDiv.innerHTML = '<div class="alert alert-success">Checkup saved successfully!</div>';
-            form.reset(); // optional: clear form
+        const msg = document.getElementById("statusMessage");
+        if (data.success){
+            msg.innerHTML = '<div class="alert alert-success">Checkup saved successfully! 🎉</div>';
+            form.reset();
         } else {
-            msgDiv.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
+            msg.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
         }
-    })
+    });
 });
 </script>
+
+
+<style>
+/* FULL PAGE CENTER */
+.page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    padding: 20px;
+}
+
+/* MAIN CHECKUP CARD */
+.health-card {
+    width: 100%;
+    max-width: 380px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 25px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    backdrop-filter: blur(8px);
+
+    /* smooth floating animation */
+    animation: floatCard 4s ease-in-out infinite;
+}
+
+/* floating animation */
+@keyframes floatCard {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+}
+
+/* Title */
+.title {
+    font-size: 26px;
+    font-weight: 700;
+    color: #233b6c;
+    margin-bottom: 18px;
+
+    /* color-changing animation */
+    animation: colorShift 5s infinite alternate;
+}
+
+/* header color animation */
+@keyframes colorShift {
+    0% { color: #233b6c; }
+    50% { color: #6a1b9a; }
+    100% { color: #008cff; }
+}
+
+/* Inputs */
+.input-box {
+    margin-bottom: 16px;
+    padding: 18px;
+    border-radius: 15px;
+    border: 1px solid #d0d0d0;
+}
+
+/* Save Button - gradient */
+.save-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #5e2bd6, #8a4dfd);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.save-btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.15);
+}
+
+.save-btn:active {
+    transform: scale(0.95);
+    transition: 0.1s;
+    filter: brightness(0.9);
+}
+
+/* Back Button */
+.back-btn {
+    position: fixed;
+    top: 65px;
+    left: 18px;
+    text-decoration: none;
+    font-size: 28px;
+    font-weight: 600;
+    color: #233b6c;
+    opacity: 0.85;
+    transition: 0.2s;
+}
+.back-btn:hover {
+    opacity: 1;
+    transform: translateX(-4px);
+}
+</style>
+
 {% endblock %}

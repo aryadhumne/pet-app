@@ -15,7 +15,6 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-
     <!-- 🔹 Logout Popup CSS -->
     <style>
         .popup-overlay {
@@ -72,8 +71,7 @@
 
 <body>
 
-
-
+<!-- ✅ BRAND HEADER -->
 <nav class="navbar navbar-dark backgroundblue">
     <div class="container-fluid justify-content-center">
         <span class="navbar-brand fw-bold">Smart AgriPet Care</span>
@@ -98,34 +96,25 @@
 </div>
 
 
-
 <!-- ✅ BOTTOM NAVIGATION BAR -->
 {% if session.get('user_id') %}
 <nav class="navbar navbar-dark backgroundblue fixed-bottom">
   <div class="container-fluid d-flex justify-content-around text-center">
+
 <a class="nav-link text-white text-center" href="{{ url_for('dashboard') }}">🏠<br>Home</a>
-
-
-
-
-<a class="nav-link text-white text-center" href="{{ url_for('pet_home') }}">🐾<br>Pet</a>
-
-
-
-<a class="nav-link text-white text-center" href="{{ url_for('agripet') }}">🌾<br>AgriPet</a>
 <a class="nav-link text-white text-center" href="{{ url_for('health') }}">❤<br>Health</a>
-
+<a class="nav-link text-white text-center" href="{{ url_for('pet_home') }}">🐾<br>Pet</a>
+<a class="nav-link text-white text-center" href="{{ url_for('agripet') }}">🌾<br>AgriPet</a>
 <a class="nav-link text-white text-center" href="{{ url_for('doctor_finder') }}">👨‍⚕<br>Doctor</a>
 
-<a class="nav-link text-danger text-center" href="{{ url_for('logout') }}">🚪<br>Logout</a>
+<!-- 🔹 NEW LOGOUT BUTTON (Popup Trigger) -->
+<a class="nav-link text-danger text-center" onclick="openLogoutPopup()">
+    🚪<br>Logout
+</a>
+
+</div>
 </nav>
 {% endif %}
-
-<!-- ✅ FOOTER -->
-
-
-
-
 
 <!-- 🔹 Logout Popup HTML -->
 <div id="logoutPopup" class="popup-overlay">

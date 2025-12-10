@@ -10,10 +10,6 @@ from werkzeug.utils import secure_filename
 from flask import request, session
 
 
-
-
-# ---------------------- APP CONFIG
-# ---------------------- APP CONFIG
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.secret_key = "your-secret-key"
 
@@ -933,6 +929,8 @@ def dashboard():
     user = db.session.get(User, session["user_id"])
     return render_template("dashboard.html", user=user)
 
+
+
 @app.route("/shop")
 def shop():
     return render_template("shop.html")
@@ -1254,7 +1252,12 @@ def breed_list(pet):
 @app.route("/pets/<pet>/<breed>")
 def breed_info(pet, breed):
     info = pets_data.get(pet, {}).get(breed)
+    if not info:
+        return "Breed not found", 404
+
     return render_template("breed_info.html", pet=pet, breed=breed, info=info)
+
+
 
 
 

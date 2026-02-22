@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Back Button -->
+<a href="{{ session.get('prev_url', url_for('home')) }}" class="back-btn">
+    🔙
+</a>
+<div class="breed-container">
+    <h2 class="title">Donkey Breeds</h2>
+
+    {% for donkey in donkey_list %}
+    <div class="breed-card">
+        <img src="{{ url_for('static', filename='images/' ~ donkey.image) }}" alt="{{ donkey.name }}">
+        <h3>{{ donkey.name }}</h3>
+
+        <a class="info-btn" href="/agribreed_details/donkey/{{ donkey.name | replace(' ', '-') }}">
+            View Info
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<style>
+
+/* Outer Background Card (Cow page सारखा) */
+.outer-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.inner-box {
+    width: 90%;
+    background: #ff8c42, #ff6f00;
+    border-radius: 25px;
+    padding: 20px 15px;
+    margin-top: 20px;
+    box-shadow: #ff8c42, #ff6f00;
+}
+
+/* Title */
+.title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    color:  #ff6f00;
+    font-weight: 600;
+}
+
+/* Breed Container */
+.breed-container {
+    width: 100%;
+}
+
+/* Breed Card */
+.breed-card {
+    background: white;
+    border-radius: 22px;
+    box-shadow: #ff8c42, #ff6f00;
+    margin: 15px auto;
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 18px;
+}
+
+/* Breed Image */
+.breed-card img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+}
+
+/* Breed Name */
+.breed-name {
+    margin: 15px 0 8px;
+    font-size: 20px;
+    color:  #ff6f00;
+    font-weight: 600;
+}
+
+/* Gradient Button */
+.info-btn {
+    background: linear-gradient(#ff8c42, #ff6f00);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    display: inline-block;
+    margin-top: 6px;
+}
+
+/* Back Button */
+.back-btn {
+    position: fixed;
+    top: 65px;
+    left: 18px;
+    text-decoration: none;
+    font-size: 30px;
+    font-weight: 600;
+    color: #233b6c;
+    opacity: 0.9;
+    z-index: 99;
+    transition: 0.2s ease;
+}
+
+.back-btn:hover {
+    opacity: 1;
+    transform: translateX(-4px);
+}
+
+</style>
+
+{% endblock %}

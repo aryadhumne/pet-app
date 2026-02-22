@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.notification-card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.notification-title{
+  font-weight:600;
+  color:#ff7043;
+}
+
+.notification-msg{
+  font-size:14px;
+  color:#444;
+}
+</style>
+
+<div class="page-content">
+  <h5 class="mb-3">🔔 Notifications</h5>
+
+  {% if notifications %}
+    {% for n in notifications %}
+      <div class="notification-card">
+        <div class="notification-title">{{ n.title }}</div>
+        <div class="notification-msg">{{ n.message }}</div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>No new notifications 🎉</p>
+  {% endif %}
+</div>
+
+{% endblock %}

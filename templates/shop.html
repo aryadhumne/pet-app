@@ -1,89 +1,235 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="text-center mb-4">Pet Shop</h2>
+ <!-- Back Button -->
+<a href="{{ url_for('pet_home') }}" class="back-btn">
+    🔙
+</a>
+<div class="shop-wrapper">
+  
+  <!-- ✅ PAGE TITLE -->
+  <h2 class="text-center shop-title animate-fade">
+    🛍 Pet Shop
+  </h2>
 
-<div class="row">
+  <p class="text-center shop-sub animate-fade-delay">
+    Everything your pet needs — in one happy place 🐶🐱
+  </p>
 
-  <!-- Pet Food -->
-  <div class="col-md-4">
-    <div class="card product-card">
-      <img src="{{ url_for('static', filename='images/food.webp') }}" class="card-img-top" alt="Pet Food">
-      <div class="card-body text-center">
-        <h5 class="card-title">Pet Food</h5>
-        <p>Nutritious and healthy meals for your pets.</p>
-        <a href="https://www.google.com/search?q=pet+food" 
-           target="_blank"
-           class="btn backgroundblue">
-           Buy Now
-        </a>
+  <div class="row mt-4">
+
+    <!-- ✅ PET FOOD -->
+    <div class="col-md-4 mb-4 animate-card">
+      <div class="card product-card">
+        <div class="img-box">
+          <img src="{{ url_for('static', filename='images/s4.jpeg') }}" class="card-img-top" alt="Pet Food">
+        </div>
+        <div class="card-body text-center">
+          <h5 class="card-title">Pet Food</h5>
+          <p>Nutritious and healthy meals for your pets.</p>
+          <a href="https://www.google.com/search?q=pet+food" target="_blank"
+             class="btn shop-btn">
+             🛒 Buy Now
+          </a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Pet Toys -->
-  <div class="col-md-4">
-    <div class="card product-card">
-      <img src="{{ url_for('static', filename='images/toys.webp') }}" class="card-img-top" alt="Pet Toys">
-      <div class="card-body text-center">
-        <h5 class="card-title">Pet Toys</h5>
-        <p>Keep your pets active and happy.</p>
-        <a href="https://www.google.com/search?q=pet+toys" 
-           target="_blank"
-           class="btn backgroundblue">
-           Buy Now
-        </a>
+    <!-- ✅ PET TOYS -->
+    <div class="col-md-4 mb-4 animate-card">
+      <div class="card product-card">
+        <div class="img-box">
+          <img src="{{ url_for('static', filename='images/toys.webp') }}" class="card-img-top" alt="Pet Toys">
+        </div>
+        <div class="card-body text-center">
+          <h5 class="card-title">Pet Toys</h5>
+          <p>Keep your pets active and happy.</p>
+          <a href="https://www.google.com/search?q=pet+toys" target="_blank"
+             class="btn shop-btn">
+             🛒 Buy Now
+          </a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Pet Skincare -->
-  <div class="col-md-4">
-    <div class="card product-card">
-      <img src="{{ url_for('static', filename='images/petskin.avif') }}" class="card-img-top" alt="Pet Skincare">
-      <div class="card-body text-center">
-        <h5 class="card-title">Pet Skincare</h5>
-        <p>Shampoos and grooming products for shiny coats.</p>
-        <a href="https://www.google.com/search?q=pet+skincare+products" 
-           target="_blank"
-           class="btn backgroundblue">
-           Buy Now
-        </a>
+    <!-- ✅ PET SKINCARE -->
+    <div class="col-md-4 mb-4 animate-card">
+      <div class="card product-card">
+        <div class="img-box">
+          <img src="{{ url_for('static', filename='images/petskin.avif') }}" class="card-img-top" alt="Pet Skincare">
+        </div>
+        <div class="card-body text-center">
+          <h5 class="card-title">Pet Skincare</h5>
+          <p>Shampoos and grooming products for shiny coats.</p>
+          <a href="https://www.google.com/search?q=pet+skincare+products" target="_blank"
+             class="btn shop-btn">
+             🛒 Buy Now
+          </a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Pet Medicines -->
-  <div class="col-md-4 mt-4">
-    <div class="card product-card">
-      <img src="{{ url_for('static', filename='images/petmed.webp') }}" class="card-img-top" alt="Pet Medicines">
-      <div class="card-body text-center">
-        <h5 class="card-title">Pet Medicines</h5>
-        <p>Essential medicines and health supplies.</p>
-        <a href="https://www.google.com/search?q=pet+medicines" 
-           target="_blank"
-           class="btn backgroundblue">
-           Buy Now
-        </a>
+    <!-- ✅ PET MEDICINES -->
+    <div class="col-md-4 mb-4 animate-card">
+      <div class="card product-card">
+        <div class="img-box">
+          <img src="{{ url_for('static', filename='images/petmed.webp') }}" class="card-img-top" alt="Pet Medicines">
+        </div>
+        <div class="card-body text-center">
+          <h5 class="card-title">Pet Medicines</h5>
+          <p>Essential medicines and health supplies.</p>
+          <a href="https://www.google.com/search?q=pet+medicines" target="_blank"
+             class="btn shop-btn">
+             🛒 Buy Now
+          </a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Pet Clothes -->
-  <div class="col-md-4 mt-4">
-    <div class="card product-card">
-      <img src="{{ url_for('static', filename='images/petcloth.jpeg') }}" class="card-img-top" alt="Pet Clothes">
-      <div class="card-body text-center">
-        <h5 class="card-title">Pet Clothes</h5>
-        <p>Comfortable and stylish clothes for pets.</p>
-        <a href="https://www.google.com/search?q=pet+clothes" 
-           target="_blank"
-           class="btn backgroundblue">
-           Buy Now
-        </a>
+    <!-- ✅ PET CLOTHES -->
+    <div class="col-md-4 mb-4 animate-card">
+      <div class="card product-card">
+        <div class="img-box">
+          <img src="{{ url_for('static', filename='images/petcloth.jpeg') }}" class="card-img-top" alt="Pet Clothes">
+        </div>
+        <div class="card-body text-center">
+          <h5 class="card-title">Pet Clothes</h5>
+          <p>Comfortable and stylish clothes for pets.</p>
+          <a href="https://www.google.com/search?q=pet+clothes" target="_blank"
+             class="btn shop-btn">
+             🛒 Buy Now
+          </a>
+        </div>
       </div>
     </div>
-  </div>
 
+  </div>
 </div>
+
+<!-- ✅ ✅ STYLES & ANIMATIONS -->
+<style>
+
+.shop-wrapper {
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(to bottom, #eef5ff, #ffffff);
+}
+
+.shop-title {
+  font-weight: 800;
+  color:  #ff6f00;
+}
+
+.shop-sub {
+  font-size: 13px;
+  color: #555;
+}
+
+/* ✅ CARD DESIGN */
+.product-card {
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+  transition: 0.4s ease;
+  background: #ffffff;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 22px 45px rgba(0,0,0,0.25);
+}
+
+/* ✅ IMAGE HOVER ZOOM */
+.img-box {
+  overflow: hidden;
+}
+
+.product-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: 0.5s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.08);
+}
+
+/* ✅ BUTTON */
+.shop-btn {
+  background: linear-gradient(135deg,#ff8c42, #ff6f00);
+  color: white;
+  border-radius: 30px;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.shop-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(37,99,235,0.6);
+  color: white;
+}
+
+/* ✅ PAGE FADE-IN */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade {
+  animation: fadeIn 0.8s forwards;
+}
+
+.animate-fade-delay {
+  animation: fadeIn 1.3s forwards;
+}
+
+/* ✅ CARD STAGGERED ENTRY */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(35px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-card {
+  animation: slideUp 0.9s ease forwards;
+}
+
+
+    /* Button */
+  .submit-btn {
+        width: 100%;
+        background: #1a73e8;
+        border: none;
+        padding: 12px;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        color: white;
+        transition: 0.25s ease;
+    }
+    .submit-btn:hover {
+        background: #0f5ed2;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(26, 115, 232, 0.35);
+    }
+    /* Back Button */
+    .back-btn {
+        position: fixed;
+        top: 65px;
+        left: 18px;
+        text-decoration: none;
+        font-size: 30px;
+        font-weight: 600;
+        color: #233b6c;
+        opacity: 0.9;
+        transition: 0.2s ease;
+    }
+    .back-btn:hover {
+        opacity: 1;
+        transform: translateX(-4px);
+    }
+
+</style>
 
 {% endblock %}

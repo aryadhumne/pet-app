@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriPet</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial;
+            background: url("https://media.istockphoto.com/id/2148798138/photo/collage-of-domestic-animal-group-together.jpg?s=612x612&w=0&k=20&c=9Pcg1H4YQYSQ1EK_9fMf2paRqVimnFGTXJdt_lXKSQc=") no-repeat center center fixed;
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+        }
+
+        .agripet-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #5e289d;
+            margin-bottom: 15px;
+        }
+
+        .hero-section {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-img {
+            width: 95%;
+            max-width: 450px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+.agripet-card {
+    background: #5c27c8;   /* Deep purple (first image style) */
+    padding: 28px;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 420px;
+    margin: 35px auto;
+    color: white;
+    border: none;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.35);
+}
+
+
+        .card-title {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .card-text {
+            margin-top: 10px;
+            font-size: 15px;
+        }
+
+       /* 🔥 Modern Premium Dual Buttons 🔥 */
+.card-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 22px;
+}
+
+.glass-btn {
+    width: 155px;
+    padding: 13px 0;
+    border-radius: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.35s ease-in-out;
+    box-shadow: 0 5px 18px rgba(0,0,0,0.30);
+}
+
+/* 🛒 Blue Gradient for Shop */
+.glass-btn:nth-child(1) {
+    background: linear-gradient(135deg, #009dff, #005eff);
+}
+
+/* 🌱 Green Gradient for AgriPets */
+.glass-btn:nth-child(2) {
+    background: linear-gradient(135deg, #44e200, #1a9b00);
+}
+
+/* ✨ Hover Animation: Lift + Glow */
+.glass-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.45);
+    filter: brightness(1.1);
+}
+
+
+    </style>
+</head>
+
+<body>
+
+    <div class="agripet-container">
+
+        <h2 class="title">🌾 AgriPet 🌾</h2>
+
+        <!-- TOP BIG IMAGE -->
+        <div class="hero-section">
+            <img src="{{ url_for('static', filename='images/agripet.webp') }}" class="hero-img">
+        </div>
+
+        <!-- CARD -->
+        <div class="agripet-card">
+            <h3 class="card-title">Smart AgriPet Services</h3>
+            <p class="card-text">
+                Healthy farming, smart livestock care & modern agriculture solutions.
+            </p>
+
+            <div class="card-buttons">
+                <button class="glass-btn" onclick="window.location.href='/agrishop'">🛒      AgriPet Shop</button>
+                <button class="glass-btn" onclick="window.location.href='/agripets'">🌱 AgriPets</button>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
+{% endblock %}

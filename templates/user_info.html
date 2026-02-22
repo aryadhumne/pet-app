@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+.user-card {
+    max-width: 380px;
+    margin: 20px auto;
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.user-icon {
+    font-size: 55px;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+}
+
+.user-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-bottom: 15px;
+}
+
+.user-info {
+    text-align: left;
+    font-size: 15px;
+}
+
+.user-info p {
+    margin-bottom: 10px;
+}
+</style>
+
+<div class="user-card">
+    <div class="user-icon">👤</div>
+    <div class="user-title">User Information</div>
+
+    <div class="user-info">
+        <p><b>Username:</b> {{ username }}</p>
+        <p><b>Mobile Number:</b> {{ mobile }}</p>
+        <p><b>Email ID:</b> {{ email }}</p>
+    </div>
+</div>
+
+{% endblock %}

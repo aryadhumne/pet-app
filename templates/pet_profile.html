@@ -1,63 +1,200 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2 class="mb-3">{{ pet.name }}'s Profile</h2>
+<div class="container-fluid py-5 pet-bg">
 
-<div class="card mt-3 p-3">
-    <h4>{{ pet.name }}</h4>
-    <p><strong>Species:</strong> {{ pet.species }}</p>
-    <p><strong>Breed:</strong> {{ pet.breed }}</p>
-    <p><strong>Age:</strong> {{ pet.age }} years</p>
+<!-- 🔙 Back Button -->
+<a href="{{ url_for('dashboard') }}" class="back-btn">🔙</a>
 
-    <hr>
 
-    <h4>Breed Information</h4>
-    <p>{{ info }}</p>
-
-    <hr>
-
-    <!-- ✅ VACCINE SECTION -->
-    <div class="d-flex justify-content-between align-items-center">
-        <h4>Vaccination Records</h4>
-        <a href="{{ url_for('add_vaccine', pet_id=pet.id) }}" class="btn btn-success btn-sm">
-            + Add Vaccine
-        </a>
-    </div>
-
-    {% if vaccines %}
-        <table class="table table-bordered mt-3">
-            <thead class="table-light">
-                <tr>
-                    <th>Vaccine Name</th>
-                    <th>Last Given</th>
-                    <th>Next Due</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for v in vaccines %}
-                <tr>
-                    <td>{{ v.vaccine_name }}</td>
-                    <td>{{ v.last_given_date }}</td>
-                    <td>{{ v.next_due_date }}</td>
-                    <td>
-                        {% if v.is_overdue %}
-                            <span class="badge bg-danger">Overdue</span>
-                        {% else %}
-                            <span class="badge bg-warning text-dark">Upcoming</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-        <p class="text-muted mt-2">No vaccines added for this pet yet.</p>
-    {% endif %}
-
-    <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">
-        Back to Dashboard
-    </a>
+<!-- 🐾 PROFILE IMAGE -->
+<div class="text-center mb-3 pet-avatar-wrap">
+  {% if pet.photo %}
+    <img src="{{ url_for('static', filename='uploads/' + pet.photo) }}"
+         class="rounded-circle shadow pet-avatar"
+         width="140" height="140">
+  {% else %}
+    <img src="{{ url_for('static', filename='uploads/default.jpg') }}"
+         class="rounded-circle shadow pet-avatar"
+         width="140" height="140">
+  {% endif %}
+  <div class="paw-badge">🐾</div>
 </div>
+
+<!-- 📸 IMAGE UPLOAD -->
+<form method="POST"
+      enctype="multipart/form-data"
+      action="{{ url_for('upload_pet_photo', pet_id=pet.id) }}"
+      class="text-center mb-4">
+
+  <input type="file" name="photo"
+         class="form-control mb-2 w-75 mx-auto"
+         accept="image/*" required>
+
+  <button type="submit" class="btn pet-btn-outline btn-sm">
+    Upload Pet Photo
+  </button>
+</form>
+
+<!-- 🐶 PROFILE TITLE -->
+<h3 class="text-center pet-title mb-4">
+  {{ pet.name }}'s Profile
+</h3>
+
+<!-- 📇 PROFILE CARD -->
+<div class="card pet-card shadow-lg p-4 mx-auto">
+
+  <h4 class="fw-bold text-primary mb-3">{{ pet.name }}</h4>
+
+  <div class="row text-start px-3 pet-info">
+    <div class="col-6 mb-2"><strong>Species</strong></div>
+    <div class="col-6 mb-2">{{ pet.species }}</div>
+
+    <div class="col-6 mb-2"><strong>Breed</strong></div>
+    <div class="col-6 mb-2">{{ pet.breed }}</div>
+
+    <div class="col-6 mb-2"><strong>Age</strong></div>
+    <div class="col-6 mb-2">{{ pet.age }} years</div>
+
+    <div class="col-6 mb-2"><strong>Gender</strong></div>
+    <div class="col-6 mb-2">{{ pet.gender }}</div>
+  </div>
+
+  <!-- 🩺 ACTION BUTTONS -->
+  <div class="health-buttons mt-4">
+
+    <a href="{{ url_for('add_vaccine', pet_id=pet.id) }}"
+       class="health-btn blue">
+       💉 Vaccination
+    </a>
+
+    <a href="{{ url_for('health_checkup', pet_id=pet.id) }}"
+       class="health-btn green">
+       🩺 Health Checkup
+    </a>
+
+    <a href="{{ url_for('diet_plan', pet_id=pet.id) }}"
+       class="health-btn orange">
+       🥗 Diet Plan
+    </a>
+
+  </div>
+</div>
+
+<!-- 📜 DETAILS SECTION -->
+{% if vaccinations or healths or diets %}
+<hr>
+<button class="view-btn" onclick="toggleDetails()">
+  👁 View Above Details
+</button>
+
+<div id="detailsSection" style="display:none;">
+
+  {% if vaccinations %}
+  <h5 class="fw-bold text-primary mt-3">💉 Vaccination History</h5>
+  {% for v in vaccinations %}
+    <div class="pet-info-box mb-2">
+      <strong>{{ v.vaccine_name }}</strong><br>
+      Given: {{ v.last_given_date }}<br>
+      Next Due: {{ v.next_due_date }}
+    </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if healths %}
+  <h5 class="fw-bold text-success mt-3">🩺 Health Checkup</h5>
+  {% for h in healths %}
+    <div class="pet-info-box mb-2">
+      Date: {{ h.checkup_date }}<br>
+      Notes: {{ h.notes }}
+    </div>
+  {% endfor %}
+  {% endif %}
+
+  {% if diets %}
+  <h5 class="fw-bold text-warning mt-3">🥗 Diet Plan</h5>
+  {% for d in diets %}
+    <div class="pet-info-box mb-2">
+      Food: {{ d.food_name }}<br>
+      Quantity: {{ d.quantity }}
+    </div>
+  {% endfor %}
+  {% endif %}
+
+</div>
+
+{% else %}
+<p class="text-center text-muted mt-3">
+  No health records yet.
+</p>
+{% endif %}
+
+<!-- 🔙 BACK TO DASHBOARD -->
+<div class="text-center">
+  <a href="{{ url_for('dashboard') }}"
+     class="btn pet-btn mt-4">
+    ← Back to Dashboard
+  </a>
+</div>
+
+<!-- 🐾 FOOTER -->
+<div class="text-center mt-4 pet-footer">
+  <img src="{{ url_for('static', filename='images/s5.jpeg') }}"
+       width="170" class="rounded shadow-sm">
+  <p class="small text-muted mt-2">
+    Your pet, your responsibility 🐾
+  </p>
+</div>
+
+</div>
+
+<!-- 🧠 JS -->
+<script>
+function toggleDetails() {
+  const section = document.getElementById("detailsSection");
+  section.style.display =
+    section.style.display === "none" ? "block" : "none";
+}
+</script>
+
+<!-- 🎨 CSS -->
+<style>
+.pet-bg {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f5f9ff, #eef4fb);
+}
+.pet-avatar-wrap { position: relative; display: inline-block; }
+.pet-avatar { object-fit: cover; border: 4px solid #dbe7f6; background: white; }
+.pet-title { color: #325ea8; font-weight: 600; }
+.pet-card {
+  max-width: 470px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff, #f7fbff);
+}
+.pet-info-box {
+  background: #f4f7fc;
+  padding: 12px;
+  border-radius: 12px;
+}
+.view-btn {
+  width: 100%;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: 14px;
+  font-weight: 700;
+  margin-top: 15px;
+}
+.view-btn:active { transform: scale(0.96); }
+
+.back-btn {
+  position: fixed;
+  top: 65px;
+  left: 18px;
+  font-size: 28px;
+  color: #233b6c;
+}
+</style>
 
 {% endblock %}

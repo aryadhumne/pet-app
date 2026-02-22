@@ -1,9 +1,2 @@
-Flask==3.0.3
-Flask-SQLAlchemy==3.1.1
-Flask-Login==0.6.3
-Flask-WTF==1.2.1
-Flask-Cors==4.0.1
-python-dotenv==1.0.1
-pg8000==1.31.2       # Pure Python PostgreSQL driver
-PyMySQL==1.1.1       # Pure Python MySQL driver
-requests==2.32.3
+gunicorn==25.1.0
+packaging==26.0

@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="pet-home-wrapper">
+
+    <!-- ✅ HERO PET IMAGE SECTION -->
+    <div class="pet-hero">
+        <div class="brand-text animate-glow">🐾 Pets 🐾</div>
+
+        <!-- ✅ FEATURED PET IMAGE -->
+        <img src="{{ url_for('static', filename='images/pin3.jpeg') }}" class="hero-pet floating-pet">
+    </div>
+
+    <!-- ✅ ACTION CARD -->
+    <div class="action-card animate-slideup">
+
+        <h4 class="welcome-text animate-color">Happy Pets, Happy You</h4>
+        <p class="sub-text">
+            Keep your pets healthy, active & cared with smart services.
+        </p>
+
+        <div class="action-buttons">
+
+            <!-- PET SHOP -->
+            <a href="{{ url_for('shop') }}" class="pet-action blue glow-hover">
+                🛒 Pet Shop
+            </a>
+
+            <!-- ADOPT (HIGHLIGHTED) -->
+            <a href="{{ url_for('adopt') }}" class="btn-adopt">
+                ❤️ Adopt
+            </a>
+
+            <!-- PET LIST -->
+            <a href="{{ url_for('pets_list') }}" class="pet-action green glow-hover">
+                🐾 Pets
+            </a>
+
+        </div>
+    </div>
+</div>
+
+<style>
+/* ================= THEME COLORS ================= */
+:root {
+    --primary: #f39a7a;        /* Top bar peach */
+    --primary-dark: #e76f51;
+    --primary-light: #fde3d9;
+    --accent: #ff3d81;         /* Adopt highlight */
+}
+
+/* ================= MAIN WRAPPER ================= */
+.pet-home-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, var(--primary-light), #ffffff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ================= HERO SECTION ================= */
+.pet-hero {
+    position: relative;
+    width: 100%;
+    height: 55vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ================= BRAND TEXT ================= */
+.brand-text {
+    position: absolute;
+    top: 30px;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--primary-dark);
+    opacity: 0.9;
+    z-index: 1;
+}
+
+/* ================= HERO IMAGE ================= */
+.hero-pet {
+    height: 260px;
+    z-index: 2;
+    transition: 0.4s ease;
+}
+
+/* Floating animation */
+@keyframes floatPet {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+.floating-pet {
+    animation: floatPet 3s ease-in-out infinite;
+}
+
+.hero-pet:hover {
+    transform: translateY(-25px) scale(1.05);
+}
+
+/* ================= ACTION CARD ================= */
+.action-card {
+    width: 92%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    margin-top: -40px;
+    border-radius: 26px;
+    padding: 25px 18px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 15px 35px rgba(231, 111, 81, 0.45);
+}
+
+/* ================= TEXT ================= */
+.welcome-text {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.sub-text {
+    font-size: 13px;
+    opacity: 0;
+    animation: fadeIn 1.5s forwards;
+    animation-delay: 0.6s;
+}
+
+/* ================= BUTTON WRAPPER ================= */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+/* ================= COMMON BUTTON ================= */
+.pet-action {
+    width: 120px;
+    padding: 12px 10px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 600;
+    color: white;
+    transition: 0.3s ease;
+}
+
+/* ================= BUTTON COLORS ================= */
+.pet-action.blue {
+    background: linear-gradient(135deg, #ff8c42, #ff6f00);
+}
+
+.pet-action.green {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+/* ================= ADOPT BUTTON ================= */
+.btn-adopt {
+    background: linear-gradient(135deg, #ff3d81, #ff1744);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 0 18px rgba(255, 61, 129, 0.9);
+    animation: pulseAdopt 1.5s infinite;
+}
+
+/* Adopt pulse animation */
+@keyframes pulseAdopt {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 61, 129, 0.6);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 25px rgba(255, 61, 129, 1);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(255, 61, 129, 0.6);
+    }
+}
+
+/* ================= HOVER EFFECT ================= */
+.glow-hover:hover {
+    transform: scale(1.12);
+    box-shadow: 0 0 20px rgba(255,255,255,0.6);
+}
+
+/* ================= ANIMATIONS ================= */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(50px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slideup {
+    animation: slideUp 1s ease forwards;
+}
+
+@keyframes colorGlow {
+    0% { color: #ffffff; }
+    25% { color: #ffe066; }
+    50% { color: #ffb703; }
+    75% { color: #ffd166; }
+    100% { color: #ffffff; }
+}
+
+.animate-color {
+    animation: colorGlow 3s linear infinite;
+}
+
+@keyframes glowPulse {
+    0% { text-shadow: 0 0 5px var(--primary); }
+    50% { text-shadow: 0 0 20px #ff6f91; }
+    100% { text-shadow: 0 0 5px var(--primary); }
+}
+
+.animate-glow {
+    animation: glowPulse 2s infinite;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+</style>
+
+{% endblock %}

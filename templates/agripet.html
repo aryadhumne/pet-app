@@ -1,37 +1,159 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgriPets</title>
+{% extends "base.html" %}
+{% block content %}
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7ff;
-      padding: 20px;
+<style>
+/* ================= THEME COLORS ================= */
+:root {
+    --primary: #f39a7a;        /* Peach */
+    --primary-dark: #e76f51;
+    --primary-light: #fde3d9;
+    --accent-green: #2ecc71;
+}
+
+/* ====== MAIN CONTAINER ====== */
+.agripet-container {
+    text-align: center;
+    padding: 20px;
+    margin-top: 20px;
+    background: linear-gradient(to bottom, var(--primary-light), #ffffff);
+}
+
+/* ====== PAGE TITLE ====== */
+.title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-bottom: 18px;
+    text-shadow: 0 0 12px rgba(231,111,81,0.5);
+}
+
+/* ====== HERO IMAGE ====== */
+.hero-section {
+    display: flex;
+    justify-content: center;
+}
+
+.hero-img {
+    width: 85%;
+    max-width: 350px;
+    border-radius: 22px;
+    box-shadow: 0 12px 25px rgba(231,111,81,0.35);
+}
+
+/* ====== PEACH CARD ====== */
+.agripet-card {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    padding: 28px;
+    border-radius: 30px;
+    width: 90%;
+    max-width: 420px;
+    margin: 28px auto;
+    color: white;
+
+    box-shadow:
+        0 10px 30px rgba(231, 111, 81, 0.45),
+        0 0 25px rgba(243, 154, 122, 0.7);
+
+    animation: peachGlow 3s infinite alternate;
+}
+
+/* Glow Animation */
+@keyframes peachGlow {
+    0% {
+        box-shadow:
+            0 10px 30px rgba(231, 111, 81, 0.35),
+            0 0 20px rgba(243, 154, 122, 0.6);
     }
-
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      max-width: 500px;
-      margin: auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    100% {
+        box-shadow:
+            0 14px 40px rgba(231, 111, 81, 0.6),
+            0 0 35px rgba(243, 154, 122, 0.9);
     }
+}
 
-    h2 {
-      text-align: center;
-      color: #1f4cb4;
-    }
-  </style>
-</head>
+/* ====== TEXT INSIDE CARD ====== */
+.card-title {
+    font-size: 23px;
+    font-weight: 700;
+}
 
-<body>
-  <div class="container">
-    <h2>AgriPets Section</h2>
-    <p>Welcome to the AgriPets page!</p>
-  </div>
-</body>
-</html>
+.card-text {
+    margin-top: 10px;
+    font-size: 15px;
+    color: #fff6f2;
+}
+
+/* ====== BUTTONS ====== */
+.card-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 22px;
+    flex-wrap: wrap;
+}
+
+/* Common Button */
+.glass-btn {
+    width: 150px;
+    padding: 12px 0;
+    border-radius: 20px;
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+/* AgriPet Shop */
+.glass-btn:nth-child(1) {
+    background: linear-gradient(135deg, #ff8c42, #ff6f00);
+}
+
+/* AgriPets */
+.glass-btn:nth-child(2) {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+/* Hover Effect */
+.glass-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 18px rgba(255,255,255,0.6);
+}
+</style>
+
+<div class="agripet-container">
+
+    <h2 class="title">🌾 AgriPet 🌾</h2>
+
+    <!-- HERO IMAGE -->
+    <div class="hero-section">
+        <img src="{{ url_for('static', filename='images/pin1.jpeg') }}" class="hero-img">
+    </div>
+
+    <!-- PEACH CARD -->
+    <div class="agripet-card">
+        <h3 class="card-title">Smart AgriPet Services</h3>
+
+        <p class="card-text">
+            Healthy farming, smart livestock care & modern agriculture solutions.
+        </p>
+
+        <div class="card-buttons">
+            <button class="glass-btn" onclick="window.location.href='/agrishop'">
+                🛒 AgriPet Shop
+            </button>
+            <button class="glass-btn" onclick="window.location.href='{{ url_for('adopt_agri') }}'">
+    ❤️ Adopt
+</button>
+
+
+            <button class="glass-btn" onclick="window.location.href='/agripets'">
+                🌱 AgriPets
+            </button>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

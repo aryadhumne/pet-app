@@ -2,7 +2,8 @@
 {% block content %}
 
 <!-- Back Button -->
-<a href="{{ url_for('health') }}" class="back-btn">🔙</a>
+<a href="{{ url_for('health', pet_id=pet_id)
+ }}" class="back-btn">🔙</a>
 
 <div class="page-wrapper">
 
@@ -93,19 +94,14 @@ document.getElementById("healthCheckupForm").addEventListener("submit", function
 .title {
     font-size: 26px;
     font-weight: 700;
-    color: #233b6c;
+    color:  #ff6f00;
     margin-bottom: 18px;
 
     /* color-changing animation */
     animation: colorShift 5s infinite alternate;
 }
 
-/* header color animation */
-@keyframes colorShift {
-    0% { color: #233b6c; }
-    50% { color: #6a1b9a; }
-    100% { color: #008cff; }
-}
+
 
 /* Inputs */
 .input-box {
@@ -119,7 +115,7 @@ document.getElementById("healthCheckupForm").addEventListener("submit", function
 .save-btn {
     width: 100%;
     padding: 12px;
-    background: linear-gradient(135deg, #5e2bd6, #8a4dfd);
+    background: linear-gradient(#ff8c42, #ff6f00);
     color: white;
     border: none;
     border-radius: 15px;

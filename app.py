@@ -7,46 +7,52 @@ from datetime import datetime, timedelta, date
 import requests
 from apscheduler.schedulers.background import BackgroundScheduler
 from werkzeug.utils import secure_filename
-from flask import request, session
+from sqlalchemy.exc import IntegrityError
+from dotenv import load_dotenv
+from flask_migrate import Migrate
+from werkzeug.utils import secure_filename
+from flask import Blueprint, request, redirect, url_for, flash
+from files.models import db, User,Pet,DietPlan
 
+
+load_dotenv()
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
-app.secret_key = "your-secret-key"
+from chatbot_api import chatbot_bp
 
-# Directory to store uploaded pet photos
-app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
-UPLOAD_FOLDER = os.path.join('static', 'uploads')
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+app.register_blueprint(chatbot_bp)
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Make sure the folder exists
-if not os.path.exists(app.config["UPLOAD_FOLDER"]):
-    os.makedirs(app.config["UPLOAD_FOLDER"])
 
-@app.before_request
-def store_previous_url():
-    if request.endpoint and request.endpoint != "static":
-        session['prev_url'] = request.referrer
 
-# ---------------------- DATABASE CONFIG
-db_password = quote_plus("admin@123")
-db_user = "petuser"
-db_host = "localhost"
-db_port = "5432"
-db_name = "smartpetdb"
+app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-    "DATABASE_URL",
-    f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
-)
+
+# ---------------------- DATABASE
+
+
+app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres.yctdbnvldajettbhsdyu:2097199552542884@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db = SQLAlchemy(app)
 
-# ---------------------- FAST2SMS CONFIG
-FAST2SMS_API_KEY = "PASTE_YOUR_FAST2SMS_API_KEY_HERE"
+# ---------------------- DATABASE CONFIG FROM ENV
+db_user = os.getenv("SUPABASE_DB_USER")
+db_password_raw = os.getenv("SUPABASE_DB_PASSWORD")
+db_host = os.getenv("SUPABASE_DB_HOST")
+db_port = os.getenv("SUPABASE_DB_PORT", "6543")
+db_name = os.getenv("SUPABASE_DB_NAME", "postgres")
 
+if not db_password_raw:
+    raise RuntimeError("SUPABASE_DB_PASSWORD not set in .env")
+
+db_password = quote_plus(db_password_raw)
+
+db.init_app(app)
+migrate = Migrate(app, db)
+
+# ---------------------- SMSFAST2SMS_API_KEY = "PASTE_YOUR_FAST2SMS_API_KEY_HERE"
 def send_sms(phone, message):
     try:
         requests.post(
@@ -56,43 +62,65 @@ def send_sms(phone, message):
         )
     except Exception as e:
         print("SMS Failed:", e)
+# ====================== MODELS ======================
 
-# ---------------------- MODELS
-class User(db.Model):
+
+
+class PetProfile(db.Model):
+    __tablename__ = "pet"
+
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(200))
-    phone = db.Column(db.String(15))
-    pets = db.relationship("Pet", backref="owner", lazy=True)
+    name = db.Column(db.String(100))
+    species = db.Column(db.String(50))
+    breed = db.Column(db.String(50))
+    age = db.Column(db.String(20))
+    gender = db.Column(db.String(10))
+    photo = db.Column(db.String(100))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
-class Pet(db.Model):
+
+class PetTimeline(db.Model):
+    __tablename__ = "pet_timeline"
+
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    species = db.Column(db.String(50), nullable=False)
-    breed = db.Column(db.String(50), nullable=False)
-    age = db.Column(db.Integer, nullable=False)
-    
-    # ✅ Add this column
-    photo = db.Column(db.String(100), nullable=True)
-    
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    pet_id = db.Column(db.Integer, db.ForeignKey('pet.id'), nullable=False)
 
+    title = db.Column(db.String(100))
+    description = db.Column(db.Text)
+    event_type = db.Column(db.String(50))
+    date = db.Column(db.Date)
+
+    # relationship to PetProfile (table: pet)
+    pet = db.relationship("PetProfile", backref="timeline_events")
 
 class Vaccine(db.Model):
+    __tablename__ = "vaccine"
+
     id = db.Column(db.Integer, primary_key=True)
-    vaccine_name = db.Column(db.String(150), nullable=False)
+    vaccine_name = db.Column(db.String(120), nullable=False)
     last_given_date = db.Column(db.Date, nullable=False)
     next_due_date = db.Column(db.Date, nullable=False)
-    pet_id = db.Column(db.Integer, db.ForeignKey("pet.id"), nullable=False)
 
+    # Correct foreign key reference
+    pet_id = db.Column(db.Integer, db.ForeignKey('pets.id'), nullable=False)
+    pet = db.relationship('Pet', backref='vaccines')  # Use the class name 'Pet'
 class Clinic(db.Model):
+    __tablename__ = "clinic"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
+class HealthCheckup(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pet_id = db.Column(db.Integer, db.ForeignKey("pet.id"))
+    date = db.Column(db.Date)
+    weight = db.Column(db.Float)
+    temperature = db.Column(db.Float)
+    notes = db.Column(db.String(255))
+    next_checkup = db.Column(db.Date)   # ✅ ADD THIS
 
 pets_data = {
-
 # ✅ ================== DOG BREEDS ==================
 "Dog": {
 
@@ -246,7 +274,6 @@ pets_data = {
         "suitable_for": "Farm security"
     }
 },
-
 # ✅ ================== CAT BREEDS ==================
 "Cat": {
 
@@ -310,7 +337,6 @@ pets_data = {
         "suitable_for": "Families"
     }
 },
-
 # ✅ ================== BIRD BREEDS ==================
 "Birds": {
 
@@ -477,8 +503,6 @@ pets_data = {
         "suitable_for": "Hobbyists, responsible owners"
     }
 }
-
-
 }
 #AGRI PETS DETAILS
 agripets_data = {
@@ -533,8 +557,8 @@ agripets_data = {
         }
     },
     "Cow": {
-        "Sahiwal": {
-            "image": "Sahiwalcow.jpg",
+        "Sahiwacow": {
+            "image": "Sahiwalcow.jpeg",
             "origin": "Punjab (India–Pakistan border)",
             "reproductive_age": "30–36 months",
             "lifespan": "15–20 years",
@@ -546,7 +570,7 @@ agripets_data = {
             "suitable_for": "Commercial dairy farms"
         },
         "Holstein Friesian": {
-            "image": "Holstein.jpg",
+            "image": "Holstein_Friesiancow.jpeg",
             "origin": "Netherlands",
             "reproductive_age": "15–18 months",
             "lifespan": "10–12 years",
@@ -671,7 +695,6 @@ agripets_data = {
         "suitable_for": "Agriculture, transport, milk production"
     }
 },
-
 "Horse": {
     "Marwari": {
         "image": "marwari.jpg",
@@ -869,14 +892,8 @@ agripets_data = {
     "climate": "Tropical and subtropical climates; tolerates heat and humidity well",
     "suitable_for": "Backyard breeding, small-scale poultry farms, free-range and semi-intensive systems"
 }
-
+}   
 }
-
-    
-}
-
-
-
 # ---------------------- UTILITIES
 def calculate_distance(lat1, lon1, lat2, lon2):
     R = 6371
@@ -885,56 +902,195 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * \
         math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
     return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-
 # ---------------------- ROUTES
 @app.route("/")
-def home():
-    if "user_id" in session:
-        return redirect(url_for("dashboard"))
-    return redirect(url_for("login"))
-
+def welcome():
+    return render_template("welcome.html")
+@app.route("/onboarding")
+def onboarding():
+    return render_template("onboarding.html")
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        user = User.query.filter_by(username=request.form["username"]).first()
-        if user and check_password_hash(user.password, request.form["password"]):
-            session["user_id"] = user.id
-            return redirect(url_for("dashboard"))
-        flash("Invalid login")
-    return render_template("login.html")
+        username = request.form.get("username")
+        password = request.form.get("password")
 
+        if not username or not password:
+            flash("Please enter username and password", "danger")
+            return redirect(url_for("login"))
+
+        user = User.query.filter_by(username=username).first()
+
+        # ✅ FIXED LINE HERE
+        if user and check_password_hash(user.password_hash, password):
+            session["user_id"] = user.id
+            session["username"] = user.username
+            flash("Login successful!", "success")
+            return redirect(url_for("dashboard"))
+        else:
+            flash("Invalid username or password", "danger")
+            return redirect(url_for("login"))
+
+    return render_template("login.html")
+@app.route("/test-db")
+def test_db():
+    from models import User, db
+
+    user = User(username="admin")
+    user.set_password("admin123")
+
+    db.session.add(user)
+    db.session.commit()
+
+    return "User added successfully!"
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        user = User(
-            username=request.form["username"],
-            password=generate_password_hash(request.form["password"]),
-            phone=request.form.get("phone")
-        )
-        db.session.add(user)
-        db.session.commit()
-        flash("Account created!")
-        return redirect(url_for("login"))
-    return render_template("register.html")
 
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirmpassword")
+        email = request.form.get("email")
+
+        print("DEBUG REGISTER DATA:", username, email)
+
+        # Basic validation
+        if not username or not password or not email:
+            flash("All fields are required", "danger")
+            return redirect(url_for("register"))
+
+        # Confirm password check
+        if password != confirm_password:
+            flash("Passwords do not match", "danger")
+            return redirect(url_for("register"))
+
+        # Check existing user
+        if User.query.filter_by(username=username).first():
+            flash("Username already exists. Try another.", "danger")
+            return redirect(url_for("register"))
+
+        if User.query.filter_by(email=email).first():
+            flash("Email already registered. Please login.", "warning")
+            return redirect(url_for("login"))
+
+        try:
+            hashed_password = generate_password_hash(password)
+
+            user = User(
+                username=username,
+                email=email,
+                password_hash=hashed_password
+            )
+
+            db.session.add(user)
+            db.session.commit()
+
+            flash("Registration successful! Please login.", "success")
+            return redirect(url_for("login"))
+
+        except IntegrityError as e:
+            db.session.rollback()
+            print("DB ERROR:", e)
+            flash("Registration failed. Try again.", "danger")
+            return redirect(url_for("register"))
+
+    return render_template("register.html")
+@app.route("/forgot_password", methods=["GET", "POST"])
+def forgot_password():
+    if request.method == "POST":
+        email = request.form.get("email")
+        new_password = request.form.get("password")
+        confirm_password = request.form.get("confirmpassword")
+
+        if not email or not new_password or not confirm_password:
+            flash("All fields are required", "danger")
+            return redirect(url_for("forgot_password"))
+
+        if new_password != confirm_password:
+            flash("Passwords do not match", "danger")
+            return redirect(url_for("forgot_password"))
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            flash("Email not registered", "danger")
+            return redirect(url_for("forgot_password"))
+
+        user.password = generate_password_hash(new_password)
+        db.session.commit()
+
+        flash("Password reset successful. Please login.", "success")
+        return redirect(url_for("login"))
+
+    return render_template("forgot_password.html")
+@app.route("/notifications")
+def notifications():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    # TEMP notifications (replace with DB later)
+    notifications = [
+        {"title": "Vaccination Due", "message": "Chiku vaccination is pending"},
+        {"title": "Appointment Reminder", "message": "Vet visit tomorrow at 10 AM"}
+    ]
+
+    return render_template(
+        "notifications.html",
+        notifications=notifications
+    )
+@app.context_processor
+def inject_notification_count():
+    if "user_id" in session:
+        # later replace with DB query
+        return {"notification_count": 0}
+    return {"notification_count": 0}
+
+
+@app.route("/help")
+def help():
+    return render_template("help.html")
+
+@app.route('/adopt_pet', methods=['GET', 'POST'])
+def adopt():
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        amount = request.form['amount']
+        message = request.form['message']
+
+        # For now just show success (later you can add payment gateway)
+        flash("Thank you for your adoption ❤️", "success")
+
+    return render_template('adopt_pet.html')
+    
+@app.route('/adopt-pet/<int:pet_id>', methods=['POST'])
+def adopt_pet(pet_id):
+    pet = Pet.query.get_or_404(pet_id)
+    db.session.delete(pet)
+    db.session.commit()
+    return jsonify({"success": True})
+@app.route("/user_info")
+def user_info():
+    return render_template(
+        "user_info.html",
+        username=session.get("username"),
+        mobile=session.get("mobile"),
+        email=session.get("email")
+    )
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("login"))
-
 @app.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
+
     user = db.session.get(User, session["user_id"])
     return render_template("dashboard.html", user=user)
-
-
-
 @app.route("/shop")
 def shop():
     return render_template("shop.html")
-
 @app.route('/delete_pet/<int:pet_id>', methods=['POST'])
 def delete_pet(pet_id):
     pet = Pet.query.get_or_404(pet_id)
@@ -947,84 +1103,144 @@ def delete_pet(pet_id):
     db.session.delete(pet)
     db.session.commit()
     return '', 204
-
-
-
-
 @app.route("/pet-home")
 def pet_home():
     if "user_id" not in session:
         return redirect(url_for("login"))
     user = db.session.get(User, session["user_id"])
     return render_template("pet_home.html", user=user)
-
 @app.route('/add_pet', methods=['GET','POST'])
 def add_pet():
+
     name = request.form.get("name")
     species = request.form.get("species")
     breed = request.form.get("breed")
     age = request.form.get("age")
+    gender = request.form.get("gender")
     user = db.session.get(User, session["user_id"])
-    new_pet = Pet(name=name, species=species, breed=breed, age=age, user_id=user.id)
+    new_pet = Pet(name=name, species=species, breed=breed, age=age, gender=gender, user_id=user.id)
+
     db.session.add(new_pet)
     db.session.commit()
+
     return redirect(url_for("dashboard"))
+@app.route("/pet/<int:pet_id>")
+def pet_profile(pet_id):
+    pet = Pet.query.get_or_404(pet_id)
 
+    vaccinations = Vaccine.query.filter_by(pet_id=pet_id).all()
+    healths = HealthCheckup.query.filter_by(pet_id=pet_id).all()
+    diets = DietPlan.query.filter_by(pet_id=pet_id).all()
 
+    return render_template(
+        "pet_profile.html",
+        pet=pet,
+        vaccines=Vaccine,
+        healths=healths,
+        diets=diets
+    )
 @app.route("/pet/<int:pet_id>/upload-photo", methods=["POST"])
 def upload_pet_photo(pet_id):
     file = request.files.get("photo")
     if file:
-        filename = secure_filename(file.filename)
+        import uuid
+        filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
         save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         file.save(save_path)
 
-        # Save filename to DB
-        pet = db.session.get(Pet, pet_id)
+        pet = Pet.query.get_or_404(pet_id)
         pet.photo = filename
         db.session.commit()
 
-        return redirect(url_for("pet_profile", pet_id=pet_id))
-    return "No file uploaded", 400
+        flash("Photo uploaded successfully!", "success")
+    else:
+        flash("No file uploaded", "danger")
+
+    return redirect(url_for("pet_profile", pet_id=pet_id))
 
 
-@app.route('/pet/<int:pet_id>')
-def pet_profile(pet_id):
-    pet = Pet.query.get_or_404(pet_id)
-    return render_template('pet_profile.html', pet=pet)
 
 @app.route('/add_vaccine', methods=['GET', 'POST'])
 def add_vaccine():
-    pets = Pet.query.all()
+    pets = Pet.query.all()  # get all pets for the dropdown
+
     if request.method == 'POST':
-        pet_id = int(request.form['pets_id'])
-        vaccine_name = request.form['vaccine_name']
-        last_given_date = datetime.strptime(request.form['last_given_date'], "%Y-%m-%d").date()
-        next_due_date = datetime.strptime(request.form['next_due_date'], "%Y-%m-%d").date()
+        pet_id = request.form.get('pets_id')
+
+        if not pet_id:
+            flash("Please select a pet!", "danger")
+            return redirect(url_for('add_vaccine'))
+
+        # Ensure pet exists
+        pet = Pet.query.get(int(pet_id))
+        if not pet:
+            flash("Pet not found!", "danger")
+            return redirect(url_for('add_vaccine'))
+
+        # Get vaccine details
+        vaccine_name = request.form.get('vaccine_name')
+        last_given_date_str = request.form.get('last_given_date')
+        next_due_date_str = request.form.get('next_due_date')
+
+        try:
+            last_given_date = datetime.strptime(last_given_date_str, "%Y-%m-%d").date()
+            next_due_date = datetime.strptime(next_due_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            flash("Invalid date format!", "danger")
+            return redirect(url_for('add_vaccine'))
+
+        # Create new vaccine record
         vaccine = Vaccine(
-            pet_id=pet_id,
+            pet_id=pet.id,
             vaccine_name=vaccine_name,
             last_given_date=last_given_date,
             next_due_date=next_due_date
         )
+
         db.session.add(vaccine)
         db.session.commit()
-        return redirect(url_for('health'))
+        flash("Vaccine added successfully!", "success")
+        return redirect(url_for('pet_profile', pet_id=pet.id))
+
+    # GET request → show form
     return render_template('add_vaccine.html', pets=pets)
+@app.route('/adopt_agri')
+def adopt_agri():
+    return render_template('adopt_agri.html')
+from datetime import datetime
 
-
-# ---------------------- ✅ HEALTH CHECKUP PAGE
-@app.route("/health_checkup")
+@app.route("/health_checkup", methods=["GET", "POST"])
 def health_checkup():
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
+
     user = db.session.get(User, session["user_id"])
     pets = user.pets if user else []
 
-    return render_template("Checkup.html", user=user, pets=pets)
+    if request.method == "POST":
+        try:
+            pet_id = int(request.form.get("pet_id"))
+            date = datetime.strptime(request.form.get("date"), "%Y-%m-%d").date()
+            weight = float(request.form.get("weight"))
+            temperature = float(request.form.get("temperature"))
 
-    
+            new_checkup = HealthCheckup(
+                pet_id=pet_id,
+                date=date,
+                weight=weight,
+                temperature=temperature
+            )
+
+            db.session.add(new_checkup)
+            db.session.commit()
+
+            return jsonify({"success": True})
+
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"success": False, "error": str(e)})
+
+    return render_template("Checkup.html", user=user, pets=pets)
 @app.route("/diet_plan")
 def diet_plan():
     if "user_id" not in session:
@@ -1034,8 +1250,6 @@ def diet_plan():
     pets = user.pets if user else []
     
     return render_template("diet_plan.html", user=user, pets=pets)
-
-
 # ---------------------- ✅ GENERATE DIET PLAN (POST API)
 @app.route("/generate_diet_plan", methods=["POST"])
 def generate_diet_plan():
@@ -1182,10 +1396,8 @@ def generate_diet_plan():
             "water": "",
             "notes": "Diet not available for this animal"
         })
-
     # Start with base
     diet = diets[species].copy()
-
     # =====================================================
     # AGE BASED DIET CHANGES
     # =====================================================
@@ -1224,53 +1436,36 @@ def generate_diet_plan():
         diet["notes"] = "Healthy balanced diet."
 
     return jsonify(diet)
-
-
-@app.route("/health")
+@app.route('/health')
 def health():
-    all_vaccines = Vaccine.query.all()
-    return render_template("health.html", vaccines=all_vaccines)
-
+    pets = Pet.query.all()
+    return render_template("health.html", pets=pets)
 @app.route("/pets")
 def pets_list():
     return render_template("pets_list.html", pets=pets_data.keys())
-
 @app.route("/agripet")
 def agripet():
     return render_template("Agripet.html")
-
 @app.route("/doctor_finder")
 def doctor_finder():
     return render_template("doctor_finder.html")
-
-
 @app.route("/pets/<pet>")
 def breed_list(pet):
     breeds = pets_data.get(pet, {})
     return render_template("pet_breeds.html", pet=pet, breeds=breeds)
-
 @app.route("/pets/<pet>/<breed>")
 def breed_info(pet, breed):
     info = pets_data.get(pet, {}).get(breed)
-    if not info:
-        return "Breed not found", 404
-
     return render_template("breed_info.html", pet=pet, breed=breed, info=info)
-
-
-
-
-
-
 @app.route('/agrishop')
 def agrishop():
     return render_template('agrishop.html')
-
 @app.route("/agripets")
 def agripets():
     return render_template("agripets.html")
-
-
+@app.route('/about')
+def about():
+    return render_template('about.html')
 @app.route("/cow_breeds")
 def cow_breeds():
     cow_list = [
@@ -1287,9 +1482,7 @@ def cow_breeds():
             "name": "Rathi","image": "Rathicow.jpg"
         }
     ]
-    
     return render_template("cow_breeds.html", cow_list=cow_list)
-
 @app.route("/buffalo_breeds")
 def buffalo_breeds():
     buffalo_list = [
@@ -1299,8 +1492,6 @@ def buffalo_breeds():
         {"name": "Mehsana", "image": "Mehsana.jpg"}
     ]
     return render_template("buffalo_breeds.html", buffalo_list=buffalo_list)
-
-
 @app.route("/ox_breeds")
 def ox_breeds():
     ox_list = [
@@ -1319,7 +1510,6 @@ def camel_breeds():
         
     ]
     return render_template("camel_breeds.html", camel_list=camel_list)
-
 @app.route("/horse_breeds")
 def horse_breeds():
     horse_list = [
@@ -1328,7 +1518,6 @@ def horse_breeds():
         {"name": "Indian Thoroughbred", "image": "thoroughbred.jpg"}
     ]
     return render_template("horse_breeds.html", horse_list=horse_list)
-
 @app.route("/donkey_breeds")
 def donkey_breeds():
     donkey_list = [
@@ -1336,8 +1525,6 @@ def donkey_breeds():
         {"name": "Ghudkhur", "image": "ghudkhur1.jpg"}
     ]
     return render_template("donkey_breeds.html", donkey_list=donkey_list)
-
-
 @app.route("/sheep_breeds")
 def sheep_breeds():
     sheep_list = [
@@ -1346,7 +1533,6 @@ def sheep_breeds():
         {"name": "Chokla", "image": "chokla.jpg"}
     ]
     return render_template("sheep_breeds.html", sheep_list=sheep_list)
-
 @app.route("/pig_breeds")
 def pig_breeds():
     pig_list = [
@@ -1362,7 +1548,6 @@ def chicken_breeds():
         {"name": "Aseel", "image": "a2.jpg"}
     ]
     return render_template("chicken_breeds.html", chicken_list=chicken_list)
-
 @app.route("/rooster_breeds")
 def rooster_breeds():
     rooster_list = [
@@ -1370,10 +1555,7 @@ def rooster_breeds():
        {"name":"Giriraja","image": "giriraj_rooster.jpg"}
     ]
     return render_template("rooster_breeds.html", rooster_list=rooster_list)   
-
-
 # ===== AGRI BREED DETAIL ROUTES =====
-
 # Cow
 @app.route("/agribreed_details/cow/<name>")
 def cow_details(name):
@@ -1382,7 +1564,6 @@ def cow_details(name):
     if not info:
         return f"Cow breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # Buffalo
 @app.route("/agribreed_details/buffalo/<name>")
 def buffalo_details(name):
@@ -1391,7 +1572,6 @@ def buffalo_details(name):
     if not info:
         return f"Buffalo breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # Ox
 @app.route("/agribreed_details/ox/<name>")
 def ox_details(name):
@@ -1400,7 +1580,6 @@ def ox_details(name):
     if not info:
         return f"Ox breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # Camel
 @app.route("/agribreed_details/camel/<name>")
 def camel_details(name):
@@ -1409,7 +1588,6 @@ def camel_details(name):
     if not info:
         return f"Camel breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # Horse
 @app.route("/agribreed_details/horse/<name>")
 def horse_details(name):
@@ -1418,7 +1596,6 @@ def horse_details(name):
     if not info:
         return f"Horse breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # Donkey
 @app.route("/agribreed_details/donkey/<name>")
 def donkey_details(name):
@@ -1427,7 +1604,6 @@ def donkey_details(name):
     if not info:
         return f"Donkey breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # Sheep
 @app.route("/agribreed_details/sheep/<name>")
 def sheep_details(name):
@@ -1436,7 +1612,6 @@ def sheep_details(name):
     if not info:
         return f"Sheep breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # Pig
 @app.route("/agribreed_details/pig/<name>")
 def pig_details(name):
@@ -1445,7 +1620,6 @@ def pig_details(name):
     if not info:
         return f"Pig breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # Chicken
 @app.route("/agribreed_details/chicken/<name>")
 def chicken_details(name):
@@ -1454,7 +1628,6 @@ def chicken_details(name):
     if not info:
         return f"Chicken breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # Rooster
 @app.route("/agribreed_details/rooster/<name>")
 def rooster_details(name):
@@ -1463,7 +1636,6 @@ def rooster_details(name):
     if not info:
         return f"Rooster breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-
 # ---------------------- CLINIC API
 @app.route("/clinics_within_20km")
 def clinics_within_20km():
@@ -1478,7 +1650,6 @@ def clinics_within_20km():
             if calculate_distance(user_lat, user_lon, c.latitude, c.longitude) <= 20:
                 count += 1
     return jsonify({"clinics_within_20km": count})
-
 # ---------------------- AUTO SMS REMINDER
 def send_vaccine_reminders():
     reminder_day = date.today() + timedelta(days=1)

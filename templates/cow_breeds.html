@@ -2,7 +2,7 @@
 {% block content %}
 
 <!-- Back Button -->
-<a href="{{ session.get('prev_url', url_for('home')) }}" class="back-btn">
+<a href="{{ session.get('prev_url', url_for('pet_home')) }}" class="back-btn">
     🔙
 </a>
 
@@ -47,7 +47,7 @@
     text-align: center;
     font-size: 28px;
     margin-bottom: 20px;
-    color: #c026d3; /* Pinkish same as Dog page */
+    color:  #ff6f00; /* Pinkish same as Dog page */
     font-weight: 600;
 }
 
@@ -74,13 +74,13 @@
 .breed-name {
     margin: 15px 0 8px;
     font-size: 20px;
-    color: #1f2937;
+    color:  #ff6f00;
     font-weight: 600;
 }
 
 /* Gradient Button (Dog Page सारखा) */
 .info-btn {
-    background: linear-gradient(135deg, #22c55e, #3b82f6);
+    background: linear-gradient(#ff8c42, #ff6f00);
     color: white;
     padding: 10px 22px;
     border-radius: 20px;

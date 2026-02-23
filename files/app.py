@@ -15,19 +15,31 @@ db = SQLAlchemy(app)
 
 # Models
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(200))
-    pets = db.relationship("Pet", backref="owner", lazy=True)
+    __tablename__ = "users"
 
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+    pets = db.relationship('Pet', backref='owner', lazy='dynamic')
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 class Pet(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    species = db.Column(db.String(100))
-    breed = db.Column(db.String(100))
-    age = db.Column(db.Integer)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    __tablename__ = "pets"
 
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    species = db.Column(db.String(80))
+    breed = db.Column(db.String(120))
+    age = db.Column(db.String(40))
+    image_filename = db.Column(db.String(200))
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 # Routes
 @app.route("/")
 def home():
@@ -46,13 +58,17 @@ def login():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        hashed_pw = generate_password_hash(request.form["password"])
-        user = User(username=request.form["username"], password=hashed_pw)
-        db.session.add(user)
-        db.session.commit()
-        flash("Account created successfully! Please login.")
+        # save user logic
         return redirect(url_for("login"))
     return render_template("register.html")
+
+@app.route("/welcome")
+def welcome():
+    return render_template("welcome.html")
+
+@app.route("/onboarding")
+def onboarding():
+    return render_template("onboarding.html")
 
 @app.route("/dashboard")
 def dashboard():

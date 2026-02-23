@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <!-- Back Button -->
-<a href="{{ session.get('prev_url', url_for('home')) }}" class="back-btn">
+<a href="{{ session.get('prev_url', url_for('pet_home')) }}" class="back-btn">
     🔙
 </a>
 <div class="breed-container">
@@ -30,11 +30,11 @@
 
 .inner-box {
     width: 90%;
-    background: rgba(255, 255, 255, 0.5);
+    background: #ff8c42, #ff6f00;
     border-radius: 25px;
     padding: 20px 15px;
     margin-top: 20px;
-    box-shadow: 0px 0px 25px rgba(105, 70, 255, 0.25);
+    box-shadow: #ff8c42, #ff6f00;
 }
 
 /* Title */
@@ -42,7 +42,7 @@
     text-align: center;
     font-size: 28px;
     margin-bottom: 20px;
-    color: #c026d3;
+    color:  #ff6f00;
     font-weight: 600;
 }
 
@@ -55,7 +55,7 @@
 .breed-card {
     background: white;
     border-radius: 22px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    box-shadow: #ff8c42, #ff6f00;
     margin: 15px auto;
     overflow: hidden;
     text-align: center;
@@ -74,13 +74,13 @@
 .breed-name {
     margin: 15px 0 8px;
     font-size: 20px;
-    color: #1f2937;
+    color:  #ff6f00;
     font-weight: 600;
 }
 
 /* Gradient Button */
 .info-btn {
-    background: linear-gradient(135deg, #22c55e, #3b82f6);
+    background: linear-gradient(#ff8c42, #ff6f00);
     color: white;
     padding: 10px 22px;
     border-radius: 20px;

@@ -3,51 +3,45 @@
 
 <div class="container-fluid py-5 pet-bg">
 
+  <!-- 🔙 Back Button -->
+  <a href="{{ url_for('dashboard') }}" class="back-btn">🔙</a>
+
   <!-- 🐾 PROFILE IMAGE -->
   <div class="text-center mb-3 pet-avatar-wrap">
-
-    {% if pet.photo %}
-        <img src="{{ url_for('static', filename='uploads/' + pet.photo) }}"
-             class="rounded-circle shadow pet-avatar"
-             width="140"
-             height="140">
-    {% else %}
-        <img src="{{ url_for('static', filename='uploads/default.jpg') }}"
-             class="rounded-circle shadow pet-avatar"
-             width="140"
-             height="140">
-    {% endif %}
-
-    <!-- Paw Badge -->
+    {% set pet_photo_path = 'uploads/' + pet.photo if pet.photo else 'uploads/german.jpg' %}
+    <img src="{{ url_for('static', filename=pet_photo_path) }}"
+         class="rounded-circle shadow pet-avatar"
+         width="140" height="140"
+         onerror="this.onerror=null;this.src='{{ url_for('static', filename='uploads/german.jpg') }}';">
     <div class="paw-badge">🐾</div>
-
   </div>
 
-  <!-- ✅ IMAGE UPLOAD -->
+  <!-- 📸 IMAGE UPLOAD -->
   <form method="POST"
         enctype="multipart/form-data"
         action="{{ url_for('upload_pet_photo', pet_id=pet.id) }}"
         class="text-center mb-4">
 
-    <input type="file" name="photo" class="form-control mb-2 w-75 mx-auto" accept="image/*" required>
+    <input type="file" name="photo"
+           class="form-control mb-2 w-75 mx-auto"
+           accept="image/*" required>
 
     <button type="submit" class="btn pet-btn-outline btn-sm">
-        Upload Pet Photo
+      Upload Pet Photo
     </button>
   </form>
 
-  <!-- ✅ PROFILE TITLE -->
+  <!-- 🐶 PROFILE TITLE -->
   <h3 class="text-center pet-title mb-4">
     {{ pet.name }}'s Profile
   </h3>
 
-  <!-- ✅ PROFILE CARD -->
+  <!-- 📇 PROFILE CARD -->
   <div class="card pet-card shadow-lg p-4 mx-auto">
 
     <h4 class="fw-bold text-primary mb-3">{{ pet.name }}</h4>
 
     <div class="row text-start px-3 pet-info">
-
       <div class="col-6 mb-2"><strong>Species</strong></div>
       <div class="col-6 mb-2">{{ pet.species }}</div>
 
@@ -57,118 +51,171 @@
       <div class="col-6 mb-2"><strong>Age</strong></div>
       <div class="col-6 mb-2">{{ pet.age }} years</div>
 
+      <div class="col-6 mb-2"><strong>Gender</strong></div>
+      <div class="col-6 mb-2">{{ pet.gender }}</div>
     </div>
 
-    <hr class="pet-divider">
+    <!-- 🩺 ACTION BUTTONS -->
+    <div class="health-buttons mt-4">
+      <a href="{{ url_for('add_vaccine', pet_id=pet.id) }}" class="health-btn blue">
+        💉 Vaccination
+      </a>
 
-    <h6 class="text-secondary fw-semibold">🐕 Breed Information</h6>
-    <p class="text-muted small pet-info-box">{{ info }}</p>
+      <a href="{{ url_for('health_checkup', pet_id=pet.id) }}" class="health-btn green">
+        🩺 Health Checkup
+      </a>
 
-    <!-- ✅ BACK BUTTON -->
-    <a href="{{ url_for('dashboard') }}" class="btn pet-btn mt-3">
-        ← Back to Dashboard
+      <a href="{{ url_for('diet_plan', pet_id=pet.id) }}" class="health-btn orange">
+        🥗 Diet Plan
+      </a>
+    </div>
+  </div>
+
+  <!-- 📜 DETAILS SECTION -->
+  {% if vaccines or healths or diets %}
+  <hr>
+  <button class="view-btn" onclick="toggleDetails()">
+    👁 View Details
+  </button>
+
+  <div id="detailsSection" style="display:none;">
+
+   <h3>Vaccinations</h3>
+
+<h4 class="mt-4 text-primary fw-bold">
+  💉 {{ pet.name }}'s Vaccinations
+</h4>
+
+{% if vaccinations %}
+  {% for v in vaccinations %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <h6 class="fw-bold text-success">{{ v.vaccine_name }}</h6>
+        Date: {{ v.date }} <br>
+        Next Due: {{ v.next_due or 'N/A' }}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">No vaccinations added for {{ pet.name }}.</p>
+{% endif %}
+
+<h4 class="mt-4 text-danger fw-bold">
+  🏥 {{ pet.name }}'s Health Checkups
+</h4>
+
+{% if healths %}
+  {% for h in healths %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <strong>Date:</strong> {{ h.date }} <br>
+        <strong>Weight:</strong> {{ h.weight }} kg <br>
+        <strong>Temperature:</strong> {{ h.temperature }} °C <br>
+        <strong>Notes:</strong> {{ h.notes or 'N/A' }}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">No health records for {{ pet.name }}.</p>
+{% endif %}
+
+<h4 class="mt-4 text-warning fw-bold">
+  🥗 {{ pet.name }}'s Diet Plans
+</h4>
+
+{% if diets %}
+  {% for d in diets %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <strong>Food:</strong> {{ d.food_name }} <br>
+        <strong>Quantity:</strong> {{ d.quantity }}
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p class="text-muted">No diet plans added for {{ pet.name }}.</p>
+{% endif %}
+
+  </div>
+  {% else %}
+  <p class="text-center text-muted mt-3">
+    No health records yet.
+  </p>
+  {% endif %}
+
+  <!-- 🔙 BACK TO DASHBOARD -->
+  <div class="text-center">
+    <a href="{{ url_for('dashboard') }}"
+       class="btn pet-btn mt-4">
+      ← Back to Dashboard
     </a>
+  </div>
 
-    <!-- ✅ PET THEME FOOTER -->
-    <div class="text-center mt-4 pet-footer">
-        <img src="{{ url_for('static', filename='images/cutie.webp') }}"
-             width="170"
-             class="rounded shadow-sm">
-        <p class="small text-muted mt-2">Your pet, your responsibility 🐾</p>
-    </div>
-
+  <!-- 🐾 FOOTER -->
+  <div class="text-center mt-4 pet-footer">
+    <img src="{{ url_for('static', filename='images/a1.jpeg') }}"
+         width="170" class="rounded shadow-sm"
+         onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/a1.jpg') }}';">
+    <p class="small text-muted mt-2">
+      Your pet, your responsibility 🐾
+    </p>
   </div>
 
 </div>
 
-<!-- ✅ PET THEME + MINIMAL COLOR CSS -->
-<style>
+<!-- 🧠 JS -->
+<script>
+function toggleDetails() {
+  const section = document.getElementById("detailsSection");
+  section.style.display =
+    section.style.display === "none" ? "block" : "none";
+}
+</script>
 
+<!-- 🎨 CSS -->
+<style>
 .pet-bg {
   min-height: 100vh;
   background: linear-gradient(to bottom, #f5f9ff, #eef4fb);
 }
-
-/* ✅ Avatar */
-.pet-avatar-wrap {
-  position: relative;
-  display: inline-block;
-}
-
-.pet-avatar {
-  object-fit: cover;
-  border: 4px solid #dbe7f6;
-  background: white;
-}
-
-
-
-/* ✅ Title */
-.pet-title {
-  color: #325ea8;
-  font-weight: 600;
-}
-
-/* ✅ Card */
+.pet-avatar-wrap { position: relative; display: inline-block; }
+.pet-avatar { object-fit: cover; border: 4px solid #dbe7f6; background: white; }
+.pet-title { color: #325ea8; font-weight: 600; }
 .pet-card {
   max-width: 470px;
   border-radius: 18px;
   background: linear-gradient(180deg, #ffffff, #f7fbff);
-  animation: fadeUp 0.6s ease;
 }
-
-/* ✅ Info text */
-.pet-info {
-  font-size: 15px;
-}
-
 .pet-info-box {
   background: #f4f7fc;
   padding: 12px;
   border-radius: 12px;
 }
-
-/* ✅ Divider */
-.pet-divider {
-  border-top: 1px dashed #cfd8ea;
-}
-
-/* ✅ Buttons */
-.pet-btn {
-  background: linear-gradient(135deg, #082e87ff, #6ea8ff);
-  color: white;
+.view-btn {
+  width: 100%;
+  background: #1a73e8;
+  color: #fff;
   border: none;
-  transition: 0.3s ease;
+  padding: 12px;
+  border-radius: 14px;
+  font-weight: 700;
+  margin-top: 15px;
+}
+.view-btn:active { transform: scale(0.96); }
+.card {
+    border-radius: 12px;
 }
 
-.pet-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+.card-body {
+    font-size: 15px;
 }
-
-.pet-btn-outline {
-  border: 1px dashed #6d0eacff;
-  color: #51297fff;
-  background: transparent;
+.back-btn {
+  position: fixed;
+  top: 65px;
+  left: 18px;
+  font-size: 28px;
+  color: #233b6c;
 }
-
-/* ✅ Footer */
-.pet-footer img {
-  animation: floatPet 3s ease-in-out infinite;
-}
-
-/* ✅ Animations */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(25px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes floatPet {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(0); }
-}
-
 </style>
 
 {% endblock %}

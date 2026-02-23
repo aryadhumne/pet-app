@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Get Started</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: Poppins, sans-serif;
+    }
+
+    /* ===== FULL BACKGROUND ===== */
+    .page {
+      min-height: 100vh;
+      width: 100%;
+      background-image: url("{{ url_for('static', filename='images/welcome2.jpeg') }}");
+      background-repeat: no-repeat;
+       background-size: cover;        /* IMPORTANT */
+  background-position: center;              /* 👈 IMAGE BIGGER */
+      /* 👈 SIDE GAP FIX */
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* ===== BLUR + WHITE OVERLAY ===== */
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* ===== CARD ===== */
+    .content {
+      position: relative;
+    background: rgba(254, 243, 242, 0.92);
+      padding: 36px 26px;
+      border-radius: 22px;
+      text-align: center;
+      width: 70%;
+      max-width: 350px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    }
+
+    /* ===== IMAGE INSIDE CARD ===== */
+    .pet-img {
+      width: 160px;
+      margin-bottom: 22px;
+      border-radius: 14px;
+    }
+
+    h2 {
+      color: #2f2f2f;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      width: 90%;
+      background: #f4a640;
+      color: white;
+      padding: 14px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .btn-outline {
+      background: white;
+      color: #f4a640;
+      border: 2px solid #f4a640;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="content">
+
+    <!-- Card image (NOT background) -->
+    <img src="{{ url_for('static', filename='images/cat.jpeg') }}"
+         class="pet-img" alt="Welcome">
+
+    <h2>Let’s get you started</h2>
+    <p>Create an account or log in if you already have one</p>
+
+    <a href="{{ url_for('register') }}" class="btn">
+      Register 🐾
+    </a>
+
+    <a href="{{ url_for('login') }}" class="btn btn-outline">
+      Log in
+    </a>
+
+  </div>
+
+</div>
+
+</body>
+</html>

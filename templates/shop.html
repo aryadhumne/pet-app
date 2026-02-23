@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-
-<div class="shop-wrapper">
-  <a href="{{ url_for('pet_home') }}" class="back-btn">
-     🔙 
+ <!-- Back Button -->
+<a href="{{ url_for('pet_home') }}" class="back-btn">
+    🔙
 </a>
-
-
+<div class="shop-wrapper">
+  
   <!-- ✅ PAGE TITLE -->
   <h2 class="text-center shop-title animate-fade">
     🛍 Pet Shop
@@ -22,7 +21,7 @@
     <div class="col-md-4 mb-4 animate-card">
       <div class="card product-card">
         <div class="img-box">
-          <img src="{{ url_for('static', filename='images/food.webp') }}" class="card-img-top" alt="Pet Food">
+          <img src="{{ url_for('static', filename='images/s4.jpeg') }}" class="card-img-top" alt="Pet Food">
         </div>
         <div class="card-body text-center">
           <h5 class="card-title">Pet Food</h5>
@@ -108,23 +107,6 @@
 
 <!-- ✅ ✅ STYLES & ANIMATIONS -->
 <style>
-  
-    /* Back Button */
-    .back-btn {
-        position: fixed;
-        top: 65px;
-        left: 18px;
-        text-decoration: none;
-        font-size: 30px;
-        font-weight: 600;
-        color: #233b6c;
-        opacity: 0.9;
-        transition: 0.2s ease;
-    }
-    .back-btn:hover {
-        opacity: 1;
-        transform: translateX(-4px);
-    }
 
 .shop-wrapper {
   min-height: 100vh;
@@ -134,7 +116,7 @@
 
 .shop-title {
   font-weight: 800;
-  color: #1e3a8a;
+  color:  #ff6f00;
 }
 
 .shop-sub {
@@ -175,7 +157,7 @@
 
 /* ✅ BUTTON */
 .shop-btn {
-  background: linear-gradient(135deg, #2563eb, #1e40af);
+  background: linear-gradient(135deg,#ff8c42, #ff6f00);
   color: white;
   border-radius: 30px;
   padding: 8px 20px;
@@ -212,6 +194,41 @@
 .animate-card {
   animation: slideUp 0.9s ease forwards;
 }
+
+
+    /* Button */
+  .submit-btn {
+        width: 100%;
+        background: #1a73e8;
+        border: none;
+        padding: 12px;
+        border-radius: 14px;
+        font-size: 16px;
+        font-weight: 700;
+        color: white;
+        transition: 0.25s ease;
+    }
+    .submit-btn:hover {
+        background: #0f5ed2;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(26, 115, 232, 0.35);
+    }
+    /* Back Button */
+    .back-btn {
+        position: fixed;
+        top: 65px;
+        left: 18px;
+        text-decoration: none;
+        font-size: 30px;
+        font-weight: 600;
+        color: #233b6c;
+        opacity: 0.9;
+        transition: 0.2s ease;
+    }
+    .back-btn:hover {
+        opacity: 1;
+        transform: translateX(-4px);
+    }
 
 </style>
 

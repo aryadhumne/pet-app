@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+<!-- Back Button -->
 <a href="{{ url_for('pet_home') }}" class="back-btn">
-     🔙 
+    🔙
 </a>
-
 <div class="main-wrapper">
     <div class="pet-container animate-card">
 
@@ -35,23 +35,6 @@
 </div>
 
 <style>
-    
-    /* Back Button */
-    .back-btn {
-        position: fixed;
-        top: 65px;
-        left: 18px;
-        text-decoration: none;
-        font-size: 30px;
-        font-weight: 600;
-        color: #233b6c;
-        opacity: 0.9;
-        transition: 0.2s ease;
-    }
-    .back-btn:hover {
-        opacity: 1;
-        transform: translateX(-4px);
-    }
 
 /* ✅ Animated background gradient */
 .main-wrapper {
@@ -94,7 +77,7 @@
 .title {
     font-weight: bold;
     margin-bottom: 20px;
-    background: linear-gradient(90deg, #2563eb, #9333ea, #ec4899);
+    background: linear-gradient( #ff8c42, #ff6f00);
     background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -127,7 +110,7 @@
     text-decoration: none;
     color: white;
     transition: 0.3s ease;
-    background: linear-gradient(270deg, #5b2cff, #2f6bff, #06b6d4, #8b5cf6);
+    background: linear-gradient( #ff8c42, #ff6f00);
     background-size: 400% 400%;
     animation: boxGlow 6s ease infinite;
 }
@@ -141,7 +124,7 @@
 /* ✅ Hover: bounce + neon glow */
 .pet-box:hover {
     transform: translateY(-8px) scale(1.1);
-    box-shadow: 0 0 20px rgba(79,70,229,0.7);
+    box-shadow:   #ff6f00);
 }
 
 /* ✅ Floating icon animation */
@@ -166,6 +149,23 @@
     font-weight: 600;
     text-shadow: 0 1px 5px rgba(0,0,0,0.3);
 }
+/* Back Button */
+    .back-btn {
+        position: fixed;
+        top: 65px;
+        left: 18px;
+        text-decoration: none;
+        font-size: 30px;
+        font-weight: 600;
+        color: #0c0c0c;
+        opacity: 0.9;
+        transition: 0.2s ease;
+    }
+    .back-btn:hover {
+        opacity: 1;
+        transform: translateX(-4px);
+    }
+
 
 </style>
 

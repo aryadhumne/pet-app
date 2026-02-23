@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+<!-- Back Button -->
 <a href="{{ url_for('pets_list') }}" class="back-btn">
-     🔙 
+    🔙
 </a>
-
-
 <div class="container mt-4 text-center animate-page">
 
     <!-- ✅ Animated Gradient Title -->
@@ -41,24 +40,6 @@
 
 <style>
 
-  
-    /* Back Button */
-    .back-btn {
-        position: fixed;
-        top: 65px;
-        left: 18px;
-        text-decoration: none;
-        font-size: 30px;
-        font-weight: 600;
-        color: #233b6c;
-        opacity: 0.9;
-        transition: 0.2s ease;
-    }
-    .back-btn:hover {
-        opacity: 1;
-        transform: translateX(-4px);
-    }
-
 /* ✅ PAGE FADE-IN */
 @keyframes fadePage {
   from { opacity: 0; transform: translateY(30px); }
@@ -71,7 +52,7 @@
 /* ✅ TITLE GRADIENT ANIMATION */
 .breed-title {
   font-weight: 800;
-  background: linear-gradient(90deg, #2563eb, #9333ea, #ec4899);
+  background: linear-gradient(#ff8c42, #ff6f00);
   background-size: 300% 300%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -114,7 +95,7 @@
   padding: 10px 18px;
   border-radius: 30px;
   color: white;
-  background: linear-gradient(270deg, #ff512f, #dd2476, #6366f1, #22c55e);
+  background: linear-gradient(#ff8c42, #ff6f00);
   background-size: 400% 400%;
   animation: glowFlow 5s ease infinite;
   box-shadow: 0 5px 18px rgba(0,0,0,0.3);
@@ -132,6 +113,24 @@
   transform: scale(1.1);
   box-shadow: 0 0 25px rgba(99,102,241,0.9);
 }
+
+/* Back Button */
+    .back-btn {
+        position: fixed;
+        top: 65px;
+        left: 18px;
+        text-decoration: none;
+        font-size: 30px;
+        font-weight: 600;
+        color: #233b6c;
+        opacity: 0.9;
+        transition: 0.2s ease;
+    }
+    .back-btn:hover {
+        opacity: 1;
+        transform: translateX(-4px);
+    }
+
 
 </style>
 

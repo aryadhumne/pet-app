@@ -1,0 +1,519 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+
+/* SAME YOUR CSS */
+
+body{
+margin:0;
+font-family:'Segoe UI', sans-serif;
+background: linear-gradient(180deg,#ecfdf5,#ffffff);
+}
+
+/* HEADER */
+
+.header{
+text-align:center;
+padding:20px;
+}
+
+.header{
+    text-align: center;
+    padding: 20px;
+
+    background: linear-gradient(to right, #166534, #22c55e);
+    background-clip: text;              /* ✅ Standard property */
+    -webkit-background-clip: text;      /* ✅ For Chrome/Safari */
+    -webkit-text-fill-color: transparent;
+}
+
+.header p{
+color:#166534;
+}
+
+/* SEARCH */
+
+.search-box{
+text-align:center;
+margin:20px;
+}
+
+.search-box input{
+width:50%;
+padding:12px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
+/* TABS */
+
+.tabs{
+text-align:center;
+margin:20px;
+}
+
+.tab-btn{
+padding:10px 30px;
+border:none;
+background:#e5e7eb;
+margin:5px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.tab-btn.active{
+background:#16a34a;
+color:white;
+}
+
+/* PET GRID */
+
+.pets{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+padding:20px;
+}
+
+.pet-card{
+background:white;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+overflow:hidden;
+}
+
+.pet-card img{
+width:100%;
+height:200px;
+object-fit:cover;
+}
+
+.pet-body{
+padding:15px;
+}
+
+.price{
+color:#16a34a;
+font-size:22px;
+font-weight:bold;
+margin-top:10px;
+}
+
+.buy-btn{
+width:100%;
+padding:10px;
+border:none;
+background:#16a34a;
+color:white;
+border-radius:10px;
+margin-top:10px;
+cursor:pointer;
+}
+
+/* SELL */
+
+.sell-box{
+background:white;
+padding:20px;
+width:400px;
+margin:auto;
+border-radius:15px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.sell-box input,
+.sell-box select{
+width:100%;
+margin:8px 0;
+padding:10px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+.sell-box button{
+width:100%;
+padding:12px;
+background:#16a34a;
+color:white;
+border:none;
+border-radius:10px;
+}
+
+.big-preview{
+height:200px;
+border:2px dashed gray;
+display:flex;
+align-items:center;
+justify-content:center;
+margin-bottom:10px;
+}
+
+.big-preview img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+</style>
+
+
+
+<div class="header">
+
+<h1>🐄 Agri Animal Marketplace</h1>
+
+<p>Buy, Sell and Adopt Farm Animals</p>
+
+</div>
+
+
+
+<div class="search-box">
+
+<input id="searchInput" placeholder="Search..." oninput="renderPets()">
+
+</div>
+
+
+
+<!-- ✅ UPDATED TABS -->
+
+<div class="tabs">
+
+
+
+<button class="tab-btn" onclick="openTab(event,'sell')">
+
+Sell
+
+</button>
+
+<button class="tab-btn active" onclick="openTab(event,'buy')">
+
+Buy
+
+</button>
+<button class="tab-btn" onclick="openTab(event,'adopt')">
+
+Adopt
+
+</button>
+
+
+
+</div>
+
+
+
+
+<!-- BUY -->
+
+<div id="buy" class="section">
+
+<div class="pets" id="buyList"></div>
+
+</div>
+
+
+
+<!-- ADOPT -->
+
+<div id="adopt" class="section" style="display:none;">
+
+<div class="pets" id="adoptList"></div>
+
+</div>
+
+
+
+<!-- SELL -->
+
+<div id="sell" class="section" style="display:none;">
+
+<div class="sell-box">
+
+<h3>Sell or Give for Adoption</h3>
+
+<div class="big-preview" id="mainPreview">
+
+Upload Image
+
+</div>
+
+<input type="file" onchange="previewMain(event)">
+
+<input id="petName" placeholder="Animal Name">
+
+<select id="petType">
+
+<option>Cow</option>
+<option>Buffalo</option>
+<option>Goat</option>
+<option>Sheep</option>
+<option>Chicken</option>
+<option>Camel</option>
+<option>Horse</option>
+<option>Ox</option>
+<option>Rooster</option>
+<option>Pig</option>
+<option>Donkey</option>
+
+</select>
+
+<input id="petBreed" placeholder="Breed">
+
+<input id="petAge" placeholder="Age">
+
+
+<!-- OPTIONAL PRICE -->
+
+<input id="petPrice" type="number"
+
+placeholder="Price (Leave empty for Adoption)">
+
+
+<input id="ownerPhone" placeholder="Phone">
+
+<button onclick="addPet()">
+
+Submit
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+let pets = JSON.parse(localStorage.getItem("agripets")) || [];
+
+let mainImage="";
+
+
+
+
+// TAB
+
+function openTab(event,tab){
+
+document.querySelectorAll('.section')
+
+.forEach(s=>s.style.display='none');
+
+document.querySelectorAll('.tab-btn')
+
+.forEach(b=>b.classList.remove('active'));
+
+document.getElementById(tab).style.display='block';
+
+event.target.classList.add('active');
+
+}
+
+
+
+// IMAGE
+
+function previewMain(e){
+
+const r=new FileReader();
+
+r.onload=()=>{
+
+mainImage=r.result;
+
+mainPreview.innerHTML=`<img src="${mainImage}">`;
+
+};
+
+r.readAsDataURL(e.target.files[0]);
+
+}
+
+
+
+// ADD
+
+function addPet(){
+
+
+if(!petName.value){
+
+alert("Enter Name");
+
+return;
+
+}
+
+
+
+let price = petPrice.value;
+
+
+
+const newPet={
+
+name:petName.value,
+
+type:petType.value,
+
+breed:petBreed.value,
+
+age:petAge.value,
+
+price: price=="" ? 0 : price,
+
+phone:ownerPhone.value,
+
+image:mainImage || "https://via.placeholder.com/300"
+
+};
+
+
+
+pets.push(newPet);
+
+
+localStorage.setItem("agripets",
+
+JSON.stringify(pets));
+
+
+alert("Added");
+
+
+renderPets();
+
+}
+
+
+
+
+// SHOW
+
+function renderPets(){
+
+
+buyList.innerHTML="";
+
+adoptList.innerHTML="";
+
+
+const q=searchInput.value.toLowerCase();
+
+
+
+pets.forEach(p=>{
+
+
+if(
+
+p.name.toLowerCase().includes(q)
+
+|| p.type.toLowerCase().includes(q)
+
+){
+
+
+if(p.price>0){
+
+
+buyList.innerHTML+=card(p,"₹"+p.price);
+
+
+}
+
+
+else{
+
+
+adoptList.innerHTML+=card(p,
+
+"Free Adoption");
+
+
+}
+
+
+
+}
+
+
+});
+
+
+}
+
+
+
+
+function card(p,price){
+
+
+return`
+
+
+<div class="pet-card">
+
+
+<img src="${p.image}">
+
+
+<div class="pet-body">
+
+
+<h3>${p.name}</h3>
+
+
+<p>
+
+${p.type} • ${p.breed}
+
+</p>
+
+
+<div class="price">
+
+${price}
+
+</div>
+
+
+<button class="buy-btn"
+
+onclick="alert('Contact : ${p.phone}')">
+
+
+Contact Owner
+
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+`;
+
+
+}
+
+
+
+renderPets();
+
+
+</script>
+
+
+
+{% endblock %}

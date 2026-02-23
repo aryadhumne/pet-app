@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body, html {
+      height: 100%;
+    }
+
+    /* ===== BACKGROUND ===== */
+    .page {
+      min-height: 100vh;
+      background: url("{{ url_for('static', filename='images/welcome2.jpeg') }}")
+                  no-repeat center center / cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(8px);
+    }
+
+    /* ===== REGISTER CARD ===== */
+    .register-card {
+      position: relative;
+      background: rgba(254, 243, 242, 0.92);
+      padding: 32px 26px;
+      border-radius: 26px;
+      width: 90%;
+      max-width: 360px;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    .register-card h2 {
+      margin-bottom: 8px;
+      color: #111;
+    }
+
+    /* ===== IMAGE BELOW REGISTER ===== */
+    .register-img {
+      width: 110px;
+      margin: 10px auto 20px;
+      display: block;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #222;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      margin-bottom: 14px;
+      font-size: 14px;
+    }
+
+    /* ===== BUTTON ===== */
+    .btn {
+      width: 100%;
+      background: #f4a640;
+      color: #fff;
+      padding: 14px;
+      border-radius: 30px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background: #ef9b2d;
+    }
+
+    /* ===== LOGIN TEXT ===== */
+    .login-text {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #222;
+    }
+
+    .login-text a {
+      color: #000;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="page">
+    <div class="register-card">
+
+      <h2>Register 🐾</h2>
+
+      <!-- IMAGE REGISTER TEXT CHYA KHALI -->
+      <img src="{{ url_for('static', filename='images/p4.jpeg') }}"
+           alt="Register Image"
+           class="register-img">
+
+      <form method="POST">
+        <label>Username</label>
+        <input type="text" name="username" required>
+
+        <label>Password</label>
+        <input type="password" name="password" required>
+
+        <label>Confirm Password</label>
+        <input type="password" name="confirmpassword" required>
+
+        <label>Mobile Number</label>
+        <input type="text" name="mobile">
+
+        <label>Email ID</label>
+        <input type="email" name="email">
+
+        <button type="submit" class="btn">Register 🐾</button>
+      </form>
+
+      <div class="login-text">
+        Already have an account?
+        <a href="{{ url_for('login') }}">Login</a>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

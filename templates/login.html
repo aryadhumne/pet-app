@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    .page {
+      min-height: 100vh;
+      background: url("{{ url_for('static', filename='images/welcome2.jpeg') }}")
+                  no-repeat center center / cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 20px;
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(8px);
+    }
+
+    .login-card {
+      position: relative;
+      background: #fff4ee;
+      padding: 36px 26px;
+      border-radius: 26px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+      text-align: center;
+    }
+
+    .login-card h2 {
+      margin-bottom: 10px;
+      color: #2f2f2f;
+    }
+
+    /* ✅ LOGIN IMAGE */
+    .login-img {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .login-img img {
+      width: 110px;
+      height: 110px;
+      border-radius: 18px;   /* circle हवं असेल तर 50% कर */
+      object-fit: cover;
+    }
+
+    /* ===== FLASH MESSAGES ===== */
+    .alert {
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .alert.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .alert.danger {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      margin-bottom: 16px;
+      font-size: 14px;
+      background: #eaf1ff;
+    }
+
+    .btn {
+      width: 100%;
+      background: #f4a640;
+      color: white;
+      padding: 14px;
+      border-radius: 30px;
+      font-weight: 600;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .links {
+      margin-top: 18px;
+      font-size: 14px;
+    }
+
+    .links a {
+      color: #f4a640;
+      font-weight: 600;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page">
+  <div class="login-card">
+
+    <h2>Login</h2>
+
+    <!-- ✅ IMAGE BELOW LOGIN -->
+    <div class="login-img">
+      <img src="{{ url_for('static', filename='images/p3.jpg') }}" alt="Login Image">
+    </div>
+
+    <!-- ✅ FLASH MESSAGE BLOCK -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <label>Username</label>
+      <input type="text" name="username" required>
+
+      <label>Password</label>
+      <input type="password" name="password" required>
+
+      <button type="submit" class="btn">Login 🐾</button>
+    </form>
+
+    <div class="links">
+      <a href="{{ url_for('register') }}">Register</a> |
+      <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

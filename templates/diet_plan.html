@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* ---------- Page Background ---------- */
+
+
+/* ---------- Back Button ---------- */
+.back-btn {
+    position: absolute;
+    left: 15px;
+    top: 80px;
+    font-size: 30px;
+    color: #1e3a8a;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.back-btn:hover {
+    transform: translateX(-5px);
+}
+
+/* ---------- Main Card ---------- */
+.diet-card {
+    width: 88%;
+    max-width: 360px;
+    margin: 90px auto 40px;
+    padding: 25px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+    animation: fadeIn 0.8s ease;
+}
+
+/* ---------- Headings ---------- */
+.diet-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    color:  #ff6f00;
+    margin-bottom: 10px;
+}
+
+/* ---------- Cute Icon ---------- */
+.diet-icon {
+    display: block;
+    font-size: 40px;
+    text-align: center;
+    animation: pop 0.6s ease;
+}
+
+/* ---------- Input Styling ---------- */
+.form-control {
+    border-radius: 10px;
+    padding: 10px;
+    transition: 0.3s;
+}
+.form-control:focus {
+    border-color: #1e90ff;
+    box-shadow: 0 0 8px rgba(30,144,255,0.4);
+    transform: scale(1.03);
+}
+
+/* ---------- Button ---------- */
+.btn-generate {
+    background:  #ff6f00;
+    color: white;
+    width: 100%;
+    font-size: 17px;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 12px;
+    transition: 0.3s;
+}
+.btn-generate:hover {
+    background: #ff6f00;
+    transform: scale(1.03);
+}
+
+/* ---------- Result Section ---------- */
+.result-box {
+    margin-top: 18px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f1f5f9;
+}
+
+/* ---------- Animations ---------- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop {
+    0%   { transform: scale(0.5); }
+    100% { transform: scale(1); }
+}
+</style>
+
+<!-- Back Button -->
+<a href="{{ url_for('health', pet_id=pet_id)
+ }}" class="back-btn">
+     🔙 
+</a>
+
+<div class="diet-card">
+    
+    <div class="diet-icon">🥗</div>
+    <h2 class="diet-title">Generate Diet Plan 🍽</h2>
+
+    <div class="row g-3">
+
+        <div class="col-12">
+            <label>🐾 Pet Name</label>
+            <input type="text" class="form-control" id="petName">
+        </div>
+
+        <div class="col-12">
+            <label>🧬 Species</label>
+            <select id="petSpecies" class="form-control">
+                <option value="">Select Species</option>
+
+                <optgroup label="🐾 Pet Animals">
+                    <option>Dog</option>
+                    <option>Cat</option>
+                    <option>Birds</option>
+                    <option>Rabbit</option>
+                    <option>Fish</option>
+                    <option>Hamster</option>
+                </optgroup>
+
+                <optgroup label="🐄 Agripet Animals">
+                    <option>Cow</option>
+                    <option>Buffalo</option>
+                    <option>Ox</option>
+                    <option>Camel</option>
+                    <option>Horse</option>
+                    <option>Donkey</option>
+                    <option>Goat</option>
+                    <option>Sheep</option>
+                    <option>Pig</option>
+                    <option>Chicken</option>
+                    <option>Rooster</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <label>🐕 Breed / Type</label>
+            <input type="text" class="form-control" id="petBreed">
+        </div>
+
+        <div class="col-12">
+            <label>🎂 Age (Years)</label>
+            <input type="number" class="form-control" id="petAgeYears">
+        </div>
+
+        <div class="col-12">
+            <label>🍼 Age (Months)</label>
+            <input type="number" class="form-control" id="petAgeMonths">
+        </div>
+
+        <div class="col-12">
+            <label>⚖ Weight (kg)</label>
+            <input type="number" class="form-control" id="petWeight">
+        </div>
+
+        <div class="col-12">
+            <label>❤ Health Issues</label>
+            <input type="text" class="form-control" id="petHealthIssue">
+        </div>
+    </div>
+
+    <button class="btn-generate" id="generateDiet">Generate Diet 🍏</button>
+
+    <!-- Diet Result -->
+    <div class="result-box">
+        <h5><strong>📝 Diet Result</strong></h5>
+        
+        <label>🌅 Morning</label>
+        <input class="form-control mt-1" id="dietMorning" placeholder="Morning Food">
+
+        <label class="mt-2">🌤 Afternoon</label>
+        <input class="form-control" id="dietAfternoon" placeholder="Afternoon Food">
+
+        <label class="mt-2">🌙 Evening</label>
+        <input class="form-control" id="dietEvening" placeholder="Evening Food">
+
+        <label class="mt-2">💧 Water Intake</label>
+        <input class="form-control" id="dietWater" placeholder="Water Intake">
+
+        <label class="mt-2">🗒 Notes</label>
+        <textarea class="form-control" id="dietNotes" placeholder="Notes"></textarea>
+    </div>
+</div>
+
+<script>
+document.getElementById("generateDiet").onclick = async () => {
+    const petData = {
+        name: petName.value,
+        breed: petBreed.value,
+        species: petSpecies.value,
+        ageYears: petAgeYears.value,
+        ageMonths: petAgeMonths.value,
+        weight: petWeight.value,
+        healthIssue: petHealthIssue.value
+    };
+
+    try {
+        const res = await fetch("/generate_diet_plan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(petData)
+        });
+
+        const data = await res.json();
+
+        dietMorning.value = data.morning || "";
+        dietAfternoon.value = data.afternoon || "";
+        dietEvening.value = data.evening || "";
+        dietWater.value = data.water || "";
+        dietNotes.value = data.notes || "";
+
+    } catch (err) {
+        console.error(err);
+        alert("Failed to generate diet plan");
+    }
+};
+</script>
+
+{% endblock %}

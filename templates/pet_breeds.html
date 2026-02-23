@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Back Button -->
+<a href="{{ url_for('pets_list') }}" class="back-btn">
+    🔙
+</a>
+<div class="container mt-4 text-center animate-page">
+
+    <!-- ✅ Animated Gradient Title -->
+    <h2 class="breed-title">{{ pet }} Breeds</h2>
+
+    <div class="row justify-content-center mt-4">
+
+        {% for breed, data in breeds.items() %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow breed-card animate-card">
+
+                <!-- ✅ Image -->
+                <img src="{{ url_for('static', filename='images/' + data.image) }}"
+                     class="card-img-top"
+                     height="220"
+                     alt="{{ breed }}">
+
+                <div class="card-body text-center">
+                    <h5 class="fw-bold">{{ breed }}</h5>
+
+                    <!-- ✅ COOL COLORFUL BUTTON -->
+                    <a href="{{ url_for('breed_info', pet=pet, breed=breed) }}"
+                       class="btn glow-btn mt-2">
+                       View Info 
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+
+<style>
+
+/* ✅ PAGE FADE-IN */
+@keyframes fadePage {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-page {
+  animation: fadePage 0.7s ease forwards;
+}
+
+/* ✅ TITLE GRADIENT ANIMATION */
+.breed-title {
+  font-weight: 800;
+  background: linear-gradient(#ff8c42, #ff6f00);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: titleFlow 4s linear infinite;
+}
+
+@keyframes titleFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ✅ CARD FLOAT ANIMATION */
+@keyframes floatCard {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0); }
+}
+
+.animate-card {
+  animation: floatCard 3.5s ease-in-out infinite;
+}
+
+/* ✅ BREED CARD STYLING */
+.breed-card {
+  border-radius: 18px;
+  overflow: hidden;
+  transition: 0.4s ease;
+}
+
+.breed-card:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+}
+
+/* ✅ GLOWING COLORFUL BUTTON */
+.glow-btn {
+  border: none;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 30px;
+  color: white;
+  background: linear-gradient(#ff8c42, #ff6f00);
+  background-size: 400% 400%;
+  animation: glowFlow 5s ease infinite;
+  box-shadow: 0 5px 18px rgba(0,0,0,0.3);
+  transition: 0.3s;
+}
+
+@keyframes glowFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ✅ BUTTON HOVER EFFECT */
+.glow-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(99,102,241,0.9);
+}
+
+/* Back Button */
+    .back-btn {
+        position: fixed;
+        top: 65px;
+        left: 18px;
+        text-decoration: none;
+        font-size: 30px;
+        font-weight: 600;
+        color: #233b6c;
+        opacity: 0.9;
+        transition: 0.2s ease;
+    }
+    .back-btn:hover {
+        opacity: 1;
+        transform: translateX(-4px);
+    }
+
+
+</style>
+
+{% endblock %}

@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="health-wrapper">
+
+    <!-- PAGE TITLE -->
+    <h2 class="health-title animate-fade">
+        🩺 Pet Health Care
+    </h2>
+
+    <p class="health-subtitle animate-fade-delay">
+        Complete health support for your beloved pet 🐾
+    </p>
+
+    <!-- HEALTH IMAGE -->
+    <div class="health-image animate-float">
+        <img src="{{ url_for('static', filename='images/health.jpeg') }}" alt="Pet Health">
+    </div>
+
+    <!-- HEALTH OPTIONS CARD -->
+    <div class="health-card animate-slideup">
+
+        <h4 class="card-title">Manage Your Pet's Health</h4>
+        <p class="card-subtitle">
+            Vaccinations • Diet Plans • Regular Checkups
+        </p>
+
+        <div class="health-buttons">
+
+            <a href="{{ url_for('add_vaccine') }}" class="health-btn peach">
+                💉 Vaccination
+            </a>
+
+            <a href="{{ url_for('health_checkup') }}" class="health-btn green">
+                🩺 Health Checkup
+            </a>
+
+            <a href="{{ url_for('diet_plan') }}" class="health-btn orange">
+                🥗 Diet Plan
+            </a>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- STYLES -->
+<style>
+/* ================= THEME COLORS ================= */
+:root {
+    --primary: #f39a7a;        /* Peach */
+    --primary-dark: #e76f51;
+    --primary-light: #fde3d9;
+    --green: #2ecc71;
+}
+
+/* ================= MAIN WRAPPER ================= */
+.health-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(to bottom, var(--primary-light), #ffffff);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ================= TITLES ================= */
+.health-title {
+    font-weight: 800;
+    color: var(--primary-dark);
+    margin-top: 10px;
+    text-shadow: 0 0 12px rgba(231,111,81,0.45);
+}
+
+.health-subtitle {
+    font-size: 13px;
+    color: #6b4b3e;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* ================= IMAGE ================= */
+.health-image img {
+    width: 170px;
+    margin-bottom: 15px;
+    border-radius: 20px;
+    box-shadow: 0 12px 25px rgba(231,111,81,0.35);
+}
+
+/* ================= FLOAT ANIMATION ================= */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* ================= CARD ================= */
+.health-card {
+    width: 95%;
+    max-width: 400px;
+    background: linear-gradient(135deg, #ffffff, #fff4ee);
+    border-radius: 26px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(231,111,81,0.25);
+}
+
+/* ================= CARD TEXT ================= */
+.card-title {
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.card-subtitle {
+    font-size: 13px;
+    color: #7a4a3a;
+    margin-bottom: 20px;
+}
+
+/* ================= BUTTON LAYOUT ================= */
+.health-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* ================= COMMON BUTTON ================= */
+.health-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 30px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+/* ================= BUTTON COLORS ================= */
+.health-btn.peach {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+}
+
+.health-btn.green {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+}
+
+.health-btn.orange {
+    background: linear-gradient(135deg, #ff8c42, #ff6f00);
+}
+
+/* ================= BUTTON HOVER ================= */
+.health-btn:hover {
+    transform: scale(1.06);
+    box-shadow: 0 0 20px rgba(231,111,81,0.45);
+}
+
+/* ================= FADE IN ================= */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade {
+    animation: fadeIn 0.8s forwards;
+}
+
+.animate-fade-delay {
+    animation: fadeIn 1.5s forwards;
+}
+
+/* ================= SLIDE UP ================= */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slideup {
+    animation: slideUp 1s ease forwards;
+}
+</style>
+
+{% endblock %}

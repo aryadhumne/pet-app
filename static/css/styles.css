@@ -1,0 +1,180 @@
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
+}
+
+/* ===== BODY ===== */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  overflow-x: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ===== BACKGROUND IMAGE ===== */
+.app-bg {
+  position: fixed;
+  inset: 0;
+  background: url("https://media.istockphoto.com/id/2148798138/photo/collage-of-domestic-animal-group-together.jpg?s=612x612&w=0&k=20&c=9Pcg1H4YQYSQ1EK_9fMf2paRqVimnFGTXJdt_lXKSQc=")
+    center / cover no-repeat;
+  z-index: -2;
+}
+
+/* ===== WHITE OVERLAY ===== */
+.app-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+ 
+}
+
+/* ===== MAIN PAGE CONTENT ===== */
+.page-content {
+  min-height: calc(100vh - 140px); /* header + bottom nav */
+  padding: 20px;
+  padding-bottom: 120px; /* space for bottom nav */
+  position: relative;
+  z-index: 1;
+}
+
+/* ===== NAVBAR ===== */
+nav {
+  background-color:#d58c33;
+  padding: 10px 20px;
+}
+
+nav a {
+  color: white !important;
+  font-weight: 500;
+  margin-right: 10px;
+  text-decoration: none;
+}
+
+nav a:hover {
+  color: #a5b4fc !important;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  text-align: center;
+  background-color: rgba(240, 248, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(30, 64, 175, 0.5);
+  padding: 30px;
+  margin: auto;
+  max-width: 420px;
+}
+
+/* ===== HEADINGS ===== */
+h1 {
+  color: #1e40af;
+  font-size: 30px;
+  margin-bottom: 25px;
+}
+
+/* ===== INPUTS ===== */
+.form-box input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #3b82f6;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #1e3a8a;
+}
+
+.form-box input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.6);
+}
+
+/* ===== BUTTON ===== */
+button {
+  background-color: #3b82f6;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 14px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+}
+
+/* ===== LINKS ===== */
+a {
+  color: #1e3a8a;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #2563eb;
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background-color: #ed8f73ff;
+  color: rgb(222, 154, 101);
+  padding: 12px 0;
+  text-align: center;
+  font-size: 14px;
+}
+
+footer span {
+  color: #ed8f73ff;
+}
+
+/* ===== BRAND COLOR ===== */
+.backgroundblue {
+  background-color:#ed8f73ff; 
+}
+
+/* ===== BREED PAGE CLEAN ===== */
+.breed-container .container,
+.container.breed-page {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* ===== HEALTH BUTTONS ===== */
+.health-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.health-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 30px;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.health-btn.blue {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+}
+
+.health-btn.green {
+  background: linear-gradient(135deg, #059669, #047857);
+}
+
+.health-btn.orange {
+  background: linear-gradient(135deg, #fb923c, #f97316);
+}
+
+.health-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+}

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Back Button -->
+<a href="{{ url_for('agripet') }}" class="back-btn">🔙</a>
+
+<div class="shop-wrapper">
+
+  <!-- TITLE -->
+  <h2 class="text-center shop-title animate-fade">
+    🌿 AgriPet Shop 🌿
+  </h2>
+
+  <p class="text-center shop-sub animate-fade-delay">
+    Everything your Agripet needs — in one happy place 🐔🐄
+  </p>
+
+</div>
+
+<div class="row justify-content-center">
+
+  <!-- Seeds -->
+  <div class="col-md-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/seeds.jpg') }}" alt="Seeds">
+      <div class="card-body text-center">
+        <h5 class="card-title">Seeds</h5>
+        <p>High-quality crop and vegetable seeds.</p>
+        <a href="https://www.google.com/search?q=agriculture+seeds" target="_blank" class="btn shop-btn">🛒 Buy Now</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fertilizers -->
+  <div class="col-md-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/fertilizer.jpg') }}" alt="Fertilizer">
+      <div class="card-body text-center">
+        <h5 class="card-title">Fertilizers</h5>
+        <p>Soil health boosters for higher yield.</p>
+        <a href="https://www.google.com/search?q=best+fertilizers" target="_blank" class="btn shop-btn">🛒 Buy Now</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Livestock Care -->
+  <div class="col-md-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/livestock.jpg') }}" alt="Livestock Care">
+      <div class="card-body text-center">
+        <h5 class="card-title">Livestock Care</h5>
+        <p>Products for cattle & poultry health.</p>
+        <a href="https://www.google.com/search?q=livestock+care+products" target="_blank" class="btn shop-btn">🛒 Buy Now</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Agri Medicines -->
+  <div class="col-md-4">
+    <div class="card product-card">
+      <img src="{{ url_for('static', filename='images/agrimedicine1.jpg') }}" alt="Agri Medicines">
+      <div class="card-body text-center">
+        <h5 class="card-title">Agri Medicines</h5>
+        <p>Essential crop protection and plant health solutions.</p>
+        <a href="https://www.google.com/search?q=agriculture+medicine" target="_blank" class="btn shop-btn">🛒 Buy Now</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<style>
+
+.shop-wrapper {
+  padding: 25px 20px 10px;
+  margin-top: 0;
+  background: linear-gradient(to bottom, #eef5ff, #ffffff);
+}
+
+/* Headings spacing fix */
+.shop-title {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.shop-sub {
+  margin-bottom: 25px;
+}
+
+/* CARD DESIGN */
+.product-card {
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+  transition: 0.4s ease;
+  background: #ffffff;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 22px 45px rgba(0,0,0,0.25);
+}
+
+.product-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: 0.5s ease;
+}
+
+.product-card:hover img {
+  transform: scale(1.08);
+}
+
+/* BUY BUTTON */
+.shop-btn {
+  background: linear-gradient(#ff8c42, #ff6f00);
+  color: white;
+  border-radius: 30px;
+  padding: 8px 20px;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+
+.shop-btn:hover {
+  transform: scale(1.1);
+  box-shadow:#ff8c42, #ff6f00;
+  color: white;
+}
+
+/* Back Button */
+/* Wrapper spacing same as Pet Shop */
+.shop-wrapper {
+  padding: 25px 20px 10px;
+  margin-top: 0;
+  background: linear-gradient(to bottom, #eef5ff, #ffffff);
+}
+
+/* Headings spacing fix */
+.shop-title {
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.shop-sub {
+  margin-bottom: 25px;
+}
+
+/* Product card spacing like Pet Shop */
+.row {
+  margin-top: 0;
+}
+
+.col-md-4 {
+  margin-bottom: 25px;
+}
+
+/* Back Button – moved down */
+.back-btn {
+  position: fixed;
+  top: 95px;   /* 🔥 पहले page जैसा perfect spacing */
+  left: 18px;
+  text-decoration: none;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1b1b1c;
+  opacity: 0.9;
+  z-index: 2000;
+}
+
+
+.back-btn:hover {
+  opacity: 1;
+  transform: translateX(-4px);
+}
+
+</style>
+
+{% endblock %}

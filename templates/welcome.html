@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Agripet Care</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    /* ===== BACKGROUND WITH BLUR ===== */
+    .welcome-bg {
+      min-height: 100vh;
+      width: 100%;
+      background-image: url("{{ url_for('static', filename='images/welcome2.jpeg') }}");
+      background-repeat: no-repeat;
+      background-size: 140%;
+      background-position: center top;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding: 20px;
+    }
+
+    /* blur overlay */
+    .welcome-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    /* ===== CONTENT CARD ===== */
+    .welcome-page {
+      position: relative;
+      background: rgba(254, 243, 242, 0.92);
+      border-radius: 26px;
+      padding: 40px 26px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.18);
+    }
+
+    .pet-img {
+      width: 180px;
+      margin-bottom: 30px;
+      border-radius: 16px;
+    }
+
+    h1 {
+      font-size: 26px;
+      color: #3a2e2a;
+      margin-bottom: 12px;
+    }
+
+    p {
+      font-size: 15px;
+      color: #7a6e69;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .start-btn {
+      background: #f4a640;
+      color: #fff;
+      padding: 14px 34px;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .start-btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="welcome-bg">
+
+    <div class="welcome-page">
+
+      <!-- Pet Image -->
+      <img 
+        src="{{ url_for('static', filename='images/dog1.jpeg') }}" 
+        alt="Dog"
+        class="pet-img"
+      >
+
+      <!-- Text -->
+      <h1>Helloo..!!</h1>
+      <p>
+        Find your perfect pet companion and begin a beautiful journey of care and love.
+        Discover dogs and cats waiting for a forever home, easily adopt pets, book visits,
+        and track approvals. Get access to health tips, vaccination reminders, and expert
+        support, all in one place. Connect with trusted shelters and professionals to give
+        your pet the happy and healthy life it deserves. 🐾
+      </p>
+
+      <!-- Button -->
+      <a href="{{ url_for('onboarding') }}" class="start-btn">
+        Get started 🐾
+      </a>
+
+    </div>
+
+  </div>
+
+</body>
+</html>

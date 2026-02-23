@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart AgriPet Care</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- 🔹 Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- 🔹 Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- 🔹 Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding-bottom: 80px;
+        }
+
+        /* 🔹 BACKGROUND */
+        .app-bg {
+            position: fixed;
+            inset: 0;
+            background: url("https://media.istockphoto.com/id/2148798138/photo/collage-of-domestic-animal-group-together.jpg?s=612x612&w=0&k=20&c=9Pcg1H4YQYSQ1EK_9fMf2paRqVimnFGTXJdt_lXKSQc=")
+                        no-repeat center center;
+            background-size: cover;
+            z-index: -2;
+        }
+
+        .app-bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.75);
+            z-index: -1;
+        }
+
+        /* 🔹 TOP BAR */
+        .topbar {
+            height: 60px;
+            background: #ed8f73ff;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        /* 🔔 NOTIFICATION ICON */
+.notification {
+    position: absolute;
+    right: 15px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.notification .badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background: #ff3d00;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #ed8f73ff;
+}
+
+
+        .menu-btn { font-size: 26px; cursor: pointer;color:black; }
+
+        .app-title {
+            position: absolute;
+            left: 50%;
+            color:black;
+            transform: translateX(-50%);
+            font-weight: 600;
+        }
+
+        /* 🔹 SIDE MENU */
+        .side-menu {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 280px;
+            height: 100%;
+            background: white;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            transition: 0.35s ease;
+            z-index: 9999;
+        }
+
+        .side-header {
+            height: 60px;
+            background: #f3a781ff;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+        }
+
+        .side-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #1f2937;
+            font-size: 16px;
+        }
+
+        .side-link:hover { background: #f1f5ff; }
+
+        .logout-link { color: #b91c1c; }
+
+        /* 🔹 PAGE CONTENT */
+        .page-content {
+            min-height: calc(100vh - 60px);
+            padding: 20px 10px;
+        }
+
+        /* 🔹 LOGOUT POPUP */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .popup-box {
+            background: white;
+            width: 90%;
+            max-width: 360px;
+            padding: 26px;
+            border-radius: 18px;
+            text-align: center;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 30px;
+            border: none;
+            background: #ef8282ff;
+            color: white;
+            font-size: 16px;
+        }
+
+        .cancel-text {
+            margin-top: 16px;
+            font-weight: 500;
+            color: #f49b80ff;
+            cursor: pointer;
+        }
+
+        /* 🔹 Google Translate Fix */
+        .goog-te-banner-frame,
+        .goog-tooltip,
+        .goog-te-gadget-icon { display: none !important; }
+        body { top: 0 !important; }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔹 BACKGROUND -->
+<div class="app-bg"></div>
+
+<!-- 🔹 SIDE MENU -->
+<div id="sideMenu" class="side-menu">
+    <div class="side-header">
+        <h6>Menu</h6>
+        <span onclick="toggleMenu()">✕</span>
+    </div>
+
+    <a href="{{ url_for('user_info') }}" class="side-link">👤 User Info</a>
+    <a href="{{ url_for('about') }}" class="side-link">📘 About Us</a>
+    <a href="#" class="side-link" onclick="toggleLanguage()">🌐 Language</a>
+    <a href="#" class="side-link logout-link" onclick="openLogoutPopup()">🚪 Logout</a>
+
+    <div id="langBox" style="display:none; padding:15px;">
+        <div id="google_translate_element"></div>
+    </div>
+</div>
+
+<!-- 🔹 TOP BAR -->
+<div class="topbar">
+    <span class="menu-btn" onclick="toggleMenu()">☰</span>
+    <span class="app-title">Smart AgriPet Care</span>
+<a href="{{ url_for('notifications') }}" class="notification">
+    🔔
+    {% if notification_count > 0 %}
+      <span class="badge">{{ notification_count }}</span>
+    {% endif %}
+</a>
+</div>
+</div>
+<!-- 🔹 MAIN CONTENT (NO CONTAINER) -->
+<main class="page-content">
+    {% block content %}{% endblock %}
+</main>
+<!-- 🔹 BOTTOM NAV -->
+{% if session.get('user_id') %}
+<nav class="navbar navbar-dark backgroundblue fixed-bottom">
+    <div class="container-fluid d-flex justify-content-around text-center">
+        <a class="nav-link text-black" href="{{ url_for('dashboard') }}">🏠<br>Home</a>
+        <a class="nav-link text-black" href="{{ url_for('health') }}">❤<br>Health</a>
+        <a class="nav-link text-black" href="{{ url_for('pet_home') }}">🐾<br>Pet</a>
+        <a class="nav-link text-black" href="{{ url_for('agripet') }}">🌾<br>AgriPet</a>
+        <a class="nav-link text-black" href="{{ url_for('doctor_finder') }}">👨‍⚕<br>Doctor</a>
+        <a class="nav-link text-black" href="{{ url_for('help') }}">❓<br>Help</a>
+    </div>
+</nav>
+{% endif %}
+
+<!-- 🔹 LOGOUT POPUP -->
+<div id="logoutPopup" class="popup-overlay">
+    <div class="popup-box">
+        <h5>Are you sure you want to log out?</h5>
+        <p>You can log in again anytime.</p>
+        <button class="logout-btn" onclick="confirmLogout()">Log Out</button>
+        <div class="cancel-text" onclick="closePopup()">Cancel</div>
+    </div>
+</div>
+
+<!-- 🔹 JS -->
+<script>
+function toggleMenu() {
+    const menu = document.getElementById("sideMenu");
+    menu.style.left = (menu.style.left === "0px") ? "-280px" : "0px";
+}
+function toggleLanguage() {
+    const box = document.getElementById("langBox");
+    box.style.display = (box.style.display === "none") ? "block" : "none";
+}
+function openLogoutPopup() {
+    document.getElementById("logoutPopup").style.display = "flex";
+}
+function closePopup() {
+    document.getElementById("logoutPopup").style.display = "none";
+}
+function confirmLogout() {
+    window.location.href = "{{ url_for('logout') }}";
+}
+</script>
+
+<!-- 🔹 GOOGLE TRANSLATE -->
+<script>
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,hi,mr'
+    }, 'google_translate_element');
+}
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Back Button -->
+<a href="{{ url_for('health', pet_id=pet_id)
+ }}" class="back-btn">🔙</a>
+
+<div class="page-wrapper">
+
+    <div class="health-card">
+        <h2 class="title">Health Checkup 🩺</h2>
+
+        <form id="healthCheckupForm">
+
+            <label class="form-label">Date 📅</label>
+            <input type="date" name="date" class="form-control input-box" required>
+
+            <label class="form-label">Weight (kg) ⚖</label>
+            <input type="number" name="weight" class="form-control input-box" required>
+
+            <label class="form-label">Temperature (°C) 🌡</label>
+            <input type="number" name="temperature" class="form-control input-box" required>
+
+            <label class="form-label">Next Checkup Date 📅</label>
+            <input type="date" name="next_checkup" class="form-control input-box">
+
+            <button type="submit" class="save-btn">Save Checkup</button>
+        </form>
+
+        <div id="statusMessage" class="mt-2"></div>
+
+    </div>
+</div>
+
+
+<script>
+document.getElementById("healthCheckupForm").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    fetch("{{ url_for('health_checkup') }}", {
+        method: "POST",
+        body: formData
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        const msg = document.getElementById("statusMessage");
+        if (data.success){
+            msg.innerHTML = '<div class="alert alert-success">Checkup saved successfully! 🎉</div>';
+            form.reset();
+        } else {
+            msg.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
+        }
+    });
+});
+</script>
+
+
+<style>
+/* FULL PAGE CENTER */
+.page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    padding: 20px;
+}
+
+/* MAIN CHECKUP CARD */
+.health-card {
+    width: 100%;
+    max-width: 380px;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 25px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    backdrop-filter: blur(8px);
+
+    /* smooth floating animation */
+    animation: floatCard 4s ease-in-out infinite;
+}
+
+/* floating animation */
+@keyframes floatCard {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+}
+
+/* Title */
+.title {
+    font-size: 26px;
+    font-weight: 700;
+    color:  #ff6f00;
+    margin-bottom: 18px;
+
+    /* color-changing animation */
+    animation: colorShift 5s infinite alternate;
+}
+
+
+
+/* Inputs */
+.input-box {
+    margin-bottom: 16px;
+    padding: 18px;
+    border-radius: 15px;
+    border: 1px solid #d0d0d0;
+}
+
+/* Save Button - gradient */
+.save-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(#ff8c42, #ff6f00);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.save-btn:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.15);
+}
+
+.save-btn:active {
+    transform: scale(0.95);
+    transition: 0.1s;
+    filter: brightness(0.9);
+}
+
+/* Back Button */
+.back-btn {
+    position: fixed;
+    top: 65px;
+    left: 18px;
+    text-decoration: none;
+    font-size: 28px;
+    font-weight: 600;
+    color: #233b6c;
+    opacity: 0.85;
+    transition: 0.2s;
+}
+.back-btn:hover {
+    opacity: 1;
+    transform: translateX(-4px);
+}
+</style>
+
+{% endblock %}

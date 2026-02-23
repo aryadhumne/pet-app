@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Back Button -->
+<a onclick="history.back()" class="back-btn">
+    🔙
+</a>
+
+<div class="container mt-4">
+    <h2 class="text-center">{{ breed }} ({{ pet }})</h2>
+
+    <!-- ✅ WIDTH INCREASED HERE -->
+    <div class="card mx-auto mt-4 shadow" style="max-width: 1100px; width: 95%;">
+
+        <!-- ✅ Breed Image -->
+        <img src="{{ url_for('static', filename='images/' + info.image) }}"
+             class="card-img-top"
+             alt="{{ breed }}">
+
+        <div class="card-body">
+            <!-- General Info -->
+            <p><strong>Information:</strong> {{ info.info }}</p>
+
+            {% if info.origin %}<p><strong>Origin:</strong> {{ info.origin }}</p>{% endif %}
+            {% if info.lifespan %}<p><strong>Lifespan:</strong> {{ info.lifespan }}</p>{% endif %}
+            {% if info.temperament %}<p><strong>Temperament:</strong> {{ info.temperament }}</p>{% endif %}
+            {% if info.habitat %}<p><strong>Habitat:</strong> {{ info.habitat }}</p>{% endif %}
+            {% if info.diet %}<p><strong>Diet:</strong> {{ info.diet }}</p>{% endif %}
+            {% if info.exercise %}<p><strong>Exercise:</strong> {{ info.exercise }}</p>{% endif %}
+            {% if info.grooming %}<p><strong>Grooming:</strong> {{ info.grooming }}</p>{% endif %}
+            {% if info.common_diseases %}<p><strong>Common Diseases:</strong> {{ info.common_diseases }}</p>{% endif %}
+            {% if info.climate %}<p><strong>Climate:</strong> {{ info.climate }}</p>{% endif %}
+            {% if info.suitable_for %}<p><strong>Suitable For:</strong> {{ info.suitable_for }}</p>{% endif %}
+        </div>
+    </div>
+    
+</div>
+<style>
+/* Back Button */
+.back-btn {
+        position: fixed;
+        top: 65px;
+        left: 18px;
+        text-decoration: none;
+        font-size: 30px;
+        font-weight: 600;
+        color: #233b6c;
+        opacity: 0.9;
+        transition: 0.2s ease;
+    }
+    .back-btn:hover {
+        opacity: 1;
+        transform: translateX(-4px);
+    }
+
+</style>
+
+{% endblock %}

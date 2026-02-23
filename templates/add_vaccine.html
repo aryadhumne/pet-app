@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+
+<a href="{{ url_for('health') }}" class="back-btn">🔙</a>
+
+<div class="page-wrapper">
+    <div class="vaccine-card">
+        <h3 class="title">🐾 Add Vaccination 🐾</h3>
+
+        <form method="POST" action="{{ url_for('add_vaccine') }}">
+
+            <label class="label">🐶 Select Pet</label>
+            <select class="form-select clean-input" name="pets_id" required>
+                <option value="">-- Select Pet --</option>
+                {% for pet in pets %}
+                    <option value="{{ pet.id }}">{{ pet.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label class="label mt-3">💉 Vaccine Name</label>
+            <input type="text" class="form-control clean-input"
+                   name="vaccine_name" placeholder="Enter vaccine name" required>
+
+            <label class="label mt-3">📅 Last Given Date</label>
+            <input type="date" class="form-control clean-input"
+                   name="last_given_date" required>
+
+            <label class="label mt-3">⏳ Next Due Date</label>
+            <input type="date" class="form-control clean-input"
+                   name="next_due_date" required>
+
+            <button type="submit" class="submit-btn mt-4">
+                🐾 Add Vaccination
+            </button>
+
+        </form>
+    </div>
+</div>
+
+<style>
+.back-btn {
+    position: fixed;
+    top: 65px;
+    left: 18px;
+    font-size: 28px;
+    text-decoration: none;
+    color: #233b6c;
+}
+
+.page-wrapper {
+    min-height: 85vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vaccine-card {
+    width: 100%;
+    max-width: 370px;
+    padding: 28px;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #ffffff, #eef3ff);
+    box-shadow: 0px 14px 28px rgba(0,0,0,0.08);
+}
+
+.title {
+    text-align: center;
+    font-size: 23px;
+    font-weight: 700;
+    color: #ff6f00;
+    margin-bottom: 22px;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #425577;
+}
+
+.clean-input {
+    height: 44px;
+    border-radius: 12px;
+    border: 1px solid #d6dff0;
+    background: #f9fbff;
+}
+
+.submit-btn {
+    width: 100%;
+    background: #ff6f00;
+    border: none;
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+}
+</style>
+
+{% endblock %}

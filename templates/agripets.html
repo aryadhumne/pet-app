@@ -105,11 +105,29 @@
 .title {
     font-weight: bold;
     margin-bottom: 20px;
-    background: linear-gradient(#ff8c42, #ff6f00);
+    background: linear-gradient(270deg, #ff8c42, #ff6f00, #ff8c42);
     background-size: 300% 300%;
+    
     -webkit-background-clip: text;
+    background-clip: text;
+    
     -webkit-text-fill-color: transparent;
+    color: transparent;
+
     animation: titleFlow 4s linear infinite;
+}
+
+/* Animation */
+@keyframes titleFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 @keyframes titleFlow {
     0% { background-position: 0% 50%; }

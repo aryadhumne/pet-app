@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
+
 <!-- Back Button -->
-<a href="{{ session.get('prev_url', url_for('home')) }}" class="back-btn">
-    🔙
-</a>
+<a href="{{ session.get('prev_url', url_for('pet_home')) }}" class="back-btn"></a>
+
 <div class="breed-container">
     <h2 class="title">Rooster Breeds</h2>
 
     {% for rooster in rooster_list %}
     <div class="breed-card">
         <img src="{{ url_for('static', filename='images/' ~ rooster.image) }}" alt="{{ rooster.name }}">
-        <h3>{{ rooster.name }}</h3>
+        <h3 class="breed-name">{{ rooster.name }}</h3>
         <a class="info-btn" href="/agribreed_details/rooster/{{ rooster.name | replace(' ', '-') }}">
             View Info
         </a>
@@ -20,74 +20,70 @@
 
 <style>
 
-/* Outer Background Card (Cow page सारखा) */
-.outer-wrapper {
+/* Container */
+.breed-container {
     width: 100%;
     display: flex;
-    justify-content: center;
-}
-
-.inner-box {
-    width: 90%;
-    background: #ff8c42, #ff6f00;
-    border-radius: 25px;
-    padding: 20px 15px;
-    margin-top: 20px;
-    box-shadow: #ff8c42, #ff6f00;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 90px;
 }
 
 /* Title */
 .title {
     text-align: center;
     font-size: 28px;
-    margin-bottom: 20px;
+    margin: 20px 0;
     color: #ff6f00;
     font-weight: 600;
 }
 
-/* Breed Container */
-.breed-container {
-    width: 100%;
-}
-
 /* Breed Card */
 .breed-card {
+    width: 85%;              /* 👈 Decreased Width */
+    max-width: 350px;        /* 👈 Perfect mobile size */
     background: white;
     border-radius: 22px;
-    box-shadow: #ff8c42, #ff6f00;
-    margin: 15px auto;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    margin: 18px 0;
     overflow: hidden;
     text-align: center;
-    padding-bottom: 18px;
+    padding-bottom: 20px;
+    transition: 0.3s ease;
+}
+
+/* Hover Effect */
+.breed-card:hover {
+    transform: translateY(-4px);
 }
 
 /* Breed Image */
 .breed-card img {
     width: 100%;
-    height: 230px;
+    height: 300px;      /* 👈 Increased Height */
     object-fit: cover;
-    border-bottom: 1px solid #eee;
+    display: block;
 }
 
 /* Breed Name */
 .breed-name {
-    margin: 15px 0 8px;
+    margin: 18px 0 10px;
     font-size: 20px;
     color: #ff6f00;
     font-weight: 600;
 }
 
-/* Gradient Button */
+/* Button */
 .info-btn {
     background: linear-gradient(#ff8c42, #ff6f00);
     color: white;
-    padding: 10px 22px;
-    border-radius: 20px;
+    padding: 12px 26px;
+    border-radius: 25px;
     text-decoration: none;
     font-size: 15px;
     font-weight: 600;
     display: inline-block;
-    margin-top: 6px;
+    margin-top: 8px;
 }
 
 /* Back Button */
@@ -96,17 +92,10 @@
     top: 65px;
     left: 18px;
     text-decoration: none;
-    font-size: 30px;
+    font-size: 26px;
     font-weight: 600;
     color: #233b6c;
-    opacity: 0.9;
-    z-index: 99;
-    transition: 0.2s ease;
-}
-
-.back-btn:hover {
-    opacity: 1;
-    transform: translateX(-4px);
+    z-index: 999;
 }
 
 </style>

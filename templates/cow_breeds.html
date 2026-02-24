@@ -2,9 +2,7 @@
 {% block content %}
 
 <!-- Back Button -->
-<a href="{{ session.get('prev_url', url_for('home')) }}" class="back-btn">
-    🔙
-</a>
+<a href="{{ session.get('prev_url', url_for('pet_home')) }}" class="back-btn"></a>
 
 <div class="outer-wrapper">
     <div class="inner-box">
@@ -17,7 +15,9 @@
             
             <h3 class="breed-name">{{ cow.name }}</h3>
 
-            <a class="info-btn" href="/agribreed_details/cow/{{ cow.name }}">View Info</a>
+           <a class="info-btn" href="/agribreed_details/cow/{{ cow.name | replace(' ', '-') }}">
+    View Info
+</a>
         </div>
         {% endfor %}
 

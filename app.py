@@ -557,20 +557,9 @@ agripets_data = {
         }
     },
     "Cow": {
-        "Sahiwacow": {
-            "image": "Sahiwalcow.jpeg",
-            "origin": "Punjab (India–Pakistan border)",
-            "reproductive_age": "30–36 months",
-            "lifespan": "15–20 years",
-            "breeding_cycle": "Estrus: 21 days",
-            "gestation_period": "280–285 days",
-            "info": "Sahiwal cows are known for high milk fat and heat tolerance.",
-            "common_diseases": "Tick fever",
-            "climate": "Hot & humid",
-            "suitable_for": "Commercial dairy farms"
-        },
+        
         "Holstein Friesian": {
-            "image": "Holstein_Friesiancow.jpeg",
+            "image": "Holstein.jpg",
             "origin": "Netherlands",
             "reproductive_age": "15–18 months",
             "lifespan": "10–12 years",
@@ -1443,7 +1432,7 @@ def health():
 @app.route("/pets")
 def pets_list():
     return render_template("pets_list.html", pets=pets_data.keys())
-@app.route("/agripet")
+@app.route("/Agripet")
 def agripet():
     return render_template("Agripet.html")
 @app.route("/doctor_finder")
@@ -1469,9 +1458,7 @@ def about():
 @app.route("/cow_breeds")
 def cow_breeds():
     cow_list = [
-        {
-            "name": "Sahiwal","image": "Sahiwalcow.jpg",
-        },
+       
         {
             "name": "Holstein Friesian", "image": "Holstein.jpg",
         },

@@ -1,221 +1,231 @@
-{% extends "base.html" %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>{{ pet.name }}'s Profile - Smart AgriPet Care</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --purple: #6C3FF5; --purple-light: #8B5CF6;
+      --green: #22C55E; --orange: #F97316;
+      --bg: #F5F3FF; --card: #fff; --text: #1e1b4b; --muted: #6B7280;
+    }
+    body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; padding-bottom: 80px; }
 
-<div class="container-fluid py-5 pet-bg">
+    /* TOP NAV */
+    .top-nav { background: var(--purple); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .nav-ham { display: flex; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-ham span { display: block; width: 22px; height: 2.5px; background: #fff; border-radius: 2px; }
+    .nav-logo { display: flex; align-items: center; gap: 8px; }
+    .nav-logo svg { width: 22px; height: 22px; }
+    .nav-title { color: #fff; font-weight: 800; font-size: 16px; font-family: 'Poppins', sans-serif; }
+    .nav-bell { background: rgba(255,255,255,0.18); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-  <!-- 🔙 Back Button -->
-  <a href="{{ url_for('dashboard') }}" class="back-btn">🔙</a>
+    /* PROFILE HERO */
+    .profile-hero { background: linear-gradient(160deg, var(--purple) 0%, var(--purple-light) 100%); padding: 20px 20px 80px; position: relative; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.85); font-size: 13px; font-weight: 700; text-decoration: none; margin-bottom: 18px; }
+    .back-btn svg { width: 16px; height: 16px; }
+    .profile-title-row { display: flex; align-items: center; justify-content: space-between; }
+    .profile-page-title { color: #fff; font-size: 18px; font-weight: 800; font-family: 'Poppins', sans-serif; }
+    .edit-btn { background: rgba(255,255,255,0.2); color: #fff; border: none; border-radius: 12px; padding: 8px 18px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; text-decoration: none; }
 
-  <!-- 🐾 PROFILE IMAGE -->
-  <div class="text-center mb-3 pet-avatar-wrap">
-    {% set pet_photo_path = 'uploads/' + pet.photo if pet.photo else 'uploads/german.jpg' %}
-    <img src="{{ url_for('static', filename=pet_photo_path) }}"
-         class="rounded-circle shadow pet-avatar"
-         width="140" height="140"
-         onerror="this.onerror=null;this.src='{{ url_for('static', filename='uploads/german.jpg') }}';">
-    <div class="paw-badge">🐾</div>
+    /* AVATAR AREA */
+    .avatar-outer { position: absolute; bottom: -56px; left: 0; right: 0; display: flex; justify-content: center; }
+    .avatar-wrap { position: relative; width: 108px; height: 108px; }
+    .pet-avatar { width: 108px; height: 108px; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 4px 24px rgba(108,63,245,0.22); overflow: hidden; background: #E5E7EB; display: flex; align-items: center; justify-content: center; }
+    .pet-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pet-avatar .avatar-emoji { font-size: 46px; }
+    .camera-btn { position: absolute; bottom: 4px; right: 4px; width: 32px; height: 32px; background: var(--purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #fff; }
+    .camera-btn svg { width: 15px; height: 15px; }
+    .upload-input { display: none; }
+
+    /* PROFILE BODY */
+    .profile-body { padding: 72px 16px 20px; }
+    .pet-name { text-align: center; font-size: 22px; font-weight: 800; color: var(--text); font-family: 'Poppins', sans-serif; }
+    .pet-sub { text-align: center; font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 600; }
+
+    /* UPLOAD HINT (shown only if no photo) */
+    .upload-hint { background: #F0FDF4; border: 2px dashed #86EFAC; border-radius: 14px; padding: 14px 16px; text-align: center; font-size: 13px; font-weight: 700; color: #16A34A; cursor: pointer; margin-top: 16px; }
+    .upload-hint.has-photo { display: none; }
+
+    /* INFO CARD */
+    .info-card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 4px 16px rgba(108,63,245,0.09); margin-top: 20px; }
+    .info-card-title { font-size: 13px; font-weight: 800; color: var(--purple); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F3F4F6; }
+    .info-row:last-child { border-bottom: none; }
+    .info-key { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .info-val { font-size: 13px; font-weight: 800; color: var(--text); }
+
+    /* ACTION PILLS */
+    .action-pills { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+    .pill-btn { border: none; border-radius: 18px; padding: 18px 24px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 12px; font-family: 'Nunito', sans-serif; transition: opacity 0.18s; text-decoration: none; justify-content: center; }
+    .pill-btn:hover { opacity: 0.88; }
+    .pill-btn.purple { background: var(--purple); color: #fff; }
+    .pill-btn.green { background: var(--green); color: #fff; }
+    .pill-btn.orange { background: var(--orange); color: #fff; }
+
+    /* BOTTOM NAV */
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: #fff; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; z-index: 100; }
+    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 14px; border-radius: 14px; text-decoration: none; }
+    .nav-item:hover { background: #F5F3FF; }
+    .nav-item.active { background: #F5F3FF; }
+    .nav-item svg { width: 24px; height: 24px; }
+    .nav-item-label { font-size: 10px; font-weight: 700; color: #9CA3AF; }
+    .nav-item.active .nav-item-label { color: var(--purple); }
+
+    /* Upload loading */
+    .uploading { opacity: 0.6; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-ham"><span></span><span></span><span></span></div>
+  <div class="nav-logo">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="nav-title">Smart AgriPet Care</span>
+  </div>
+  <div class="nav-bell">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</nav>
+
+<!-- PROFILE HERO -->
+<div class="profile-hero">
+  <a href="/" class="back-btn">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back
+  </a>
+  <div class="profile-title-row">
+    <div class="profile-page-title">{{ pet.name }}'s Profile</div>
+    <a href="/pet/{{ pet.id }}/edit" class="edit-btn">Edit ✏️</a>
   </div>
 
-  <!-- 📸 IMAGE UPLOAD -->
-  <form method="POST"
-        enctype="multipart/form-data"
-        action="{{ url_for('upload_pet_photo', pet_id=pet.id) }}"
-        class="text-center mb-4">
-
-    <input type="file" name="photo"
-           class="form-control mb-2 w-75 mx-auto"
-           accept="image/*" required>
-
-    <button type="submit" class="btn pet-btn-outline btn-sm">
-      Upload Pet Photo
-    </button>
-  </form>
-
-  <!-- 🐶 PROFILE TITLE -->
-  <h3 class="text-center pet-title mb-4">
-    {{ pet.name }}'s Profile
-  </h3>
-
-  <!-- 📇 PROFILE CARD -->
-  <div class="card pet-card shadow-lg p-4 mx-auto">
-
-    <h4 class="fw-bold text-primary mb-3">{{ pet.name }}</h4>
-
-    <div class="row text-start px-3 pet-info">
-      <div class="col-6 mb-2"><strong>Species</strong></div>
-      <div class="col-6 mb-2">{{ pet.species }}</div>
-
-      <div class="col-6 mb-2"><strong>Breed</strong></div>
-      <div class="col-6 mb-2">{{ pet.breed }}</div>
-
-      <div class="col-6 mb-2"><strong>Age</strong></div>
-      <div class="col-6 mb-2">{{ pet.age }} years</div>
-
-      <div class="col-6 mb-2"><strong>Gender</strong></div>
-      <div class="col-6 mb-2">{{ pet.gender }}</div>
-    </div>
-
-    <!-- 🩺 ACTION BUTTONS -->
-    <div class="health-buttons mt-4">
-      <a href="{{ url_for('add_vaccine', pet_id=pet.id) }}" class="health-btn blue">
-        💉 Vaccination
-      </a>
-
-      <a href="{{ url_for('health_checkup', pet_id=pet.id) }}" class="health-btn green">
-        🩺 Health Checkup
-      </a>
-
-      <a href="{{ url_for('diet_plan', pet_id=pet.id) }}" class="health-btn orange">
-        🥗 Diet Plan
-      </a>
-    </div>
-  </div>
-
-  <!-- 📜 DETAILS SECTION -->
-  {% if vaccines or healths or diets %}
-  <hr>
-  <button class="view-btn" onclick="toggleDetails()">
-    👁 View Details
-  </button>
-
-  <div id="detailsSection" style="display:none;">
-
-   <h3>Vaccinations</h3>
-
-<h4 class="mt-4 text-primary fw-bold">
-  💉 {{ pet.name }}'s Vaccinations
-</h4>
-
-{% if vaccinations %}
-  {% for v in vaccinations %}
-    <div class="card shadow-sm mb-3">
-      <div class="card-body">
-        <h6 class="fw-bold text-success">{{ v.vaccine_name }}</h6>
-        Date: {{ v.date }} <br>
-        Next Due: {{ v.next_due or 'N/A' }}
+  <!-- AVATAR -->
+  <div class="avatar-outer">
+    <div class="avatar-wrap">
+      <div class="pet-avatar" id="avatarDisplay">
+        {% if pet.photo_url %}
+          <img id="avatarImg" src="{{ pet.photo_url }}" alt="{{ pet.name }}"/>
+        {% else %}
+          <span class="avatar-emoji" id="avatarEmoji">🐾</span>
+        {% endif %}
       </div>
+      <!-- Click camera icon to upload -->
+      <label for="pet-photo-upload" class="camera-btn" title="Upload photo">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#fff" stroke-width="2"/><circle cx="12" cy="13" r="4" stroke="#fff" stroke-width="2"/></svg>
+      </label>
     </div>
-  {% endfor %}
-{% else %}
-  <p class="text-muted">No vaccinations added for {{ pet.name }}.</p>
-{% endif %}
-
-<h4 class="mt-4 text-danger fw-bold">
-  🏥 {{ pet.name }}'s Health Checkups
-</h4>
-
-{% if healths %}
-  {% for h in healths %}
-    <div class="card shadow-sm mb-3">
-      <div class="card-body">
-        <strong>Date:</strong> {{ h.date }} <br>
-        <strong>Weight:</strong> {{ h.weight }} kg <br>
-        <strong>Temperature:</strong> {{ h.temperature }} °C <br>
-        <strong>Notes:</strong> {{ h.notes or 'N/A' }}
-      </div>
-    </div>
-  {% endfor %}
-{% else %}
-  <p class="text-muted">No health records for {{ pet.name }}.</p>
-{% endif %}
-
-<h4 class="mt-4 text-warning fw-bold">
-  🥗 {{ pet.name }}'s Diet Plans
-</h4>
-
-{% if diets %}
-  {% for d in diets %}
-    <div class="card shadow-sm mb-3">
-      <div class="card-body">
-        <strong>Food:</strong> {{ d.food_name }} <br>
-        <strong>Quantity:</strong> {{ d.quantity }}
-      </div>
-    </div>
-  {% endfor %}
-{% else %}
-  <p class="text-muted">No diet plans added for {{ pet.name }}.</p>
-{% endif %}
-
   </div>
-  {% else %}
-  <p class="text-center text-muted mt-3">
-    No health records yet.
-  </p>
-  {% endif %}
-
-  <!-- 🔙 BACK TO DASHBOARD -->
-  <div class="text-center">
-    <a href="{{ url_for('dashboard') }}"
-       class="btn pet-btn mt-4">
-      ← Back to Dashboard
-    </a>
-  </div>
-
-  <!-- 🐾 FOOTER -->
-  <div class="text-center mt-4 pet-footer">
-    <img src="{{ url_for('static', filename='images/a1.jpeg') }}"
-         width="170" class="rounded shadow-sm"
-         onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/a1.jpg') }}';">
-    <p class="small text-muted mt-2">
-      Your pet, your responsibility 🐾
-    </p>
-  </div>
-
 </div>
 
-<!-- 🧠 JS -->
+<!-- UPLOAD FORM (hidden, submits via JS fetch) -->
+<form id="uploadForm" enctype="multipart/form-data">
+  <input type="file" id="pet-photo-upload" class="upload-input" accept="image/*" onchange="uploadPhoto(this)"/>
+</form>
+
+<!-- PROFILE BODY -->
+<div class="profile-body">
+  <div class="pet-name">{{ pet.name }}</div>
+  <div class="pet-sub">{{ pet.species }} · {{ pet.breed }} · {{ pet.age }} years old</div>
+
+  <!-- Show upload hint only when there's no photo yet -->
+  <div class="upload-hint {% if pet.photo_url %}has-photo{% endif %}" id="uploadHint"
+       onclick="document.getElementById('pet-photo-upload').click()">
+    📷 No photo yet — tap to upload one! It will show on the Home page too.
+  </div>
+
+  <!-- INFO CARD -->
+  <div class="info-card">
+    <div class="info-card-title">Pet Details</div>
+    <div class="info-row"><span class="info-key">Species</span><span class="info-val">{{ pet.species }}</span></div>
+    <div class="info-row"><span class="info-key">Breed</span><span class="info-val">{{ pet.breed }}</span></div>
+    <div class="info-row"><span class="info-key">Age</span><span class="info-val">{{ pet.age }} years</span></div>
+    <div class="info-row"><span class="info-key">Gender</span><span class="info-val">{{ pet.gender or 'Not specified' }}</span></div>
+    <div class="info-row"><span class="info-key">Weight</span><span class="info-val">{{ pet.weight or '—' }} kg</span></div>
+    <div class="info-row"><span class="info-key">Last Checkup</span><span class="info-val">{{ pet.last_checkup or '—' }}</span></div>
+  </div>
+
+  <!-- ACTION PILLS -->
+  <div class="action-pills">
+    <a href="/pet/{{ pet.id }}/vaccination" class="pill-btn purple">💉 Vaccination Records</a>
+    <a href="/pet/{{ pet.id }}/health" class="pill-btn green">🩺 Health Checkup</a>
+    <a href="/pet/{{ pet.id }}/diet" class="pill-btn orange">🥗 Diet Plan</a>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <a href="/" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
+    <span class="nav-item-label">Home</span>
+  </a>
+  <a href="/health" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="nav-item-label">Health</span>
+  </a>
+  <a href="/pets" class="nav-item active">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#6C3FF5" stroke-width="2"/><path d="M12 8v4l3 3" stroke="#6C3FF5" stroke-width="2" stroke-linecap="round"/></svg>
+    <span class="nav-item-label" style="color:#6C3FF5">My Pets</span>
+  </a>
+  <a href="/agripet" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="nav-item-label">AgriPet</span>
+  </a>
+  <a href="/doctor" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="#9CA3AF" stroke-width="2"/></svg>
+    <span class="nav-item-label">Doctor</span>
+  </a>
+</nav>
+
 <script>
-function toggleDetails() {
-  const section = document.getElementById("detailsSection");
-  section.style.display =
-    section.style.display === "none" ? "block" : "none";
+async function uploadPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('photo', file);
+  formData.append('pet_id', '{{ pet.id }}');
+
+  // Show preview immediately
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const url = e.target.result;
+    const avatarDisplay = document.getElementById('avatarDisplay');
+    const emoji = document.getElementById('avatarEmoji');
+    if (emoji) emoji.style.display = 'none';
+    let img = document.getElementById('avatarImg');
+    if (!img) {
+      img = document.createElement('img');
+      img.id = 'avatarImg';
+      avatarDisplay.insertBefore(img, avatarDisplay.firstChild);
+    }
+    img.src = url;
+    img.style.display = 'block';
+    document.getElementById('uploadHint').classList.add('has-photo');
+  };
+  reader.readAsDataURL(file);
+
+  // Send to Flask backend
+  try {
+    const resp = await fetch('/upload_pet_photo', {
+      method: 'POST',
+      body: formData
+    });
+    const data = await resp.json();
+    if (data.success) {
+      console.log('Photo saved:', data.photo_url);
+    } else {
+      alert('Upload failed: ' + (data.error || 'Unknown error'));
+    }
+  } catch(e) {
+    console.error('Upload error:', e);
+  }
 }
 </script>
 
-<!-- 🎨 CSS -->
-<style>
-.pet-bg {
-  min-height: 100vh;
-  background: linear-gradient(to bottom, #f5f9ff, #eef4fb);
-}
-.pet-avatar-wrap { position: relative; display: inline-block; }
-.pet-avatar { object-fit: cover; border: 4px solid #dbe7f6; background: white; }
-.pet-title { color: #325ea8; font-weight: 600; }
-.pet-card {
-  max-width: 470px;
-  border-radius: 18px;
-  background: linear-gradient(180deg, #ffffff, #f7fbff);
-}
-.pet-info-box {
-  background: #f4f7fc;
-  padding: 12px;
-  border-radius: 12px;
-}
-.view-btn {
-  width: 100%;
-  background: #1a73e8;
-  color: #fff;
-  border: none;
-  padding: 12px;
-  border-radius: 14px;
-  font-weight: 700;
-  margin-top: 15px;
-}
-.view-btn:active { transform: scale(0.96); }
-.card {
-    border-radius: 12px;
-}
-
-.card-body {
-    font-size: 15px;
-}
-.back-btn {
-  position: fixed;
-  top: 65px;
-  left: 18px;
-  font-size: 28px;
-  color: #233b6c;
-}
-</style>
-
-{% endblock %}
+</body>
+</html>

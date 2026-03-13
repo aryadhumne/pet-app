@@ -24,7 +24,7 @@
     /* ===== BACKGROUND ===== */
     .page {
       min-height: 100vh;
-      background: url("{{ url_for('static', filename='images/welcome2.jpeg') }}")
+      background: url("{{ url_for('static', filename='images/register1.jpeg') }}")
                   no-repeat center center / cover;
       display: flex;
       align-items: center;
@@ -36,25 +36,25 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(255,255,255,0.65);
+      background: rgba(245,243,255,0.75); /* lavender overlay */
       backdrop-filter: blur(8px);
     }
 
     /* ===== REGISTER CARD ===== */
     .register-card {
       position: relative;
-      background: rgba(254, 243, 242, 0.92);
+      background: rgba(255,255,255,0.92); /* white-glass card */
       padding: 32px 26px;
       border-radius: 26px;
       width: 90%;
       max-width: 360px;
-      box-shadow: 0 14px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.18);
       text-align: center;
     }
 
     .register-card h2 {
       margin-bottom: 8px;
-      color: #111;
+      color: #6d28d9; /* deep lavender */
     }
 
     /* ===== IMAGE BELOW REGISTER ===== */
@@ -62,6 +62,7 @@
       width: 110px;
       margin: 10px auto 20px;
       display: block;
+      border-radius: 12px;
     }
 
     label {
@@ -69,23 +70,30 @@
       text-align: left;
       font-size: 14px;
       margin-bottom: 6px;
-      color: #222;
+      color: #6d28d9; /* deep lavender */
+      font-weight: 500;
     }
 
     input {
       width: 100%;
       padding: 12px 14px;
-      border-radius: 10px;
-      border: none;
+      border-radius: 12px;
+      border: 1px solid #ddd6fe;
       outline: none;
       margin-bottom: 14px;
       font-size: 14px;
+      background: #f5f3ff; /* soft lavender background */
+    }
+
+    input:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 5px rgba(139,92,246,0.4);
     }
 
     /* ===== BUTTON ===== */
     .btn {
       width: 100%;
-      background: #f4a640;
+      background: #8b5cf6; /* lavender button */
       color: #fff;
       padding: 14px;
       border-radius: 30px;
@@ -93,27 +101,29 @@
       border: none;
       cursor: pointer;
       margin-top: 10px;
+      transition: 0.3s;
     }
 
     .btn:hover {
-      background: #ef9b2d;
+      background: #7c3aed; /* darker lavender on hover */
+      transform: translateY(-2px);
     }
 
     /* ===== LOGIN TEXT ===== */
     .login-text {
       margin-top: 16px;
       font-size: 14px;
-      color: #222;
+      color: #6d28d9;
     }
 
     .login-text a {
-      color: #000;
+      color: #8b5cf6;
       font-weight: 600;
       text-decoration: underline;
     }
   </style>
-</head>
 
+</head>
 <body>
 
   <div class="page">
@@ -121,8 +131,8 @@
 
       <h2>Register 🐾</h2>
 
-      <!-- IMAGE REGISTER TEXT CHYA KHALI -->
-      <img src="{{ url_for('static', filename='images/p3.jpeg') }}"
+      <!-- IMAGE BELOW REGISTER TEXT -->
+      <img src="{{ url_for('static', filename='images/p4.jpeg') }}"
            alt="Register Image"
            class="register-img">
 

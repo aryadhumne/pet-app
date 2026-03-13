@@ -23,8 +23,8 @@
       width: 100%;
       background-image: url("{{ url_for('static', filename='images/welcome2.jpeg') }}");
       background-repeat: no-repeat;
-      background-size: 140%;
-      background-position: center top;
+      background-size: cover;
+      background-position: center;
 
       display: flex;
       align-items: center;
@@ -38,7 +38,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: rgba(255, 255, 255, 0.7);
+      background: rgba(230, 230, 255, 0.75); /* lavender overlay */
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
@@ -46,7 +46,7 @@
     /* ===== CONTENT CARD ===== */
     .welcome-page {
       position: relative;
-      background: rgba(254, 243, 242, 0.92);
+      background: rgba(245, 245, 255, 0.95); /* light lavender card */
       border-radius: 26px;
       padding: 40px 26px;
       max-width: 420px;
@@ -63,19 +63,19 @@
 
     h1 {
       font-size: 26px;
-      color: #3a2e2a;
+      color: #4b3cb6; /* deep lavender */
       margin-bottom: 12px;
     }
 
     p {
       font-size: 15px;
-      color: #7a6e69;
+      color: #6c63ff; /* soft lavender text */
       margin-bottom: 32px;
       line-height: 1.6;
     }
 
     .start-btn {
-      background: #f4a640;
+      background: #7c4dff; /* lavender button */
       color: #fff;
       padding: 14px 34px;
       border-radius: 30px;
@@ -85,12 +85,16 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
+      transition: 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
     .start-btn:hover {
-      opacity: 0.9;
+      background: #5e35b1; /* darker hover lavender */
+      transform: translateY(-2px);
     }
   </style>
+
 </head>
 
 <body>
@@ -107,7 +111,8 @@
       >
 
       <!-- Text -->
-      <h1>Helloo..!!</h1>
+      <h1>Hello..!!</h1>
+
       <p>
         Find your perfect pet companion and begin a beautiful journey of care and love.
         Discover dogs and cats waiting for a forever home, easily adopt pets, book visits,
@@ -118,7 +123,7 @@
 
       <!-- Button -->
       <a href="{{ url_for('onboarding') }}" class="start-btn">
-        Get started 🐾
+        Get Started 🐾
       </a>
 
     </div>

@@ -1,34 +1,39 @@
-from werkzeug.utils import secure_filename
+
 from flask import flash, redirect, url_for, request, current_app
+
+
 import os
+from werkzeug.utils import secure_filename
 
-@bp.route("/upload_pet_photo/<int:pet_id>", methods=["POST"])
-def upload_pet_photo(pet_id):
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
-    if "photo" not in request.files:
-        flash("No file selected", "danger")
-        return redirect(url_for("main.pet_profile", pet_id=pet_id))
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-    file = request.files["photo"]
+@app.route('/upload_pet_photo', methods=['POST'])
+def upload_pet_photo():
+    if 'photo' not in request.files:
+        return jsonify({'success': False, 'error': 'No file'}), 400
 
-    if file.filename == "":
-        flash("No selected file", "danger")
-        return redirect(url_for("main.pet_profile", pet_id=pet_id))
+    file  = request.files['photo']
+    pet_id = request.form.get('pet_id')
 
-    # ✅ Create upload folder if not exists
-    upload_folder = os.path.join(current_app.root_path, "static/uploads")
-    os.makedirs(upload_folder, exist_ok=True)
+    if not file or not pet_id or not allowed_file(file.filename):
+        return jsonify({'success': False, 'error': 'Invalid request'}), 400
 
-    # ✅ Secure filename
-    filename = secure_filename(f"pet_{pet_id}.jpg")
-    filepath = os.path.join(upload_folder, filename)
+    ext      = file.filename.rsplit('.', 1)[1].lower()
+    filename = f'pet_{pet_id}.{ext}'
 
-    file.save(filepath)
+    save_dir = os.path.join(app.root_path, 'static', 'uploads')
+    os.makedirs(save_dir, exist_ok=True)
+    file.save(os.path.join(save_dir, filename))
 
-    # ✅ Save image name to DB
-    pet = Pet.query.get_or_404(pet_id)
-    pet.profile_image = filename
+    # Save filename to DB
+    pet = Pet.query.get(pet_id)
+    if not pet:
+        return jsonify({'success': False, 'error': 'Pet not found'}), 404
+
+    pet.photo = filename
     db.session.commit()
 
-    flash("Profile photo uploaded successfully!", "success")
-    return redirect(url_for("main.pet_profile", pet_id=pet_id))
+    return jsonify({'success': True, 'photo': filename})

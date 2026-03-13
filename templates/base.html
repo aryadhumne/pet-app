@@ -5,262 +5,503 @@
     <title>Smart AgriPet Care</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- 🔹 Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- 🔹 Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <!-- 🔹 Custom CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
     <style>
+        :root {
+            --primary:       #7c3aed;
+            --primary-dark:  #5b21b6;
+            --primary-light: #ede9fe;
+            --accent:        #f59e0b;
+            --accent-light:  #fef3c7;
+            --teal:          #0891b2;
+            --rose:          #e11d48;
+            --rose-light:    #ffe4e6;
+            --bg:            #f8f7ff;
+            --surface:       #ffffff;
+            --surface2:      #f3f0ff;
+            --border:        rgba(124,58,237,0.12);
+            --text:          #1e1b4b;
+            --text-mid:      #6d6a8a;
+            --text-light:    #a89fc4;
+            --shadow-sm:     0 2px 10px rgba(124,58,237,0.08);
+            --shadow-md:     0 8px 24px rgba(124,58,237,0.14);
+            --shadow-lg:     0 16px 48px rgba(124,58,237,0.2);
+            --nav-height:    68px;
+            --top-height:    60px;
+            --radius:        16px;
+            --radius-lg:     24px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding-bottom: 80px;
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding-bottom: var(--nav-height);
+            min-height: 100vh;
         }
 
-        /* 🔹 BACKGROUND */
-        .app-bg {
-            position: fixed;
-            inset: 0;
-            background: url("https://media.istockphoto.com/id/2148798138/photo/collage-of-domestic-animal-group-together.jpg?s=612x612&w=0&k=20&c=9Pcg1H4YQYSQ1EK_9fMf2paRqVimnFGTXJdt_lXKSQc=")
-                        no-repeat center center;
-            background-size: cover;
-            z-index: -2;
-        }
+ 
 
-        .app-bg::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.75);
-            z-index: -1;
-        }
-
-        /* 🔹 TOP BAR */
+        /* Rest of your existing styles remain exactly the same */
+        /* TOPBAR */
         .topbar {
-            height: 60px;
-            background: #ed8f73ff;
-            color: white;
+            height: var(--top-height);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             display: flex;
             align-items: center;
-            padding: 0 15px;
+            padding: 0 16px;
             position: sticky;
             top: 0;
             z-index: 1000;
+            box-shadow: 0 4px 20px rgba(91,33,182,0.35);
         }
-        /* 🔔 NOTIFICATION ICON */
-.notification {
-    position: absolute;
-    right: 15px;
-    font-size: 22px;
-    cursor: pointer;
+
+        .topbar::after {
+            content: "";
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), #f472b6, var(--teal), var(--accent));
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
+        }
+
+        .menu-btn {
+            font-size: 22px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.85);
+            background: none;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            line-height: 1;
+        }
+        .menu-btn:hover { color: white; background: rgba(255,255,255,0.15); }
+.app-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: 
+        /* MASSIVE VISIBLE PET PAWS */
+        radial-gradient(circle 300px at 20% 30%, #7c3aed20 0%, transparent 50%),
+        radial-gradient(circle 250px at 70% 70%, #10b98120 0%, transparent 50%),
+        radial-gradient(circle 200px at 80% 20%, #f59e0b20 0%, transparent 50%),
+        /* GIANT PAW PRINTS - SUPER VISIBLE */
+        url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNzAiIHI9IjE1IiBmaWxsPSIjN0MzQUVEIi8+CjxjaXJjbGUgY3g9IjM1IiBjeT0iNTUiIHI9IjgiIGZpbGw9IiM3QzNBREQiLz4KPGNpcmNsZSBjeD0iNDUiBjeT0iNDUiIHI9IjgiIGZpbGw9IiM3QzNBREQiLz4KPGNpcmNsZSBjeD0iNTUiBjeT0iNDUiIHI9IjgiIGZpbGw9IiM3QzNBREQiLz4KPGNpcmNsZSBjeD0iNjUiBjeT0iNTUiIHI9IjgiIGZpbGw9IiM3QzNBREQiLz4KPC9zdmc+') repeat,
+        /* Base color */
+        linear-gradient(135deg, #f8f7ff 0%, #ede9fe 100%);
+    background-size: 100px 100px, auto, cover;
 }
 
-.notification .badge {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    background: #ff3d00;
-    color: white;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 6px;
-    border-radius: 50%;
-    box-shadow: 0 0 0 2px #ed8f73ff;
-}
 
-
-        .menu-btn { font-size: 26px; cursor: pointer;color:black; }
 
         .app-title {
             position: absolute;
             left: 50%;
-            color:black;
             transform: translateX(-50%);
-            font-weight: 600;
-        }
-
-        /* 🔹 SIDE MENU */
-        .side-menu {
-            position: fixed;
-            top: 0;
-            left: -280px;
-            width: 280px;
-            height: 100%;
-            background: white;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.15);
-            transition: 0.35s ease;
-            z-index: 9999;
-        }
-
-        .side-header {
-            height: 60px;
-            background: #f3a781ff;
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
             color: white;
+            letter-spacing: 0.2px;
+            white-space: nowrap;
+        }
+
+        .notification {
+            position: absolute;
+            right: 16px;
+            font-size: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 6px;
+            border-radius: 10px;
+            transition: background 0.2s;
+            line-height: 1;
+        }
+        .notification:hover { background: rgba(255,255,255,0.15); }
+
+        .notification .badge {
+            position: absolute;
+            top: 2px; right: 2px;
+            background: var(--accent);
+            color: #1e1b4b;
+            font-size: 9px;
+            font-weight: 800;
+            width: 17px; height: 17px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 18px;
+            justify-content: center;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
         }
+
+        /* SIDE MENU */
+        .side-menu {
+            position: fixed;
+            top: 0; left: -300px;
+            width: 285px;
+            height: 100%;
+            background: var(--surface);
+            box-shadow: var(--shadow-lg);
+            transition: left 0.32s cubic-bezier(0.4,0,0.2,1);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+        }
+        .side-menu.open { left: 0; }
+
+        .side-header {
+            background: linear-gradient(145deg, var(--primary-dark), var(--primary));
+            padding: 52px 22px 22px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .side-header::before {
+            content: "🐾";
+            position: absolute;
+            bottom: -12px; right: -5px;
+            font-size: 80px;
+            opacity: 0.12;
+            transform: rotate(-15deg);
+        }
+        .side-header h6 {
+            font-family: 'Sora', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2px;
+        }
+        .side-header small { color: rgba(255,255,255,0.6); font-size: 12px; }
+
+        .side-close {
+            position: absolute;
+            top: 14px; right: 14px;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        .side-close:hover { background: rgba(255,255,255,0.2); color: white; }
+
+        .side-links { padding: 10px 0; flex: 1; overflow-y: auto; }
 
         .side-link {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 14px 20px;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 2px 8px;
             text-decoration: none;
-            color: #1f2937;
-            font-size: 16px;
+            color: var(--text);
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 12px;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
         }
+        .side-link:hover {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+        .side-link .icon {
+            width: 38px; height: 38px;
+            background: var(--surface2);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .side-divider { height: 1px; background: var(--border); margin: 8px 20px; }
+        .side-link.logout-link { color: var(--rose); }
+        .side-link.logout-link .icon { background: var(--rose-light); }
+        .side-link.logout-link:hover { background: var(--rose-light); border-left-color: var(--rose); }
 
-        .side-link:hover { background: #f1f5ff; }
+        /* OVERLAY */
+        .menu-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(30,27,75,0.45);
+            z-index: 9998;
+            backdrop-filter: blur(3px);
+        }
+        .menu-overlay.show { display: block; }
 
-        .logout-link { color: #b91c1c; }
-
-        /* 🔹 PAGE CONTENT */
+        /* PAGE CONTENT */
         .page-content {
-            min-height: calc(100vh - 60px);
-            padding: 20px 10px;
+            padding: 16px 14px 24px;
+            max-width: 620px;
+            margin: 0 auto;
+            /* Enhanced backdrop for better readability over bg image */
+            background: rgba(181, 156, 219, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--nav-height);
         }
 
-        /* 🔹 LOGOUT POPUP */
-        .popup-overlay {
+        /* ─── BOTTOM NAV ──────────────────────────────── */
+        .bottom-nav-bar {
             position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
+            bottom: 0; left: 0; right: 0;
+            height: var(--nav-height);
+                background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 2px;
+            box-shadow: 0 -4px 30px rgba(124,58,237,0.13);
+            border-top: 1.5px solid var(--border);
+            z-index: 999;
+            backdrop-filter: blur(20px);
+        }
+
+        .bottom-nav-bar a {
+            text-decoration: none;
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            padding: 6px 2px;
+            border-radius: 14px;
+            transition: all 0.22s;
+            flex: 1;
+            position: relative;
+        }
+
+        .bottom-nav-bar a .nav-icon {
+            font-size: 21px;
+            line-height: 1;
+            transition: transform 0.22s;
+            display: block;
+        }
+
+        .bottom-nav-bar a .nav-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+
+        .bottom-nav-bar a:hover { color: var(--primary); }
+        .bottom-nav-bar a:hover .nav-icon { transform: translateY(-3px); }
+
+        .bottom-nav-bar a.active { color: var(--primary); }
+        .bottom-nav-bar a.active .nav-icon { transform: translateY(-3px) scale(1.12); }
+
+        .bottom-nav-bar a.active::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 28px; height: 3px;
+            background: var(--primary);
+            border-radius: 0 0 4px 4px;
+        }
+
+        /* LOGOUT POPUP */
+        .popup-overlay {
+            position: fixed; inset: 0;
+            background: rgba(30,27,75,0.5);
             display: none;
             justify-content: center;
-            align-items: center;
+            align-items: flex-end;
             z-index: 10000;
+            backdrop-filter: blur(5px);
         }
+        .popup-overlay.show { display: flex; }
 
         .popup-box {
             background: white;
-            width: 90%;
-            max-width: 360px;
-            padding: 26px;
-            border-radius: 18px;
+            width: 100%; max-width: 480px;
+            padding: 20px 24px 36px;
+            border-radius: 28px 28px 0 0;
             text-align: center;
+            animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+            backdrop-filter: blur(20px);
+        }
+        .popup-handle { width: 40px; height: 4px; background: #e0e0e0; border-radius: 2px; margin: 0 auto 18px; }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
         }
 
-        .logout-btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 30px;
-            border: none;
-            background: #ef8282ff;
-            color: white;
-            font-size: 16px;
+        .popup-box h5 { font-family: 'Sora', sans-serif; font-size: 18px; margin-bottom: 6px; }
+        .popup-box p  { color: var(--text-mid); font-size: 13px; margin-bottom: 22px; }
+
+        .logout-confirm-btn {
+            width: 100%; padding: 14px;
+            border-radius: 14px; border: none;
+            background: linear-gradient(135deg, #be123c, var(--rose));
+            color: white; font-size: 15px; font-weight: 700;
+            font-family: 'Nunito', sans-serif;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(225,29,72,0.3);
+            transition: all 0.2s;
         }
+        .logout-confirm-btn:hover { transform: translateY(-2px); }
 
         .cancel-text {
-            margin-top: 16px;
-            font-weight: 500;
-            color: #f49b80ff;
-            cursor: pointer;
+            margin-top: 14px; font-weight: 700;
+            color: var(--text-mid); cursor: pointer;
+            font-size: 14px; transition: color 0.2s;
+        }
+        .cancel-text:hover { color: var(--primary); }
+
+        /* RESPONSIVE */
+        @media (min-width: 480px) {
+            .app-title { font-size: 16px; }
+            .bottom-nav-bar a .nav-label { font-size: 11px; }
+            .bottom-nav-bar a .nav-icon  { font-size: 22px; }
+        }
+        @media (min-width: 640px) {
+            .page-content { padding: 20px 24px 28px; }
+        }
+        @media (max-width: 360px) {
+            .app-title { font-size: 13px; }
+            .bottom-nav-bar a .nav-label { font-size: 9px; }
+            .bottom-nav-bar a .nav-icon  { font-size: 18px; }
+            .bottom-nav-bar a { gap: 2px; }
         }
 
-        /* 🔹 Google Translate Fix */
-        .goog-te-banner-frame,
-        .goog-tooltip,
-        .goog-te-gadget-icon { display: none !important; }
+        /* Google Translate */
+        .goog-te-banner-frame, .goog-tooltip, .goog-te-gadget-icon { display: none !important; }
         body { top: 0 !important; }
     </style>
 </head>
-
 <body>
 
-<!-- 🔹 BACKGROUND -->
+<!-- Rest of your HTML remains exactly the same -->
 <div class="app-bg"></div>
+<div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 
-<!-- 🔹 SIDE MENU -->
+<!-- SIDE MENU -->
 <div id="sideMenu" class="side-menu">
     <div class="side-header">
-        <h6>Menu</h6>
-        <span onclick="toggleMenu()">✕</span>
+        <span class="side-close" onclick="toggleMenu()">✕</span>
+        <h6>Smart AgriPet</h6>
+        <small>Your pet companion app</small>
     </div>
-
-    <a href="{{ url_for('user_info') }}" class="side-link">👤 User Info</a>
-    <a href="{{ url_for('about') }}" class="side-link">📘 About Us</a>
-    <a href="#" class="side-link" onclick="toggleLanguage()">🌐 Language</a>
-    <a href="#" class="side-link logout-link" onclick="openLogoutPopup()">🚪 Logout</a>
-
-    <div id="langBox" style="display:none; padding:15px;">
+    <div class="side-links">
+        <a href="{{ url_for('user_info') }}" class="side-link"><span class="icon">👤</span> User Info</a>
+        <a href="{{ url_for('about') }}"     class="side-link"><span class="icon">📘</span> About Us</a>
+        <a href="#" class="side-link" onclick="toggleLanguage(); return false;"><span class="icon">🌐</span> Language</a>
+        <div class="side-divider"></div>
+        <a href="#" class="side-link logout-link" onclick="openLogoutPopup(); return false;"><span class="icon">🚪</span> Logout</a>
+    </div>
+    <div id="langBox" style="display:none; padding:12px 16px;">
         <div id="google_translate_element"></div>
     </div>
 </div>
 
-<!-- 🔹 TOP BAR -->
+<!-- TOPBAR -->
 <div class="topbar">
-    <span class="menu-btn" onclick="toggleMenu()">☰</span>
-    <span class="app-title">Smart AgriPet Care</span>
-<a href="{{ url_for('notifications') }}" class="notification">
-    🔔
-    {% if notification_count > 0 %}
-      <span class="badge">{{ notification_count }}</span>
-    {% endif %}
-</a>
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <span class="app-title">🐾 Smart AgriPet Care</span>
+    <a href="{{ url_for('notifications') }}" class="notification">
+        🔔
+        {% if notification_count > 0 %}
+           <span class="badge">{{ notification_count }}</span>
+        {% endif %}
+    </a>
 </div>
-</div>
-<!-- 🔹 MAIN CONTENT (NO CONTAINER) -->
+
+<!-- MAIN CONTENT -->
 <main class="page-content">
     {% block content %}{% endblock %}
 </main>
-<!-- 🔹 BOTTOM NAV -->
+
+<!-- BOTTOM NAV -->
 {% if session.get('user_id') %}
-<nav class="navbar navbar-dark backgroundblue fixed-bottom">
-    <div class="container-fluid d-flex justify-content-around text-center">
-        <a class="nav-link text-black" href="{{ url_for('dashboard') }}">🏠<br>Home</a>
-        <a class="nav-link text-black" href="{{ url_for('health') }}">❤<br>Health</a>
-        <a class="nav-link text-black" href="{{ url_for('pet_home') }}">🐾<br>Pet</a>
-        <a class="nav-link text-black" href="{{ url_for('agripet') }}">🌾<br>AgriPet</a>
-        <a class="nav-link text-black" href="{{ url_for('doctor_finder') }}">👨‍⚕<br>Doctor</a>
-        <a class="nav-link text-black" href="{{ url_for('help') }}">❓<br>Help</a>
-    </div>
+<nav class="bottom-nav-bar">
+    <a href="{{ url_for('dashboard') }}">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
+    </a>
+    <a href="{{ url_for('health') }}">
+        <span class="nav-icon">❤️</span>
+        <span class="nav-label">Health</span>
+    </a>
+    <a href="{{ url_for('pet_home') }}">
+        <span class="nav-icon">🐾</span>
+        <span class="nav-label">My Pets</span>
+    </a>
+    <a href="{{ url_for('agripet') }}">
+        <span class="nav-icon">🌾</span>
+        <span class="nav-label">AgriPet</span>
+    </a>
+    <a href="{{ url_for('doctor_finder') }}">
+        <span class="nav-icon">🩺</span>
+        <span class="nav-label">Doctor</span>
+    </a>
+    <a href="{{ url_for('help') }}">
+        <span class="nav-icon">❓</span>
+        <span class="nav-label">Help</span>
+    </a>
 </nav>
 {% endif %}
 
-<!-- 🔹 LOGOUT POPUP -->
+<!-- LOGOUT POPUP -->
 <div id="logoutPopup" class="popup-overlay">
     <div class="popup-box">
-        <h5>Are you sure you want to log out?</h5>
-        <p>You can log in again anytime.</p>
-        <button class="logout-btn" onclick="confirmLogout()">Log Out</button>
+        <div class="popup-handle"></div>
+        <h5>Log out of SmartAgriPet?</h5>
+        <p>You can always log back in anytime.</p>
+        <button class="logout-confirm-btn" onclick="confirmLogout()">Yes, Log Out</button>
         <div class="cancel-text" onclick="closePopup()">Cancel</div>
     </div>
 </div>
 
-<!-- 🔹 JS -->
 <script>
 function toggleMenu() {
     const menu = document.getElementById("sideMenu");
-    menu.style.left = (menu.style.left === "0px") ? "-280px" : "0px";
+    const overlay = document.getElementById("menuOverlay");
+    const isOpen = menu.classList.contains("open");
+    menu.classList.toggle("open", !isOpen);
+    overlay.classList.toggle("show", !isOpen);
 }
 function toggleLanguage() {
     const box = document.getElementById("langBox");
     box.style.display = (box.style.display === "none") ? "block" : "none";
 }
-function openLogoutPopup() {
-    document.getElementById("logoutPopup").style.display = "flex";
-}
-function closePopup() {
-    document.getElementById("logoutPopup").style.display = "none";
-}
-function confirmLogout() {
-    window.location.href = "{{ url_for('logout') }}";
-}
+function openLogoutPopup() { document.getElementById("logoutPopup").style.display = "flex"; }
+function closePopup()       { document.getElementById("logoutPopup").style.display = "none"; }
+function confirmLogout()    { window.location.href = "{{ url_for('logout') }}"; }
+
+// Auto-highlight active nav link
+(function() {
+    const path = window.location.pathname;
+    document.querySelectorAll('.bottom-nav-bar a').forEach(function(link) {
+        try {
+            if (new URL(link.href).pathname === path) link.classList.add('active');
+        } catch(e) {}
+    });
+})();
 </script>
 
-<!-- 🔹 GOOGLE TRANSLATE -->
 <script>
 function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        includedLanguages: 'en,hi,mr'
-    }, 'google_translate_element');
+    new google.translate.TranslateElement({ pageLanguage:'en', includedLanguages:'en,hi,mr' }, 'google_translate_element');
 }
 </script>
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

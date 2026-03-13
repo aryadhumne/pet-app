@@ -1,229 +1,440 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="pet-home-wrapper">
-
-    <!-- ✅ HERO PET IMAGE SECTION -->
-    <div class="pet-hero">
-        <div class="brand-text animate-glow">🐾 Pets 🐾</div>
-
-        <!-- ✅ FEATURED PET IMAGE -->
-        <img src="{{ url_for('static', filename='images/pin3.jpeg') }}" class="hero-pet floating-pet">
-    </div>
-
-    <!-- ✅ ACTION CARD -->
-    <div class="action-card animate-slideup">
-
-        <h4 class="welcome-text animate-color">Happy Pets, Happy You</h4>
-        <p class="sub-text">
-            Keep your pets healthy, active & cared with smart services.
-        </p>
-
-        <div class="action-buttons">
-
-            <!-- PET SHOP -->
-            <a href="{{ url_for('shop') }}" class="pet-action blue glow-hover">
-                🛒 Pet Shop
-            </a>
-
-            <!-- ADOPT (HIGHLIGHTED) -->
-            <a href="{{ url_for('adopt') }}" class="btn-adopt">
-                ❤️ Adopt
-            </a>
-
-            <!-- PET LIST -->
-            <a href="{{ url_for('pets_list') }}" class="pet-action green glow-hover">
-                🐾 Pets
-            </a>
-
-        </div>
-    </div>
-</div>
-
 <style>
-/* ================= THEME COLORS ================= */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
 :root {
-    --primary: #f39a7a;        /* Top bar peach */
+    --primary: #f39a7a;
     --primary-dark: #e76f51;
     --primary-light: #fde3d9;
-    --accent: #ff3d81;         /* Adopt highlight */
+    --accent: #ff3d81;
+    --coral: #FF6B6B;
+    --peach: #FFA07A;
+    --soft-orange: #FFD166;
 }
 
-/* ================= MAIN WRAPPER ================= */
+* { box-sizing: border-box; }
+
 .pet-home-wrapper {
     min-height: 100vh;
-    background: linear-gradient(to bottom, var(--primary-light), #ffffff);
+    background: #FFF8F5;
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-family: 'Nunito', sans-serif;
+    overflow-x: hidden;
+    padding-bottom: 100px;
 }
 
-/* ================= HERO SECTION ================= */
+/* ── HERO ── */
 .pet-hero {
-    position: relative;
     width: 100%;
-    height: 55vh;
+    min-height: 58vh;
+    background: linear-gradient(160deg, #FF8C69 0%, #FF6B6B 45%, #FF3D81 100%);
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
+    position: relative;
+    padding-bottom: 60px;
+    overflow: hidden;
 }
 
-/* ================= BRAND TEXT ================= */
-.brand-text {
+/* big soft circles in bg */
+.pet-hero::before {
+    content: '';
     position: absolute;
-    top: 30px;
-    font-size: 32px;
+    width: 320px; height: 320px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+    top: -80px; right: -80px;
+}
+.pet-hero::after {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    bottom: 40px; left: -60px;
+}
+
+.brand-badge {
+    position: absolute;
+    top: 22px;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(12px);
+    border: 1.5px solid rgba(255,255,255,0.4);
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.5px;
+    z-index: 3;
+    animation: fadeDown 0.6s ease both;
+}
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* floating paw dots */
+.paw-dot {
+    position: absolute;
+    opacity: 0.18;
+    font-size: 28px;
+    z-index: 1;
+    animation: floatDot 4s ease-in-out infinite;
+}
+.paw-dot:nth-child(2) { top: 60px; left: 20px; animation-delay: 0s; font-size: 20px; }
+.paw-dot:nth-child(3) { top: 100px; right: 30px; animation-delay: 0.8s; font-size: 34px; }
+.paw-dot:nth-child(4) { bottom: 90px; right: 20px; animation-delay: 1.4s; font-size: 18px; }
+
+@keyframes floatDot {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(15deg); }
+}
+
+/* hero image — circular with glow ring */
+.hero-img-ring {
+    position: relative;
+    z-index: 4;
+    animation: floatPet 3.2s ease-in-out infinite;
+}
+
+@keyframes floatPet {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-16px); }
+}
+
+.hero-img-ring::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(255,255,255,0.6), rgba(255,255,255,0.1), rgba(255,255,255,0.6));
+    animation: spin 6s linear infinite;
+    z-index: -1;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.hero-pet {
+    width: 210px;
+    height: 210px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid rgba(255,255,255,0.9);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+    display: block;
+}
+
+/* ── STATS ROW ── */
+.stats-strip {
+    width: 92%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: -32px;
+    z-index: 10;
+    animation: riseUp 0.7s ease 0.15s both;
+}
+
+@keyframes riseUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.stat-pill {
+    background: white;
+    border-radius: 18px;
+    padding: 14px 8px;
+    text-align: center;
+    box-shadow: 0 8px 28px rgba(231,111,81,0.14);
+}
+.stat-pill .s-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+.stat-pill .s-num  {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
     font-weight: 800;
     color: var(--primary-dark);
-    opacity: 0.9;
-    z-index: 1;
+    display: block;
+    line-height: 1;
+}
+.stat-pill .s-lbl  {
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    display: block;
+    margin-top: 3px;
 }
 
-/* ================= HERO IMAGE ================= */
-.hero-pet {
-    height: 260px;
-    z-index: 2;
-    transition: 0.4s ease;
-}
-
-/* Floating animation */
-@keyframes floatPet {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-    100% { transform: translateY(0px); }
-}
-
-.floating-pet {
-    animation: floatPet 3s ease-in-out infinite;
-}
-
-.hero-pet:hover {
-    transform: translateY(-25px) scale(1.05);
-}
-
-/* ================= ACTION CARD ================= */
-.action-card {
+/* ── TAGLINE ── */
+.tagline-block {
     width: 92%;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    margin-top: -40px;
-    border-radius: 26px;
-    padding: 25px 18px;
-    text-align: center;
-    color: white;
-    box-shadow: 0 15px 35px rgba(231, 111, 81, 0.45);
+    margin-top: 24px;
+    animation: riseUp 0.7s ease 0.25s both;
 }
-
-/* ================= TEXT ================= */
-.welcome-text {
-    font-weight: 700;
-    margin-bottom: 6px;
+.tagline-block h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: #2D1B0E;
+    margin: 0 0 6px 0;
+    line-height: 1.25;
 }
-
-.sub-text {
+.tagline-block p {
     font-size: 13px;
-    opacity: 0;
-    animation: fadeIn 1.5s forwards;
-    animation-delay: 0.6s;
-}
-
-/* ================= BUTTON WRAPPER ================= */
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 15px;
-    flex-wrap: wrap;
-}
-
-/* ================= COMMON BUTTON ================= */
-.pet-action {
-    width: 120px;
-    padding: 12px 10px;
-    border-radius: 14px;
-    text-decoration: none;
+    color: #888;
     font-weight: 600;
-    color: white;
-    transition: 0.3s ease;
+    margin: 0;
+    line-height: 1.5;
 }
 
-/* ================= BUTTON COLORS ================= */
-.pet-action.blue {
-    background: linear-gradient(135deg, #ff8c42, #ff6f00);
+/* ── ACTION CARDS ── */
+.action-grid {
+    width: 92%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 20px;
+    animation: riseUp 0.7s ease 0.35s both;
 }
 
-.pet-action.green {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-}
-
-/* ================= ADOPT BUTTON ================= */
-.btn-adopt {
-    background: linear-gradient(135deg, #ff3d81, #ff1744);
-    color: white;
-    padding: 12px 16px;
-    border-radius: 16px;
-    font-weight: 700;
+.action-tile {
+    border-radius: 22px;
+    padding: 22px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
     text-decoration: none;
-    box-shadow: 0 0 18px rgba(255, 61, 129, 0.9);
-    animation: pulseAdopt 1.5s infinite;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+    min-height: 120px;
+}
+.action-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.15);
+}
+.action-tile::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; right: -20px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
 }
 
-/* Adopt pulse animation */
-@keyframes pulseAdopt {
-    0% {
-        transform: scale(1);
-        box-shadow: 0 0 10px rgba(255, 61, 129, 0.6);
-    }
-    50% {
-        transform: scale(1.08);
-        box-shadow: 0 0 25px rgba(255, 61, 129, 1);
-    }
-    100% {
-        transform: scale(1);
-        box-shadow: 0 0 10px rgba(255, 61, 129, 0.6);
-    }
+.tile-shop {
+    background: linear-gradient(135deg, #FF8C42, #FF6000);
+    grid-column: 1;
+    box-shadow: 0 10px 28px rgba(255,96,0,0.32);
+}
+.tile-adopt {
+    background: linear-gradient(135deg, #FF3D81, #C2185B);
+    grid-column: 2;
+    box-shadow: 0 10px 28px rgba(255,61,129,0.35);
+    animation: adoptPulse 2s ease-in-out infinite;
+}
+.tile-pets {
+    background: linear-gradient(135deg, #2ecc71, #16a34a);
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 10px 28px rgba(22,163,74,0.28);
+    min-height: auto;
+    padding: 20px 22px;
 }
 
-/* ================= HOVER EFFECT ================= */
-.glow-hover:hover {
-    transform: scale(1.12);
-    box-shadow: 0 0 20px rgba(255,255,255,0.6);
+@keyframes adoptPulse {
+    0%, 100% { box-shadow: 0 10px 28px rgba(255,61,129,0.35); }
+    50%       { box-shadow: 0 14px 40px rgba(255,61,129,0.6); }
 }
 
-/* ================= ANIMATIONS ================= */
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(50px); }
-    to { opacity: 1; transform: translateY(0); }
+.tile-icon {
+    font-size: 30px;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+}
+.tile-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
+    line-height: 1;
+}
+.tile-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.78);
+    font-weight: 600;
+}
+.tile-arrow {
+    background: rgba(255,255,255,0.22);
+    border-radius: 50%;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    color: white;
+    flex-shrink: 0;
 }
 
-.animate-slideup {
-    animation: slideUp 1s ease forwards;
+/* ── FEATURES ROW ── */
+.features-row {
+    width: 92%;
+    margin-top: 24px;
+    animation: riseUp 0.7s ease 0.45s both;
+}
+.features-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: #2D1B0E;
+    margin-bottom: 14px;
+}
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.feature-item {
+    background: white;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 4px 16px rgba(231,111,81,0.08);
+}
+.feat-icon-wrap {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+.feat-title {
+    font-size: 14px;
+    font-weight: 800;
+    color: #2D1B0E;
+    margin: 0 0 2px 0;
+    font-family: 'Sora', sans-serif;
+}
+.feat-sub {
+    font-size: 11px;
+    color: #aaa;
+    font-weight: 600;
+    margin: 0;
 }
 
-@keyframes colorGlow {
-    0% { color: #ffffff; }
-    25% { color: #ffe066; }
-    50% { color: #ffb703; }
-    75% { color: #ffd166; }
-    100% { color: #ffffff; }
-}
-
-.animate-color {
-    animation: colorGlow 3s linear infinite;
-}
-
-@keyframes glowPulse {
-    0% { text-shadow: 0 0 5px var(--primary); }
-    50% { text-shadow: 0 0 20px #ff6f91; }
-    100% { text-shadow: 0 0 5px var(--primary); }
-}
-
-.animate-glow {
-    animation: glowPulse 2s infinite;
-}
-
-@keyframes fadeIn {
-    to { opacity: 1; }
+@media (max-width: 360px) {
+    .hero-pet { width: 180px; height: 180px; }
+    .action-tile .tile-label { font-size: 14px; }
 }
 </style>
+
+<div class="pet-home-wrapper">
+
+    <!-- HERO -->
+    <div class="pet-hero">
+        <span class="paw-dot">🐾</span>
+        <span class="paw-dot">🐾</span>
+        <span class="paw-dot">🐾</span>
+
+        <div class="brand-badge">🐾 Pets &amp; Care</div>
+
+        <div class="hero-img-ring">
+            <img src="{{ url_for('static', filename='images/pin3.jpeg') }}"
+                 class="hero-pet" alt="Pets">
+        </div>
+    </div>
+
+    <!-- STATS STRIP -->
+    <div class="stats-strip">
+        <div class="stat-pill">
+            <span class="s-icon">🐶</span>
+            <span class="s-num">120+</span>
+            <span class="s-lbl">Pets</span>
+        </div>
+        <div class="stat-pill">
+            <span class="s-icon">🏠</span>
+            <span class="s-num">85+</span>
+            <span class="s-lbl">Adopted</span>
+        </div>
+        <div class="stat-pill">
+            <span class="s-icon">🩺</span>
+            <span class="s-num">50+</span>
+            <span class="s-lbl">Vets</span>
+        </div>
+    </div>
+
+    <!-- TAGLINE -->
+    <div class="tagline-block">
+        <h2>Happy Pets,<br>Happy You 🧡</h2>
+        <p>Keep your pets healthy, active &amp; cared for with smart services.</p>
+    </div>
+
+    <!-- ACTION TILES -->
+    <div class="action-grid">
+
+        <a href="{{ url_for('shop') }}" class="action-tile tile-shop">
+            <span class="tile-icon">🛒</span>
+            <span class="tile-label">Pet Shop</span>
+            <span class="tile-sub">Browse products</span>
+        </a>
+
+        <a href="{{ url_for('adopt') }}" class="action-tile tile-adopt">
+            <span class="tile-icon">❤️</span>
+            <span class="tile-label">Adopt</span>
+            <span class="tile-sub">Find a friend</span>
+        </a>
+
+        <a href="{{ url_for('pets_list') }}" class="action-tile tile-pets">
+            <div>
+                <span class="tile-icon">🐾</span>
+                <span class="tile-label" style="display:block;margin-top:4px;">Browse All Pets</span>
+                <span class="tile-sub">See every pet available</span>
+            </div>
+            <div class="tile-arrow">→</div>
+        </a>
+
+    </div>
+
+    <!-- WHY US FEATURES -->
+    <div class="features-row">
+        <div class="features-title">Why Pet Owners Love Us</div>
+        <div class="features-list">
+            <div class="feature-item">
+                <div class="feat-icon-wrap" style="background:#FFF0E6;">🏥</div>
+                <div>
+                    <p class="feat-title">Vet Appointments</p>
+                    <p class="feat-sub">Book online in under 60 seconds</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feat-icon-wrap" style="background:#E8F5E9;">💊</div>
+                <div>
+                    <p class="feat-title">Health Reminders</p>
+                    <p class="feat-sub">Vaccines, checkups &amp; medicine alerts</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <div class="feat-icon-wrap" style="background:#FCE4EC;">🍖</div>
+                <div>
+                    <p class="feat-title">Smart Diet Plans</p>
+                    <p class="feat-sub">Personalised nutrition for every breed</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
 
 {% endblock %}

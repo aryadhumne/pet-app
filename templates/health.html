@@ -27,15 +27,15 @@
 
         <div class="health-buttons">
 
-            <a href="{{ url_for('add_vaccine') }}" class="health-btn peach">
+            <a href="{{ url_for('add_vaccine') }}" class="health-btn lavender">
                 💉 Vaccination
             </a>
 
-            <a href="{{ url_for('health_checkup') }}" class="health-btn green">
+            <a href="{{ url_for('health_checkup') }}" class="health-btn lavender-light">
                 🩺 Health Checkup
             </a>
 
-            <a href="{{ url_for('diet_plan') }}" class="health-btn orange">
+            <a href="{{ url_for('diet_plan') }}" class="health-btn lavender-dark">
                 🥗 Diet Plan
             </a>
 
@@ -44,20 +44,19 @@
 
 </div>
 
-<!-- STYLES -->
 <style>
-/* ================= THEME COLORS ================= */
+/* ================= LAVENDER THEME COLORS ================= */
 :root {
-    --primary: #f39a7a;        /* Peach */
-    --primary-dark: #e76f51;
-    --primary-light: #fde3d9;
-    --green: #2ecc71;
+    --lavender: #7c4dff;
+    --lavender-light: #c6b3ff;
+    --lavender-dark: #5e35b1;
+    --lavender-bg: #f3f4ff;
 }
 
 /* ================= MAIN WRAPPER ================= */
 .health-wrapper {
     min-height: 100vh;
-    background: linear-gradient(to bottom, var(--primary-light), #ffffff);
+    background: linear-gradient(to bottom, var(--lavender-bg), #ffffff);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -67,14 +66,14 @@
 /* ================= TITLES ================= */
 .health-title {
     font-weight: 800;
-    color: var(--primary-dark);
+    color: var(--lavender-dark);
     margin-top: 10px;
-    text-shadow: 0 0 12px rgba(231,111,81,0.45);
+    text-shadow: 0 0 12px rgba(124,77,255,0.25);
 }
 
 .health-subtitle {
     font-size: 13px;
-    color: #6b4b3e;
+    color: #6c63ff;
     text-align: center;
     margin-bottom: 10px;
 }
@@ -84,44 +83,33 @@
     width: 170px;
     margin-bottom: 15px;
     border-radius: 20px;
-    box-shadow: 0 12px 25px rgba(231,111,81,0.35);
-}
-
-/* ================= FLOAT ANIMATION ================= */
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
-
-.animate-float {
-    animation: float 3s ease-in-out infinite;
+    box-shadow: 0 12px 25px rgba(124,77,255,0.25);
 }
 
 /* ================= CARD ================= */
 .health-card {
     width: 95%;
     max-width: 400px;
-    background: linear-gradient(135deg, #ffffff, #fff4ee);
+    background: rgba(245,245,255,0.95);
     border-radius: 26px;
     padding: 25px;
     text-align: center;
-    box-shadow: 0 15px 35px rgba(231,111,81,0.25);
+    box-shadow: 0 15px 35px rgba(124,77,255,0.25);
 }
 
 /* ================= CARD TEXT ================= */
 .card-title {
     font-weight: 700;
-    color: var(--primary-dark);
+    color: var(--lavender-dark);
 }
 
 .card-subtitle {
     font-size: 13px;
-    color: #7a4a3a;
+    color: #7c63ff;
     margin-bottom: 20px;
 }
 
-/* ================= BUTTON LAYOUT ================= */
+/* ================= BUTTONS ================= */
 .health-buttons {
     display: flex;
     flex-direction: column;
@@ -140,47 +128,44 @@
 }
 
 /* ================= BUTTON COLORS ================= */
-.health-btn.peach {
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+.health-btn.lavender {
+    background: linear-gradient(135deg, var(--lavender), var(--lavender-dark));
 }
 
-.health-btn.green {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
+.health-btn.lavender-light {
+    background: linear-gradient(135deg, var(--lavender-light), var(--lavender));
 }
 
-.health-btn.orange {
-    background: linear-gradient(135deg, #ff8c42, #ff6f00);
+.health-btn.lavender-dark {
+    background: linear-gradient(135deg, var(--lavender-dark), #4b3cb6);
 }
 
 /* ================= BUTTON HOVER ================= */
 .health-btn:hover {
     transform: scale(1.06);
-    box-shadow: 0 0 20px rgba(231,111,81,0.45);
+    box-shadow: 0 0 20px rgba(124,77,255,0.35);
 }
 
-/* ================= FADE IN ================= */
+/* ================= ANIMATIONS ================= */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+.animate-float { animation: float 3s ease-in-out infinite; }
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
+.animate-fade { animation: fadeIn 0.8s forwards; }
+.animate-fade-delay { animation: fadeIn 1.5s forwards; }
 
-.animate-fade {
-    animation: fadeIn 0.8s forwards;
-}
-
-.animate-fade-delay {
-    animation: fadeIn 1.5s forwards;
-}
-
-/* ================= SLIDE UP ================= */
 @keyframes slideUp {
     from { opacity: 0; transform: translateY(40px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
-.animate-slideup {
-    animation: slideUp 1s ease forwards;
-}
+.animate-slideup { animation: slideUp 1s ease forwards; }
 </style>
 
 {% endblock %}

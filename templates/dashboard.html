@@ -1,251 +1,465 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="dashboard">
-
-  <!-- ================= USER HEADER ================= -->
-  <div class="user-header animate-fade">
-    <h4>Hello, {{ user.username }} 👋</h4>
-    <p>Manage your pets easily</p>
-  </div>
-
-  <!-- ================= PETS ================= -->
-  <h6 class="section-title">🐾 Your Pets</h6>
-
-  <div class="pet-scroll animate-slide">
-    {% for pet in user.pets %}
-      <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="pet-mini-card">
-        {% if pet.photo %}
-          <img src="{{ url_for('static', filename='uploads/' + pet.photo) }}">
-        {% else %}
-          <div class="pet-placeholder">{{ pet.name[0]|upper }}</div>
-        {% endif %}
-        <span>{{ pet.name }}</span>
-      </a>
-    {% endfor %}
-  </div>
-
-  <!-- ===== DIVIDER ===== -->
-  <div class="section-divider">
-    <span>📅</span>
-  </div>
-
-  <!-- ================= APPOINTMENTS ================= -->
-  <h6 class="section-title">Appointments & Vaccines</h6>
-
-  <div class="info-cards animate-fade">
-    <div class="info-card appointment">
-      <h6>Vet Appointment</h6>
-      <p>No upcoming visits</p>
-      <small>Tap to schedule</small>
-    </div>
-
-    <div class="info-card vaccine">
-      <h6>Vaccination</h6>
-      <p>Status: Pending</p>
-      <small>View schedule</small>
-    </div>
-  </div>
-
-  <!-- ===== DIVIDER ===== -->
-  <div class="section-divider">
-    <span>🐶</span>
-  </div>
-
-  <!-- ================= ADD PET ================= -->
-  <div id="addPetSection">
-    <form action="{{ url_for('add_pet') }}" method="POST" class="add-pet-form animate-slide">
-      <input type="text" name="name" placeholder="Pet Name" required>
-      <input type="text" name="species" placeholder="Species" required>
-      <input type="text" name="breed" placeholder="Breed" required>
-      <input type="number" name="age" placeholder="Age" required>
-
-      <select name="gender" required>
-        <option value="" disabled selected>Select Gender</option>
-        <option>Male</option>
-        <option>Female</option>
-        <option>Other</option>
-      </select>
-
-      <button>Add Pet</button>
-    </form>
-  </div>
-</div>
-
-<!-- ================= BOTTOM NAV ================= -->
-<div class="bottom-nav">
-  <a href="{{ url_for('dashboard') }}" class="active">🏠<span>Home</span></a>
-  <a href="#">📅<span>Appointments</span></a>
-  <a href="#addPetSection">➕<span>Add Pet</span></a>
-  <a href="#">👤<span>Profile</span></a>
-</div>
-
 <style>
-:root {
-  --primary-dark: #d3543c;
-  --appointment-card: #4f6fdc;
-  --vaccine-card: #d65a7b;
-  --divider-color: rgba(0,0,0,0.15);
-}
-
-/* ANIMATIONS */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-.animate-fade { animation: fadeUp 0.6s ease; }
-.animate-slide { animation: slideIn 0.6s ease; }
-
-/* DASHBOARD */
-.dashboard {
-  padding: 16px;
-  padding-bottom: 90px;
-  background: linear-gradient(to bottom, #f3f7ff, #ffe6f0);
-  min-height: 100vh;
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
-/* HEADER */
-.user-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.user-header h4 {
-  font-weight: bold;
-  color: var(--primary-dark);
-}
-.user-header p { font-size: 13px; color: gray; }
-
-/* TITLES */
-.section-title {
-  margin: 18px 5px;
-  font-weight: bold;
-  color: var(--primary-dark);
+/* GLASSMORPHISM - LETS PETS SHINE THROUGH */
+.page-content {
+    background: rgba(255, 255, 255, 0.06) !important;
+    backdrop-filter: blur(30px) !important;
+    -webkit-backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important;
+    padding: 24px 20px !important;
+    margin-bottom: var(--nav-height) !important;
 }
 
-/* DIVIDER */
-.section-divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 22px 0;
-}
-.section-divider::before,
-.section-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--divider-color);
-}
-.section-divider span {
-  margin: 0 10px;
-  font-size: 18px;
+/* GREETING - PURPLE GLASS */
+.greeting-card {
+    background: rgba(124, 58, 237, 0.80) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 24px;
+    padding: 24px 22px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(124,58,237,0.4);
+    animation: fadeUp 0.5s ease both;
 }
 
-/* PET SCROLL */
+.greeting-card::before {
+    content: "🐾";
+    position: absolute;
+    top: 10px; right: 15px;
+    font-size: 32px;
+    opacity: 0.15;
+    z-index: 0;
+}
+
+.greeting-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+    position: relative;
+    z-index: 1;
+}
+
+.greeting-avatar {
+    width: 56px; height: 56px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(10px);
+}
+
+.greeting-text h4 {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 4px 0;
+    line-height: 1.2;
+}
+.greeting-text p { 
+    color: rgba(255,255,255,0.75); 
+    font-size: 14px; 
+    margin: 0;
+    font-weight: 500;
+}
+
+.greeting-stats {
+    display: flex;
+    gap: 12px;
+}
+
+.stat-chip {
+    background: rgba(255,255,255,0.20);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 14px;
+    padding: 12px 16px;
+    color: white;
+    flex: 1;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+.stat-chip .stat-num {
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    display: block;
+    line-height: 1.1;
+}
+.stat-chip .stat-lbl {
+    font-size: 12px;
+    opacity: 0.85;
+    font-weight: 700;
+    display: block;
+    margin-top: 4px;
+    letter-spacing: 0.3px;
+}
+
+/* PETS SECTION */
+.section-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(30,27,75,0.95);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: fadeUp 0.4s ease 0.1s both;
+}
+
 .pet-scroll {
-  display: flex;
-  overflow-x: auto;
-  gap: 14px;
-  padding: 10px;
+    display: flex;
+    overflow-x: auto;
+    gap: 14px;
+    padding: 8px 4px 16px;
+    margin-bottom: 28px;
+    scrollbar-width: none;
+    animation: fadeUp 0.4s ease 0.15s both;
 }
 .pet-scroll::-webkit-scrollbar { display: none; }
 
 .pet-mini-card {
-  min-width: 90px;
-  text-align: center;
-  text-decoration: none;
-  color: #333;
-  transition: 0.3s;
+    min-width: 84px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.25s;
+    flex-shrink: 0;
 }
-.pet-mini-card:hover { transform: scale(1.1); }
+.pet-mini-card:hover { 
+    transform: translateY(-8px) scale(1.05);
+    filter: drop-shadow(0 8px 20px rgba(124,58,237,0.3));
+}
+
+.pet-img-wrap {
+    position: relative;
+    padding: 4px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.8), rgba(168,85,247,0.6), rgba(245,158,11,0.7));
+    border-radius: 50%;
+    box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+}
 
 .pet-mini-card img,
 .pet-placeholder {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #e6ecff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--primary);
+    border: 3px solid white;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.pet-mini-card .pet-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(30,27,75,0.9);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
+}
+
+.no-pets {
+    background: rgba(255,255,255,0.15) !important;
+    backdrop-filter: blur(15px) !important;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 24px 28px;
+    text-align: center;
+    width: 100%;
+    color: rgba(30,27,75,0.9);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
 }
 
 /* INFO CARDS */
 .info-cards {
-  display: flex;
-  gap: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.4s ease 0.25s both;
 }
+
 .info-card {
-  flex: 1;
-  padding: 16px;
-  border-radius: 18px;
-  color: white;
-  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-  transition: 0.3s;
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 24px 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
 }
-.info-card:hover {
-  transform: translateY(-6px) scale(1.03);
+.info-card:hover { 
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
 }
-.info-card.appointment { background: var(--appointment-card); }
-.info-card.vaccine { background: var(--vaccine-card); }
+
+.info-card.appointment {
+    background: rgba(59, 130, 246, 0.25) !important;
+    border-left: 5px solid rgba(55, 84, 131, 0.8);
+}
+.info-card.vaccine {
+    background: rgba(168, 85, 247, 0.25) !important;
+    border-left: 5px solid rgba(44, 15, 72, 0.8);
+}
+
+.info-card .card-icon { 
+    font-size: 32px; 
+    margin-bottom: 12px; 
+    display: block;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.info-card .card-tag {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    margin-bottom: 6px;
+    display: block;
+}
+.info-card .card-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+.info-card .card-sub { 
+    font-size: 13px; 
+    opacity: 0.85;
+    font-weight: 600;
+}
 
 /* FORM */
-.add-pet-form {
-  max-width: 350px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.add-pet-form input,
-.add-pet-form select {
-  padding: 12px;
-  border-radius: 22px;
-  border: none;
-}
-.add-pet-form button {
-  background: var(--primary-dark);
-    box-shadow:0 6px 15px rgba(229,57,53,.4);
-  border: none;
-  padding: 12px;
-  border-radius: 30px;
-  color: white;
-  font-weight: bold;
+.form-card {
+    background: rgba(255, 255, 255, 0.18) !important;
+    backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 28px;
+    padding: 28px 24px;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.15);
+    margin-top: 20px;
 }
 
-/* BOTTOM NAV */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: white;
-  display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
-  box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+.form-card-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: rgba(30,27,75,0.95);
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
-.bottom-nav a {
-  text-decoration: none;
-  color: #777;
-  font-size: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+
+.form-field {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.35) !important;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: rgba(30,27,75,0.95);
+    transition: all 0.3s;
+    outline: none;
+    margin-bottom: 14px;
+    backdrop-filter: blur(15px);
 }
-.bottom-nav a.active,
-.bottom-nav a:hover {
-  color: var(--primary-dark);
-  transform: scale(1.1);
+.form-field:focus {
+    border-color: var(--primary);
+    background: rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 0 0 4px rgba(124,58,237,0.25);
+    transform: translateY(-2px);
+}
+.form-field::placeholder { 
+    color: rgba(109,106,138,0.7); 
+    font-weight: 500; 
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.form-row .form-field { margin-bottom: 0; }
+
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: white;
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 12px 32px rgba(124,58,237,0.45);
+    transition: all 0.3s;
+    margin-top: 16px;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+.submit-btn:hover { 
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(124,58,237,0.55);
+}
+.submit-btn:active { transform: translateY(-2px); }
+
+.fancy-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0;
+    animation: fadeUp 0.4s ease 0.2s both;
+}
+.fancy-divider::before,
+.fancy-divider::after {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(124,58,237,0.3), transparent);
+}
+.fancy-divider span { 
+    font-size: 20px; 
+    color: rgba(109,106,138,0.8);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
+}
+
+@media (max-width: 380px) {
+    .greeting-text h4 { font-size: 20px; }
+    .info-cards { gap: 12px; grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
 }
 </style>
+
+<div class="greeting-card">
+    <div class="greeting-top">
+        <div class="greeting-avatar">👋</div>
+        <div class="greeting-text">
+            <h4>Hello, {{ user.username }}!</h4>
+            <p>Welcome back to your dashboard</p>
+        </div>
+    </div>
+    <div class="greeting-stats">
+        <div class="stat-chip">
+            <span class="stat-num">{{ user.pets.count() }}</span>
+            <span class="stat-lbl">Pets</span>
+        </div>
+        <div class="stat-chip">
+            <span class="stat-num">0</span>
+            <span class="stat-lbl">Due Today</span>
+        </div>
+        <div class="stat-chip">
+            <span class="stat-num">0</span>
+            <span class="stat-lbl">Vaccines</span>
+        </div>
+    </div>
+</div>
+
+<div class="section-label">🐾 Your Pets</div>
+<div class="pet-scroll">
+    {% for pet in user.pets %}
+    <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="pet-mini-card">
+        <div class="pet-img-wrap">
+            {# ── PHOTO FIX ──────────────────────────────────────────────────
+               pet.photo stores just the filename (e.g. "buddy_1.jpg").
+               We look it up in static/uploads/ — same folder the pet
+               profile page saves to.  If no photo exists we fall back
+               to the initial-letter placeholder, never to a1.jpeg.
+            ────────────────────────────────────────────────────────────── #}
+            {% if pet.photo and pet.photo.strip() %}
+                <img src="{{ url_for('static', filename='uploads/' + pet.photo) }}"
+                     alt="{{ pet.name }}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="pet-placeholder" style="display:none;">{{ pet.name[0]|upper }}</div>
+            {% else %}
+                <div class="pet-placeholder">{{ pet.name[0]|upper }}</div>
+            {% endif %}
+        </div>
+        <span class="pet-name">{{ pet.name }}</span>
+    </a>
+    {% else %}
+    <div class="no-pets">🐶 No pets yet — add one below!</div>
+    {% endfor %}
+</div>
+
+<div class="fancy-divider"><span>📅</span></div>
+
+<div class="section-label">Appointments & Vaccines</div>
+<div class="info-cards">
+    <div class="info-card appointment">
+        <span class="card-icon">📅</span>
+        <span class="card-tag">Vet Visit</span>
+        <div class="card-title">No upcoming</div>
+        <div class="card-sub">Tap to schedule</div>
+    </div>
+    <div class="info-card vaccine">
+        <span class="card-icon">💉</span>
+        <span class="card-tag">Vaccination</span>
+        <div class="card-title">Status: Pending</div>
+        <div class="card-sub">View schedule</div>
+    </div>
+</div>
+
+<div class="fancy-divider"><span>➕</span></div>
+
+<div class="form-card">
+    <div class="form-card-title">🐾 Add a New Pet</div>
+    <form action="{{ url_for('add_pet') }}" method="POST">
+        <input class="form-field" type="text" name="name" placeholder="Pet Name *" required>
+        <div class="form-row">
+            <input class="form-field" type="text" name="species" placeholder="Species" required>
+            <input class="form-field" type="text" name="breed" placeholder="Breed" required>
+        </div>
+        <div class="form-row">
+            <input class="form-field" type="number" name="age" placeholder="Age" required>
+            <select class="form-field" name="gender" required>
+                <option value="" disabled selected>Gender</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+        </div>
+        <button type="submit" class="submit-btn">Add Pet 🐾</button>
+    </form>
+</div>
 
 {% endblock %}

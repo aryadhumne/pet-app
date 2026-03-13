@@ -13,23 +13,19 @@ ANIMALS = {
     "dog": ["dog", "puppy", "कुत्ता", "कुत्रा", "श्वान"],
     "cat": ["cat", "kitten", "बिल्ली", "मांजर"]
 }
-
 # ================= SYMPTOMS =================
 SYMPTOMS = {
     "fever": ["fever", "bukhar", "बुखार", "ताप"],
     "vomiting": ["vomit", "vomiting", "ulti", "उलटी", "ओकारी"],
     "diarrhea": ["diarrhea", "loose motion", "दस्त", "जुलाब"]
 }
-
 # ================= FEEDING KEYWORDS =================
 FEEDING_WORDS = [
     "feed", "food", "eat", "diet", "khilau", "khana",
     "खिलाऊ", "खाना", "काय खाऊ", "काय खायला"
 ]
-
 # ================= RESPONSES =================
 RESPONSES = {
-
 # ---------- FEEDING ----------
 "feeding": {
     "dog": {
@@ -58,7 +54,6 @@ RESPONSES = {
             "❌ चॉकलेट, कांदा, द्राक्षे देऊ नका"
         )
     },
-
     "cat": {
         "en-IN": (
             "🐱 **Cat Feeding Guide**\n"
@@ -86,7 +81,6 @@ RESPONSES = {
         )
     }
 },
-
 # ---------- VACCINATION ----------
 "vaccine": {
     "dog": {
@@ -101,7 +95,6 @@ RESPONSES = {
     }
 }
 }
-
 # ================= HELPERS =================
 def detect_animal(msg):
     for animal, words in ANIMALS.items():
@@ -109,17 +102,14 @@ def detect_animal(msg):
             if w in msg:
                 return animal
     return None
-
 def detect_symptom(msg):
     for symptom, words in SYMPTOMS.items():
         for w in words:
             if w in msg:
                 return symptom
     return None
-
 def is_feeding_question(msg):
     return any(w in msg for w in FEEDING_WORDS)
-
 # ================= CHATBOT ROUTE =================
 @chatbot_bp.route("/chatbot", methods=["POST"])
 def chatbot():

@@ -2,16 +2,11 @@
 {% block content %}
 
 <style>
-
-/* SAME YOUR CSS */
-
 body{
 margin:0;
 font-family:'Segoe UI', sans-serif;
 background: linear-gradient(180deg,#ecfdf5,#ffffff);
 }
-
-/* HEADER */
 
 .header{
 text-align:center;
@@ -29,8 +24,6 @@ background:linear-gradient(90deg,#16a34a,#22c55e);
 color:#166534;
 }
 
-/* SEARCH */
-
 .search-box{
 text-align:center;
 margin:20px;
@@ -42,8 +35,6 @@ padding:12px;
 border-radius:10px;
 border:1px solid #ccc;
 }
-
-/* TABS */
 
 .tabs{
 text-align:center;
@@ -65,8 +56,6 @@ background:#16a34a;
 color:white;
 }
 
-/* PET GRID */
-
 .pets{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -79,6 +68,7 @@ background:white;
 border-radius:15px;
 box-shadow:0 5px 15px rgba(0,0,0,0.1);
 overflow:hidden;
+position:relative;
 }
 
 .pet-card img{
@@ -109,7 +99,28 @@ margin-top:10px;
 cursor:pointer;
 }
 
-/* SELL */
+.remove-btn{
+width:100%;
+padding:10px;
+border:none;
+background:#ef4444;
+color:white;
+border-radius:10px;
+margin-top:6px;
+cursor:pointer;
+}
+
+.seller-badge{
+position:absolute;
+top:10px;
+right:10px;
+background:rgba(22,163,74,0.9);
+color:white;
+font-size:11px;
+font-weight:700;
+padding:3px 8px;
+border-radius:20px;
+}
 
 .sell-box{
 background:white;
@@ -127,6 +138,7 @@ margin:8px 0;
 padding:10px;
 border-radius:8px;
 border:1px solid #ccc;
+box-sizing:border-box;
 }
 
 .sell-box button{
@@ -136,6 +148,7 @@ background:#16a34a;
 color:white;
 border:none;
 border-radius:10px;
+cursor:pointer;
 }
 
 .big-preview{
@@ -145,6 +158,7 @@ display:flex;
 align-items:center;
 justify-content:center;
 margin-bottom:10px;
+overflow:hidden;
 }
 
 .big-preview img{
@@ -153,364 +167,288 @@ height:100%;
 object-fit:cover;
 }
 
+.empty-state{
+text-align:center;
+padding:40px;
+color:#6b7280;
+grid-column:1/-1;
+}
+
+.sync-bar{
+text-align:center;
+font-size:12px;
+padding:4px 12px;
+background:#dcfce7;
+color:#15803d;
+border-radius:20px;
+max-width:250px;
+margin:0 auto 10px;
+}
+
+.sync-bar.error{
+background:#fee2e2;
+color:#991b1b;
+}
+
+/* Loading */
+.loading-overlay{
+display:none;
+position:fixed;
+inset:0;
+background:rgba(255,255,255,0.75);
+z-index:9999;
+align-items:center;
+justify-content:center;
+}
+.loading-overlay.show{ display:flex; }
+.spinner{
+width:42px; height:42px;
+border:5px solid #bbf7d0;
+border-top-color:#16a34a;
+border-radius:50%;
+animation:spin .8s linear infinite;
+}
+@keyframes spin{ to{transform:rotate(360deg)} }
 </style>
 
 
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+</div>
 
 <div class="header">
-
-<h1>🐄 Agri Animal Marketplace</h1>
-
-<p>Buy, Sell and Adopt Farm Animals</p>
-
+    <h1>🐄 Agri Animal Marketplace</h1>
+    <p>Buy, Sell and Adopt Farm Animals</p>
 </div>
 
-
+<div class="sync-bar" id="syncBar">Connecting...</div>
 
 <div class="search-box">
-
-<input id="searchInput" placeholder="Search..." oninput="renderPets()">
-
+    <input id="searchInput" placeholder="Search..." oninput="renderPets()">
 </div>
-
-
-
-<!-- ✅ UPDATED TABS -->
 
 <div class="tabs">
-
-
-
-<button class="tab-btn" onclick="openTab(event,'sell')">
-
-Sell
-
-</button>
-
-<button class="tab-btn active" onclick="openTab(event,'buy')">
-
-Buy
-
-</button>
-<button class="tab-btn" onclick="openTab(event,'adopt')">
-
-Adopt
-
-</button>
-
-
-
+    <button class="tab-btn" onclick="openTab(event,'sell')">Sell</button>
+    <button class="tab-btn active" onclick="openTab(event,'buy')">Buy</button>
+    <button class="tab-btn" onclick="openTab(event,'adopt')">Adopt</button>
 </div>
-
-
-
 
 <!-- BUY -->
-
 <div id="buy" class="section">
-
-<div class="pets" id="buyList"></div>
-
+    <div class="pets" id="buyList"></div>
 </div>
-
-
 
 <!-- ADOPT -->
-
 <div id="adopt" class="section" style="display:none;">
-
-<div class="pets" id="adoptList"></div>
-
+    <div class="pets" id="adoptList"></div>
 </div>
-
-
 
 <!-- SELL -->
-
 <div id="sell" class="section" style="display:none;">
-
-<div class="sell-box">
-
-<h3>Sell or Give for Adoption</h3>
-
-<div class="big-preview" id="mainPreview">
-
-Upload Image
-
+    <div class="sell-box">
+        <h3>Sell or Give for Adoption</h3>
+        <div class="big-preview" id="mainPreview">Upload Image</div>
+        <input type="file" accept="image/*" onchange="previewMain(event)">
+        <input id="petName" placeholder="Animal Name *">
+        <select id="petType">
+            <option>Cow</option>
+            <option>Buffalo</option>
+            <option>Goat</option>
+            <option>Sheep</option>
+            <option>Chicken</option>
+            <option>Camel</option>
+            <option>Horse</option>
+            <option>Ox</option>
+            <option>Rooster</option>
+            <option>Pig</option>
+            <option>Donkey</option>
+        </select>
+        <input id="petBreed" placeholder="Breed">
+        <input id="petAge" placeholder="Age">
+        <input id="petPrice" type="number" placeholder="Price (leave empty for free adoption)">
+        <input id="ownerPhone" placeholder="Phone">
+        <button onclick="addPet()">Submit</button>
+    </div>
 </div>
-
-<input type="file" onchange="previewMain(event)">
-
-<input id="petName" placeholder="Animal Name">
-
-<select id="petType">
-
-<option>Cow</option>
-<option>Buffalo</option>
-<option>Goat</option>
-<option>Sheep</option>
-<option>Chicken</option>
-<option>Camel</option>
-<option>Horse</option>
-<option>Ox</option>
-<option>Rooster</option>
-<option>Pig</option>
-<option>Donkey</option>
-
-</select>
-
-<input id="petBreed" placeholder="Breed">
-
-<input id="petAge" placeholder="Age">
-
-
-<!-- OPTIONAL PRICE -->
-
-<input id="petPrice" type="number"
-
-placeholder="Price (Leave empty for Adoption)">
-
-
-<input id="ownerPhone" placeholder="Phone">
-
-<button onclick="addPet()">
-
-Submit
-
-</button>
-
-</div>
-
-</div>
-
 
 
 <script>
+const CURRENT_USER = "{{ username }}";
+const POLL_INTERVAL = 8000;
+let pets = [];
+let mainImage = "";
 
-
-let pets = JSON.parse(localStorage.getItem("agripets")) || [];
-
-let mainImage="";
-
-
-
-
-// TAB
-
-function openTab(event,tab){
-
-document.querySelectorAll('.section')
-
-.forEach(s=>s.style.display='none');
-
-document.querySelectorAll('.tab-btn')
-
-.forEach(b=>b.classList.remove('active'));
-
-document.getElementById(tab).style.display='block';
-
-event.target.classList.add('active');
-
+// ─── SYNC BAR ────────────────────────────────────────────────────────────────
+function setSyncBar(msg, cls) {
+    const bar = document.getElementById("syncBar");
+    bar.textContent = msg;
+    bar.className = "sync-bar " + (cls || "");
 }
 
+// ─── LOADING ─────────────────────────────────────────────────────────────────
+function showLoading() { document.getElementById("loadingOverlay").classList.add("show"); }
+function hideLoading() { document.getElementById("loadingOverlay").classList.remove("show"); }
 
-
-// IMAGE
-
-function previewMain(e){
-
-const r=new FileReader();
-
-r.onload=()=>{
-
-mainImage=r.result;
-
-mainPreview.innerHTML=`<img src="${mainImage}">`;
-
-};
-
-r.readAsDataURL(e.target.files[0]);
-
+// ─── FETCH FROM SERVER ───────────────────────────────────────────────────────
+async function loadPets() {
+    try {
+        const res = await fetch('/api/agripets');
+        return await res.json();
+    } catch(e) {
+        setSyncBar("Could not load animals", "error");
+        return [];
+    }
 }
 
+// ─── INIT ────────────────────────────────────────────────────────────────────
+async function init() {
+    showLoading();
+    pets = await loadPets();
+    hideLoading();
+    setSyncBar("Live from server");
+    renderPets();
 
-
-// ADD
-
-function addPet(){
-
-
-if(!petName.value){
-
-alert("Enter Name");
-
-return;
-
+    setInterval(async function() {
+        const fresh = await loadPets();
+        if (JSON.stringify(fresh) !== JSON.stringify(pets)) {
+            pets = fresh;
+            renderPets();
+            setSyncBar("Updated");
+        }
+    }, POLL_INTERVAL);
 }
 
+// ─── ADD PET ─────────────────────────────────────────────────────────────────
+async function addPet() {
+    const name = document.getElementById("petName").value.trim();
+    if (!name) { alert("Enter Animal Name"); return; }
 
-
-let price = petPrice.value;
-
-
-
-const newPet={
-
-name:petName.value,
-
-type:petType.value,
-
-breed:petBreed.value,
-
-age:petAge.value,
-
-price: price=="" ? 0 : price,
-
-phone:ownerPhone.value,
-
-image:mainImage || "https://via.placeholder.com/300"
-
-};
-
-
-
-pets.push(newPet);
-
-
-localStorage.setItem("agripets",
-
-JSON.stringify(pets));
-
-
-alert("Added");
-
-
-renderPets();
-
+    showLoading();
+    try {
+        const res = await fetch('/api/agripets/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name:  name,
+                type:  document.getElementById("petType").value,
+                breed: document.getElementById("petBreed").value,
+                age:   document.getElementById("petAge").value,
+                price: document.getElementById("petPrice").value || 0,
+                phone: document.getElementById("ownerPhone").value,
+                image: mainImage || "https://via.placeholder.com/300"
+            })
+        });
+        const result = await res.json();
+        if (result.success) {
+            pets = await loadPets();
+            renderPets();
+            alert("Animal added! Visible to all users.");
+            // Reset form
+            document.getElementById("petName").value = "";
+            document.getElementById("petBreed").value = "";
+            document.getElementById("petAge").value = "";
+            document.getElementById("petPrice").value = "";
+            document.getElementById("ownerPhone").value = "";
+            document.getElementById("petType").selectedIndex = 0;
+            mainImage = "";
+            document.getElementById("mainPreview").innerHTML = "Upload Image";
+        } else {
+            alert("Error: " + (result.error || "Could not add."));
+        }
+    } catch(e) {
+        alert("Server error. Please try again.");
+    }
+    hideLoading();
 }
 
-
-
-
-// SHOW
-
-function renderPets(){
-
-
-buyList.innerHTML="";
-
-adoptList.innerHTML="";
-
-
-const q=searchInput.value.toLowerCase();
-
-
-
-pets.forEach(p=>{
-
-
-if(
-
-p.name.toLowerCase().includes(q)
-
-|| p.type.toLowerCase().includes(q)
-
-){
-
-
-if(p.price>0){
-
-
-buyList.innerHTML+=card(p,"₹"+p.price);
-
-
+// ─── REMOVE PET ──────────────────────────────────────────────────────────────
+async function removePet(id) {
+    const pet = pets.find(function(p) { return p.id == id; });
+    if (!pet) return;
+    if (!confirm("Remove " + pet.name + " from the marketplace?")) return;
+    showLoading();
+    try {
+        const res = await fetch('/api/agripets/remove/' + id, { method: 'DELETE' });
+        const result = await res.json();
+        if (result.success) {
+            pets = await loadPets();
+            renderPets();
+        } else {
+            alert("Error: " + (result.error || "Could not remove."));
+        }
+    } catch(e) {
+        alert("Server error. Please try again.");
+    }
+    hideLoading();
 }
 
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function renderPets() {
+    const buyList   = document.getElementById("buyList");
+    const adoptList = document.getElementById("adoptList");
+    buyList.innerHTML   = "";
+    adoptList.innerHTML = "";
 
-else{
+    const q = document.getElementById("searchInput").value.toLowerCase();
+    const filtered = pets.filter(function(p) {
+        return p.name.toLowerCase().includes(q) || p.type.toLowerCase().includes(q);
+    });
 
+    if (filtered.length === 0) {
+        const msg = '<div class="empty-state">No animals listed yet. Be the first to add one!</div>';
+        buyList.innerHTML   = msg;
+        adoptList.innerHTML = msg;
+        return;
+    }
 
-adoptList.innerHTML+=card(p,
+    filtered.forEach(function(p) {
+        const isMine    = p.added_by === CURRENT_USER;
+        const badge     = isMine ? '<span class="seller-badge">Your Listing</span>' : '';
+        const removeBtn = isMine
+            ? '<button class="remove-btn" onclick="removePet(' + p.id + ')">Remove My Listing</button>'
+            : '';
+        const priceLabel = p.price > 0 ? 'Rs.' + p.price : 'Free Adoption';
 
-"Free Adoption");
+        const cardHtml = '<div class="pet-card">'
+            + badge
+            + '<img src="' + p.image + '" onerror="this.src=\'https://via.placeholder.com/300\'">'
+            + '<div class="pet-body">'
+            + '<h3>' + p.name + '</h3>'
+            + '<p>' + p.type + (p.breed ? ' - ' + p.breed : '') + '</p>'
+            + '<div class="price">' + priceLabel + '</div>'
+            + '<button class="buy-btn" onclick="alert(\'Contact: ' + p.phone + '\')">Contact Owner</button>'
+            + removeBtn
+            + '</div></div>';
 
-
+        if (p.price > 0) {
+            buyList.innerHTML += cardHtml;
+        } else {
+            adoptList.innerHTML += cardHtml;
+        }
+    });
 }
 
-
-
+// ─── TABS ────────────────────────────────────────────────────────────────────
+function openTab(event, tab) {
+    document.querySelectorAll('.section').forEach(function(s) { s.style.display = 'none'; });
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById(tab).style.display = 'block';
+    event.target.classList.add('active');
 }
 
-
-});
-
-
+// ─── IMAGE PREVIEW ───────────────────────────────────────────────────────────
+function previewMain(e) {
+    const r = new FileReader();
+    r.onload = function() {
+        mainImage = r.result;
+        document.getElementById("mainPreview").innerHTML = '<img src="' + mainImage + '">';
+    };
+    r.readAsDataURL(e.target.files[0]);
 }
 
-
-
-
-function card(p,price){
-
-
-return`
-
-
-<div class="pet-card">
-
-
-<img src="${p.image}">
-
-
-<div class="pet-body">
-
-
-<h3>${p.name}</h3>
-
-
-<p>
-
-${p.type} • ${p.breed}
-
-</p>
-
-
-<div class="price">
-
-${price}
-
-</div>
-
-
-<button class="buy-btn"
-
-onclick="alert('Contact : ${p.phone}')">
-
-
-Contact Owner
-
-
-</button>
-
-
-</div>
-
-
-</div>
-
-
-`;
-
-
-}
-
-
-
-renderPets();
-
-
+// ─── START ───────────────────────────────────────────────────────────────────
+init();
 </script>
-
-
 
 {% endblock %}

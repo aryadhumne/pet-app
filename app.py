@@ -13,45 +13,28 @@ from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 from flask import Blueprint, request, redirect, url_for, flash
 from files.models import db, User,Pet,DietPlan
-
-
+import os, math, json  # just add json here
 load_dotenv()
-
 app = Flask(__name__, template_folder="templates", static_folder="static")
 from chatbot_api import chatbot_bp
-
 app.register_blueprint(chatbot_bp)
-
-
-
-
 app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
-
-
 # ---------------------- DATABASE
-
-
 app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres.yctdbnvldajettbhsdyu:2097199552542884@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"
-
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
 # ---------------------- DATABASE CONFIG FROM ENV
 db_user = os.getenv("SUPABASE_DB_USER")
 db_password_raw = os.getenv("SUPABASE_DB_PASSWORD")
 db_host = os.getenv("SUPABASE_DB_HOST")
 db_port = os.getenv("SUPABASE_DB_PORT", "6543")
 db_name = os.getenv("SUPABASE_DB_NAME", "postgres")
-
 if not db_password_raw:
     raise RuntimeError("SUPABASE_DB_PASSWORD not set in .env")
-
 db_password = quote_plus(db_password_raw)
-
 db.init_app(app)
 migrate = Migrate(app, db)
-
 # ---------------------- SMSFAST2SMS_API_KEY = "PASTE_YOUR_FAST2SMS_API_KEY_HERE"
 def send_sms(phone, message):
     try:
@@ -63,9 +46,34 @@ def send_sms(phone, message):
     except Exception as e:
         print("SMS Failed:", e)
 # ====================== MODELS ======================
+class MarketplacePet(db.Model):
+    __tablename__ = "marketplace_pets"
 
+    id         = db.Column(db.Integer, primary_key=True)
+    added_by   = db.Column(db.String(100), nullable=False)
+    name       = db.Column(db.String(100), nullable=False)
+    pet_type   = db.Column(db.String(50))
+    gender     = db.Column(db.String(20))
+    breed      = db.Column(db.String(100))
+    age        = db.Column(db.String(30))
+    disease    = db.Column(db.String(200))
+    price      = db.Column(db.Float, default=0)
+    phone      = db.Column(db.String(20))
+    address    = db.Column(db.String(300))
+    image_data = db.Column(db.Text)
+    
+class MarketplaceAgriPet(db.Model):
+    __tablename__ = "marketplace_agri_pets"
 
-
+    id         = db.Column(db.Integer, primary_key=True)
+    added_by   = db.Column(db.String(100), nullable=False)
+    name       = db.Column(db.String(100), nullable=False)
+    pet_type   = db.Column(db.String(50))
+    breed      = db.Column(db.String(100))
+    age        = db.Column(db.String(30))
+    price      = db.Column(db.Float, default=0)
+    phone      = db.Column(db.String(20))
+    image_data = db.Column(db.Text)
 class PetProfile(db.Model):
     __tablename__ = "pet"
 
@@ -77,8 +85,6 @@ class PetProfile(db.Model):
     gender = db.Column(db.String(10))
     photo = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-
 class PetTimeline(db.Model):
     __tablename__ = "pet_timeline"
 
@@ -92,7 +98,6 @@ class PetTimeline(db.Model):
 
     # relationship to PetProfile (table: pet)
     pet = db.relationship("PetProfile", backref="timeline_events")
-
 class Vaccine(db.Model):
     __tablename__ = "vaccine"
 
@@ -119,7 +124,6 @@ class HealthCheckup(db.Model):
     temperature = db.Column(db.Float)
     notes = db.Column(db.String(255))
     next_checkup = db.Column(db.Date)   # ✅ ADD THIS
-
 pets_data = {
 # ✅ ================== DOG BREEDS ==================
 "Dog": {
@@ -1053,15 +1057,71 @@ def help():
 @app.route('/adopt_pet', methods=['GET', 'POST'])
 def adopt():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        amount = request.form['amount']
-        message = request.form['message']
-
-        # For now just show success (later you can add payment gateway)
+        name    = request.form.get('name', '')
+        email   = request.form.get('email', '')
+        amount  = request.form.get('amount', '')
+        message = request.form.get('message', '')
         flash("Thank you for your adoption ❤️", "success")
+    username = session.get('username', 'anonymous')
+    return render_template('adopt_pet.html', username=username)
 
-    return render_template('adopt_pet.html')
+
+@app.route('/api/pets', methods=['GET'])
+def api_get_pets():
+    all_pets = MarketplacePet.query.all()
+    return jsonify([{
+        'id':       p.id,
+        'added_by': p.added_by,
+        'name':     p.name,
+        'type':     p.pet_type,
+        'gender':   p.gender,
+        'breed':    p.breed,
+        'age':      p.age,
+        'disease':  p.disease,
+        'price':    p.price,
+        'phone':    p.phone,
+        'address':  p.address,
+        'image':    p.image_data or 'https://place-puppy.com/400x300'
+    } for p in all_pets])
+
+
+@app.route('/api/pets/add', methods=['POST'])
+def api_add_pet():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    data = request.get_json()
+    if not data or not data.get('name'):
+        return jsonify({'error': 'Pet name is required'}), 400
+    pet = MarketplacePet(
+        added_by   = session['username'],
+        name       = data.get('name', ''),
+        pet_type   = data.get('type', ''),
+        gender     = data.get('gender', ''),
+        breed      = data.get('breed', ''),
+        age        = data.get('age', ''),
+        disease    = data.get('disease', ''),
+        price      = float(data.get('price') or 0),
+        phone      = data.get('phone', ''),
+        address    = data.get('address', ''),
+        image_data = data.get('image', '')
+    )
+    db.session.add(pet)
+    db.session.commit()
+    return jsonify({'success': True, 'id': pet.id})
+
+
+@app.route('/api/pets/remove/<int:pet_id>', methods=['DELETE'])
+def api_remove_pet(pet_id):
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    pet = MarketplacePet.query.get(pet_id)
+    if not pet:
+        return jsonify({'error': 'Pet not found'}), 404
+    if pet.added_by != session['username']:
+        return jsonify({'error': 'You can only remove your own listings'}), 403
+    db.session.delete(pet)
+    db.session.commit()
+    return jsonify({'success': True})
     
 @app.route('/adopt-pet/<int:pet_id>', methods=['POST'])
 def adopt_pet(pet_id):
@@ -1206,8 +1266,58 @@ def add_vaccine():
     return render_template('add_vaccine.html', pets=pets)
 @app.route('/adopt_agri')
 def adopt_agri():
-    return render_template('adopt_agri.html')
-from datetime import datetime
+    username = session.get('username', 'anonymous')
+    return render_template('adopt_agri.html', username=username)
+
+@app.route('/api/agripets', methods=['GET'])
+def api_get_agripets():
+    all_pets = MarketplaceAgriPet.query.all()
+    return jsonify([{
+        'id':       p.id,
+        'added_by': p.added_by,
+        'name':     p.name,
+        'type':     p.pet_type,
+        'breed':    p.breed,
+        'age':      p.age,
+        'price':    p.price,
+        'phone':    p.phone,
+        'image':    p.image_data or 'https://via.placeholder.com/300'
+    } for p in all_pets])
+
+@app.route('/api/agripets/add', methods=['POST'])
+def api_add_agripet():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    data = request.get_json()
+    if not data or not data.get('name'):
+        return jsonify({'error': 'Animal name is required'}), 400
+    pet = MarketplaceAgriPet(
+        added_by   = session['username'],
+        name       = data.get('name', ''),
+        pet_type   = data.get('type', ''),
+        breed      = data.get('breed', ''),
+        age        = data.get('age', ''),
+        price      = float(data.get('price') or 0),
+        phone      = data.get('phone', ''),
+        image_data = data.get('image', '')
+    )
+    db.session.add(pet)
+    db.session.commit()
+    return jsonify({'success': True, 'id': pet.id})
+
+@app.route('/api/agripets/remove/<int:pet_id>', methods=['DELETE'])
+def api_remove_agripet(pet_id):
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    pet = MarketplaceAgriPet.query.get(pet_id)
+    if not pet:
+        return jsonify({'error': 'Not found'}), 404
+    if pet.added_by != session['username']:
+        return jsonify({'error': 'Unauthorized'}), 403
+    db.session.delete(pet)
+    db.session.commit()
+    return jsonify({'success': True})
+
 
 @app.route("/health_checkup", methods=["GET", "POST"])
 def health_checkup():

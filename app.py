@@ -23,7 +23,7 @@ app.register_blueprint(chatbot_bp)
 app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-ANTHROPIC_API_KEY = "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"
+
 # ---------------------- DATABASE
 app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres.yctdbnvldajettbhsdyu:2097199552542884@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"

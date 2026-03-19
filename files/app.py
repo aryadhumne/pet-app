@@ -30,17 +30,17 @@ class User(db.Model):
 class Pet(db.Model):
     __tablename__ = "pets"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), nullable=False)
-    species = db.Column(db.String(80))
-    breed = db.Column(db.String(120))
-    age = db.Column(db.String(40))
+    id             = db.Column(db.Integer, primary_key=True)
+    name           = db.Column(db.String(120), nullable=False)
+    species        = db.Column(db.String(80))
+    breed          = db.Column(db.String(120))
+    age            = db.Column(db.String(40))
+    gender         = db.Column(db.String(20))
     image_filename = db.Column(db.String(200))
-    notes = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-# Routes
+    notes          = db.Column(db.Text)
+    created_at     = db.Column(db.DateTime, default=datetime.utcnow)
+    photo          = db.Column(db.String(200), nullable=True, default=None)
+    user_id        = db.Column(db.Integer, db.ForeignKey('users.id'))
 @app.route("/")
 def home():
     return render_template("base.html")

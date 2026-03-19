@@ -1,171 +1,369 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="health-wrapper">
-
-    <!-- PAGE TITLE -->
-    <h2 class="health-title animate-fade">
-        🩺 Pet Health Care
-    </h2>
-
-    <p class="health-subtitle animate-fade-delay">
-        Complete health support for your beloved pet 🐾
-    </p>
-
-    <!-- HEALTH IMAGE -->
-    <div class="health-image animate-float">
-        <img src="{{ url_for('static', filename='images/h2.jpg') }}" alt="Pet Health">
-    </div>
-
-    <!-- HEALTH OPTIONS CARD -->
-    <div class="health-card animate-slideup">
-
-        <h4 class="card-title">Manage Your Pet's Health</h4>
-        <p class="card-subtitle">
-            Vaccinations • Diet Plans • Regular Checkups
-        </p>
-
-        <div class="health-buttons">
-
-            <a href="{{ url_for('add_vaccine') }}" class="health-btn lavender">
-                💉 Vaccination
-            </a>
-
-            <a href="{{ url_for('health_checkup') }}" class="health-btn lavender-light">
-                🩺 Health Checkup
-            </a>
-
-            <a href="{{ url_for('diet_plan') }}" class="health-btn lavender-dark">
-                🥗 Diet Plan
-            </a>
-
-        </div>
-    </div>
-
-</div>
-
 <style>
-/* ================= LAVENDER THEME COLORS ================= */
-:root {
-    --lavender: #7c4dff;
-    --lavender-light: #c6b3ff;
-    --lavender-dark: #5e35b1;
-    --lavender-bg: #f3f4ff;
-}
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
 
-/* ================= MAIN WRAPPER ================= */
-.health-wrapper {
+* { box-sizing: border-box; }
+
+.ph-wrap {
     min-height: 100vh;
-    background: linear-gradient(to bottom, var(--lavender-bg), #ffffff);
+    background: #F0FDF4;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    font-family: 'Nunito', sans-serif;
+    overflow-x: hidden;
+    padding-bottom: 24px;
 }
 
-/* ================= TITLES ================= */
-.health-title {
-    font-weight: 800;
-    color: var(--lavender-dark);
-    margin-top: 10px;
-    text-shadow: 0 0 12px rgba(124,77,255,0.25);
-}
-
-.health-subtitle {
-    font-size: 13px;
-    color: #6c63ff;
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-/* ================= IMAGE ================= */
-.health-image img {
-    width: 170px;
-    margin-bottom: 15px;
-    border-radius: 20px;
-    box-shadow: 0 12px 25px rgba(124,77,255,0.25);
-}
-
-/* ================= CARD ================= */
-.health-card {
-    width: 95%;
-    max-width: 400px;
-    background: rgba(245,245,255,0.95);
-    border-radius: 26px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 15px 35px rgba(124,77,255,0.25);
-}
-
-/* ================= CARD TEXT ================= */
-.card-title {
-    font-weight: 700;
-    color: var(--lavender-dark);
-}
-
-.card-subtitle {
-    font-size: 13px;
-    color: #7c63ff;
-    margin-bottom: 20px;
-}
-
-/* ================= BUTTONS ================= */
-.health-buttons {
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
+.ph-hero {
+    width: 100%;
+    background: linear-gradient(145deg, #22C55E 0%, #6366F1 50%, #A855F7 100%);
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 26px 20px 58px;
+    overflow: hidden;
 }
 
-/* ================= COMMON BUTTON ================= */
-.health-btn {
-    width: 100%;
-    padding: 12px;
-    border-radius: 30px;
-    font-weight: 600;
+/* mesh overlay */
+.ph-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 15% 80%, rgba(251,113,133,0.18) 0%, transparent 50%);
+    pointer-events: none;
+}
+.ph-hero::after {
+    content: '';
+    position: absolute;
+    width: 220px; height: 220px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 50%;
+    top: -70px; right: -70px;
+}
+
+.blob-hot1 {
+    position: absolute;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(251,113,133,0.4), transparent 70%);
+    border-radius: 50%;
+    bottom: 20px; right: 16px;
+    z-index: 1;
+    animation: blobDrift 6s ease-in-out infinite alternate;
+}
+.blob-hot2 {
+    position: absolute;
+    width: 70px; height: 70px;
+    background: radial-gradient(circle, rgba(251,191,36,0.35), transparent 70%);
+    border-radius: 50%;
+    top: 14px; left: 14px;
+    z-index: 1;
+    animation: blobDrift 8s ease-in-out infinite alternate-reverse;
+}
+@keyframes blobDrift {
+    from { transform: translate(0,0) scale(1); }
+    to   { transform: translate(8px,10px) scale(1.1); }
+}
+
+/* badge */
+.ph-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255,255,255,0.38);
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
     color: white;
+    letter-spacing: 0.6px;
+    z-index: 5;
+    margin-bottom: 18px;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes popIn {
+    from { opacity:0; transform: scale(0.7) translateY(-10px); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+/* spinning ring */
+.ph-img-ring {
+    position: relative;
+    z-index: 4;
+    animation: floatImg 3.5s ease-in-out infinite;
+}
+@keyframes floatImg {
+    0%,100% { transform: translateY(0px) rotate(0deg); }
+    50%      { transform: translateY(-10px) rotate(1deg); }
+}
+.ph-img-ring::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+        #FB7185, #FBBF24, #34D399, #60A5FA, #22C55E, #FB7185);
+    animation: spinRing 5s linear infinite;
+    z-index: -1;
+    filter: blur(1px);
+}
+.ph-img-ring::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.85);
+    z-index: 1;
+    pointer-events: none;
+}
+@keyframes spinRing { to { transform: rotate(360deg); } }
+
+.ph-hero-img {
+    width: 165px; height: 165px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.28);
+}
+
+/* hero text */
+.ph-hero-text {
+    text-align: center;
+    z-index: 3;
+    margin-top: 16px;
+    animation: riseUp 0.6s ease 0.25s both;
+}
+.ph-hero-text h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 5px;
+    line-height: 1.25;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.18);
+}
+.ph-hero-text p {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.82);
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+@keyframes riseUp {
+    from { opacity:0; transform: translateY(18px); }
+    to   { opacity:1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════
+   CHIPS — overlap hero bottom
+══════════════════════════════ */
+.ph-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    width: 92%;
+    margin-top: -22px;
+    z-index: 10;
+    animation: riseUp 0.55s ease 0.35s both;
+}
+.ph-chip {
+    background: white;
+    border-radius: 50px;
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 6px 18px rgba(34,197,94,0.15);
+    font-size: 13px;
+    font-weight: 800;
+    color: #14532D;
+    white-space: nowrap;
+    flex: 1;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+.ph-chip:active { transform: scale(0.95); }
+.ph-chip span { font-size: 17px; }
+.ph-chip.c1 { border-bottom: 3px solid #22C55E; }
+.ph-chip.c2 { border-bottom: 3px solid #FB7185; }
+.ph-chip.c3 { border-bottom: 3px solid #8B5CF6; }
+.ph-chip.c4 { border-bottom: 3px solid #FBBF24; }
+
+/* ══════════════════════════════
+   ACTION TILES
+══════════════════════════════ */
+.ph-tiles {
+    width: 92%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+    animation: riseUp 0.6s ease 0.45s both;
+}
+
+.ph-tile {
+    border-radius: 20px;
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
     text-decoration: none;
-    transition: 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s;
+    min-height: 128px;
+}
+.ph-tile:active { transform: scale(0.97); }
+
+/* shine sweep on hover */
+.ph-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -80%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: skewX(-15deg);
+    transition: left 0.5s ease;
+}
+.ph-tile:hover::before { left: 130%; }
+
+/* decorative circle */
+.ph-tile::after {
+    content: '';
+    position: absolute;
+    bottom: -18px; right: -18px;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+}
+.ph-tile:hover { transform: translateY(-5px); }
+
+/* tile colors */
+.tile-vaccine {
+    background: linear-gradient(145deg, #34D399, #16A34A);
+    box-shadow: 0 10px 28px rgba(34,197,94,0.38);
+}
+.tile-checkup {
+    background: linear-gradient(145deg, #FB7185, #BE123C);
+    box-shadow: 0 10px 28px rgba(251,113,133,0.4);
+    animation: checkupPulse 2.4s ease-in-out infinite;
+}
+@keyframes checkupPulse {
+    0%,100% { box-shadow: 0 10px 28px rgba(251,113,133,0.4); }
+    50%      { box-shadow: 0 16px 44px rgba(251,113,133,0.68); }
+}
+.tile-diet {
+    background: linear-gradient(145deg, #A78BFA, #6366F1);
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-height: auto;
+    padding: 20px 22px;
+    box-shadow: 0 10px 28px rgba(139,92,246,0.32);
 }
 
-/* ================= BUTTON COLORS ================= */
-.health-btn.lavender {
-    background: linear-gradient(135deg, var(--lavender), var(--lavender-dark));
+.t-icon  { font-size: 28px; line-height: 1; }
+.t-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px; font-weight: 800;
+    color: white; line-height: 1;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.12);
+}
+.t-sub { font-size: 12.5px; color: rgba(255,255,255,0.78); font-weight: 600; }
+
+.t-arrow {
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 17px; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: background 0.2s, transform 0.2s;
+}
+.ph-tile:hover .t-arrow {
+    background: rgba(255,255,255,0.38);
+    transform: translateX(3px);
 }
 
-.health-btn.lavender-light {
-    background: linear-gradient(135deg, var(--lavender-light), var(--lavender));
+@media (max-width: 360px) {
+    .ph-hero-img     { width: 130px; height: 130px; }
+    .ph-hero-text h2 { font-size: 21px; }
+    .t-label         { font-size: 13px; }
+    .ph-chip         { padding: 7px 9px; font-size: 10.5px; }
 }
-
-.health-btn.lavender-dark {
-    background: linear-gradient(135deg, var(--lavender-dark), #4b3cb6);
-}
-
-/* ================= BUTTON HOVER ================= */
-.health-btn:hover {
-    transform: scale(1.06);
-    box-shadow: 0 0 20px rgba(124,77,255,0.35);
-}
-
-/* ================= ANIMATIONS ================= */
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
-}
-.animate-float { animation: float 3s ease-in-out infinite; }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade { animation: fadeIn 0.8s forwards; }
-.animate-fade-delay { animation: fadeIn 1.5s forwards; }
-
-@keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.animate-slideup { animation: slideUp 1s ease forwards; }
 </style>
+
+<div class="ph-wrap">
+
+    <!-- HERO -->
+    <div class="ph-hero">
+        <div class="blob-hot1"></div>
+        <div class="blob-hot2"></div>
+
+        <div class="ph-badge">🩺 Pet Health</div>
+
+        <div class="ph-img-ring">
+            <img src="{{ url_for('static', filename='images/h2.jpg') }}"
+                 class="ph-hero-img" alt="Pet Health">
+        </div>
+
+        <div class="ph-hero-text">
+            <h2>Healthy Pets,<br>Happy Life 💚</h2>
+            <p>Track vaccines, checkups &amp; diet plans</p>
+        </div>
+    </div>
+
+    <!-- CHIPS -->
+    <div class="ph-chips">
+        <div class="ph-chip c1"><span>💉</span> Vaccines</div>
+        <div class="ph-chip c2"><span>🩺</span> Vet Check</div>
+        <div class="ph-chip c3"><span>🥗</span> Diet</div>
+        <div class="ph-chip c4"><span>❤️</span> Care</div>
+    </div>
+
+    <!-- TILES -->
+    <div class="ph-tiles">
+
+        <a href="{{ url_for('add_vaccine') }}" class="ph-tile tile-vaccine">
+            <span class="t-icon">💉</span>
+            <span class="t-label">Vaccination</span>
+            <span class="t-sub">Manage vaccines</span>
+        </a>
+
+        <a href="{{ url_for('health_checkup') }}" class="ph-tile tile-checkup">
+            <span class="t-icon">🩺</span>
+            <span class="t-label">Health Checkup</span>
+            <span class="t-sub">Book vet visit</span>
+        </a>
+
+        <a href="{{ url_for('diet_plan') }}" class="ph-tile tile-diet">
+            <div>
+                <span class="t-icon">🥗</span>
+                <span class="t-label" style="display:block;margin-top:5px;">Diet Plan</span>
+                <span class="t-sub">Healthy pet food guide</span>
+            </div>
+            <div class="t-arrow">→</div>
+        </a>
+
+    </div>
+
+</div>
 
 {% endblock %}

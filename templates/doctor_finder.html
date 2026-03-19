@@ -1,13 +1,695 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="text-center mb-4">Find Nearby Veterinarians</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PawCare — Find Vets & Book</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sky:#0EA5E9;--indigo:#6366F1;--emerald:#10B981;--rose:#F43F5E;
+  --amber:#F59E0B;--bg:#F0F9FF;--card:#fff;--text:#1e1b4b;--sub:#6B7280;--border:#E5E7EB;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh}
+.vet-header{background:linear-gradient(135deg,#0EA5E9 0%,#6366F1 100%);padding:28px 20px 50px;text-align:center;position:relative;overflow:hidden;}
+.vet-header::before{content:'';position:absolute;width:200px;height:200px;background:rgba(255,255,255,0.07);border-radius:50%;top:-60px;right:-50px;}
+.vet-header::after{content:'';position:absolute;bottom:-18px;left:0;right:0;height:36px;background:var(--bg);border-radius:36px 36px 0 0;}
+.back-btn{position:absolute;left:16px;top:28px;background:rgba(255,255,255,0.2);border:none;border-radius:10px;padding:6px 12px;color:#fff;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;}
+.vet-header h2{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:white;margin:0 0 5px;}
+.vet-header p{font-size:13px;color:rgba(255,255,255,0.82);font-weight:600}
+.tabs-wrap{display:flex;margin:0 16px;background:white;border-radius:16px;padding:5px;box-shadow:0 4px 16px rgba(14,165,233,0.12);position:relative;z-index:2;margin-top:-24px;}
+.tab-btn{flex:1;padding:12px 8px;border:none;border-radius:12px;font-family:'Sora',sans-serif;font-size:13px;font-weight:800;cursor:pointer;background:transparent;color:var(--sub);transition:all 0.25s;}
+.tab-btn.active{background:linear-gradient(135deg,var(--sky),var(--indigo));color:white;box-shadow:0 4px 12px rgba(14,165,233,0.3);}
+.panel{display:none;padding-bottom:40px}
+.panel.active{display:block}
+.status-card{margin:16px 16px 0;background:white;border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(14,165,233,0.1);}
+.status-icon{width:44px;height:44px;border-radius:14px;background:#EFF6FF;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.status-title{font-family:'Sora',sans-serif;font-size:13px;font-weight:800;color:var(--text);margin-bottom:2px}
+.status-sub{font-size:11px;color:var(--sub);font-weight:600}
+.locate-wrap{padding:12px 16px 0}
+.locate-btn{width:100%;padding:15px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--sky),var(--indigo));color:white;font-family:'Sora',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(14,165,233,0.32);transition:transform 0.2s,box-shadow 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.locate-btn:hover{transform:translateY(-2px);}
+.locate-btn:disabled{opacity:0.65;cursor:not-allowed;transform:none}
+.map-wrap{margin:14px 16px 0;border-radius:20px;overflow:hidden;box-shadow:0 6px 24px rgba(14,165,233,0.15);display:none;}
+.map-wrap.show{display:block}
+.map-wrap iframe{width:100%;height:380px;border:0;display:block}
+.open-maps-btn{margin:10px 16px 0;padding:13px;background:white;border:2px solid #BAE6FD;border-radius:16px;color:#0369A1;font-family:'Sora',sans-serif;font-size:13px;font-weight:800;text-decoration:none;display:none;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(14,165,233,0.1);transition:all 0.2s;}
+.open-maps-btn.show{display:flex}
+.spinner-wrap{display:none;justify-content:center;padding:18px}
+.spinner-wrap.show{display:flex}
+.spinner{width:34px;height:34px;border:4px solid #BAE6FD;border-top-color:var(--sky);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.section-head{margin:20px 16px 12px;font-family:'Sora',sans-serif;font-size:15px;font-weight:800;color:var(--text);}
+.section-sub{font-size:12px;color:var(--sub);font-weight:600;margin-top:2px}
+.doctor-list{margin:0 16px}
+.doctor-card{background:white;border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 4px 14px rgba(14,165,233,0.09);display:flex;gap:12px;align-items:flex-start;border:2px solid transparent;transition:all 0.2s;cursor:pointer;}
+.doctor-card:hover,.doctor-card.selected{border-color:var(--sky);box-shadow:0 6px 20px rgba(14,165,233,0.18)}
+.doc-avatar{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--sky),var(--indigo));display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.doc-name{font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:var(--text);margin-bottom:2px}
+.doc-spec{font-size:12px;color:var(--sky);font-weight:700;margin-bottom:4px}
+.doc-meta{display:flex;gap:8px;flex-wrap:wrap}
+.doc-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;background:#F0F9FF;color:#0369A1;}
+.doc-badge.avail{background:#F0FDF4;color:#065F46}
+.doc-badge.busy{background:#FFF1F2;color:#9F1239}
+.doc-badge.off{background:#F3F4F6;color:#6B7280}
+.doc-select-btn{margin-left:auto;background:linear-gradient(135deg,var(--sky),var(--indigo));border:none;border-radius:12px;padding:8px 14px;color:white;font-family:'Sora',sans-serif;font-size:12px;font-weight:800;cursor:pointer;flex-shrink:0;white-space:nowrap;}
+.doc-select-btn:disabled{opacity:0.5;cursor:not-allowed;background:#9CA3AF;}
+.empty-doctors{background:white;border-radius:18px;padding:30px;margin:0 16px;text-align:center;box-shadow:0 4px 14px rgba(14,165,233,0.09);}
+.empty-doctors .big{font-size:40px;margin-bottom:10px}
+.empty-doctors p{font-size:13px;font-weight:600;color:var(--sub)}
+.tips-card{margin:14px 16px 0;background:white;border-radius:18px;padding:16px;box-shadow:0 4px 14px rgba(14,165,233,0.09);}
+.tips-title{font-family:'Sora',sans-serif;font-size:13px;font-weight:800;color:var(--text);margin-bottom:10px}
+.tip-row{display:flex;align-items:flex-start;gap:9px;margin-bottom:8px;font-size:12px;font-weight:600;color:#374151}
+.tip-dot{width:7px;height:7px;border-radius:50%;background:var(--sky);flex-shrink:0;margin-top:4px}
+/* BOOKING FORM */
+.form-wrap{margin:0 16px}
+.form-card{background:white;border-radius:18px;padding:20px;box-shadow:0 4px 14px rgba(14,165,233,0.09);margin-bottom:14px;}
+.form-section-title{font-family:'Sora',sans-serif;font-size:13px;font-weight:800;color:var(--text);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid #F0F9FF;}
+.form-group{margin-bottom:14px}
+.form-group:last-child{margin-bottom:0}
+.form-label{display:block;font-size:12px;font-weight:800;color:var(--text);margin-bottom:6px;}
+.form-label .req{color:var(--rose)}
+.form-input,.form-select,.form-textarea{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:var(--text);background:white;transition:border-color 0.2s;outline:none;-webkit-appearance:none;appearance:none;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--sky);box-shadow:0 0 0 3px rgba(14,165,233,0.12);}
+.form-textarea{resize:vertical;min-height:90px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pet-type-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pet-type-btn{padding:10px 6px;border:2px solid var(--border);border-radius:12px;background:white;cursor:pointer;text-align:center;transition:all 0.2s;font-size:11px;font-weight:700;color:var(--sub);}
+.pet-type-btn .emoji{font-size:20px;display:block;margin-bottom:3px}
+.pet-type-btn.selected{border-color:var(--sky);background:#F0F9FF;color:var(--sky)}
+.upload-area{border:2.5px dashed #BAE6FD;border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;background:#F8FBFF;}
+.upload-area:hover{border-color:var(--sky);background:#EFF6FF}
+.upload-area p{font-size:12px;font-weight:700;color:var(--sub);margin-top:6px}
+.upload-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.upload-thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;border:2px solid #BAE6FD;}
+.file-chip{display:flex;align-items:center;gap:6px;padding:6px 10px;background:#EFF6FF;border-radius:8px;font-size:11px;font-weight:700;color:#0369A1;}
+.avail-hint{background:#F0FDF4;border-radius:14px;padding:12px 14px;border:1.5px solid #A7F3D0;margin-bottom:14px;}
+.avail-hint p{font-size:12px;font-weight:700;color:#065F46}
+.avail-warn{background:#FFF7ED;border-radius:14px;padding:12px 14px;border:1.5px solid #FED7AA;margin-bottom:14px;}
+.avail-warn p{font-size:12px;font-weight:700;color:#92400E}
+.submit-btn{width:100%;padding:16px;border:none;border-radius:16px;background:linear-gradient(135deg,var(--emerald) 0%,#059669 100%);color:white;font-family:'Sora',sans-serif;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 8px 24px rgba(16,185,129,0.32);transition:transform 0.2s;display:flex;align-items:center;justify-content:center;gap:10px;}
+.submit-btn:hover{transform:translateY(-2px);}
+.submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.success-state{display:none;text-align:center;padding:30px 20px;background:white;border-radius:20px;margin:0 16px;box-shadow:0 4px 14px rgba(16,185,129,0.15);border:2px solid #A7F3D0;}
+.success-state .big{font-size:56px;margin-bottom:12px}
+.success-state h3{font-family:'Sora',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:8px}
+.success-state p{font-size:13px;color:var(--sub);font-weight:600;line-height:1.5}
+.success-state .ref{margin-top:14px;display:inline-block;background:#F0FDF4;border-radius:10px;padding:8px 16px;font-family:'Sora',sans-serif;font-size:12px;font-weight:800;color:#065F46;}
+.new-booking-btn{margin-top:16px;padding:12px 24px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--sky),var(--indigo));color:white;font-family:'Sora',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+.selected-doc-banner{margin:0 16px 14px;background:linear-gradient(135deg,#F0F9FF,#EEF2FF);border:2px solid #BAE6FD;border-radius:16px;padding:12px 14px;display:none;align-items:center;gap:10px;}
+.selected-doc-banner.show{display:flex}
+.selected-doc-banner .avatar{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--sky),var(--indigo));display:flex;align-items:center;justify-content:center;font-size:18px;}
+.selected-doc-banner .info h4{font-family:'Sora',sans-serif;font-size:13px;font-weight:800;color:var(--text)}
+.selected-doc-banner .info p{font-size:11px;color:var(--sub);font-weight:600}
+.change-doc-btn{margin-left:auto;background:transparent;border:2px solid #BAE6FD;border-radius:10px;padding:6px 12px;color:var(--sky);font-family:'Sora',sans-serif;font-size:11px;font-weight:800;cursor:pointer;}
+.symptom-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.stag{padding:6px 12px;border:2px solid var(--border);border-radius:20px;font-size:12px;font-weight:700;color:var(--sub);cursor:pointer;background:white;transition:all 0.2s;}
+.stag.active{border-color:var(--rose);background:#FFF1F2;color:var(--rose)}
+.error-msg{background:#FEE2E2;border-radius:14px;padding:12px 14px;margin:0 16px 14px;font-size:13px;font-weight:700;color:#991B1B;display:none;}
+.error-msg.show{display:block}
+</style>
+</head>
+<body>
 
-<div class="text-center">
-  <iframe 
-    src="https://www.google.com/maps?q=veterinarian+within+20km&output=embed" 
-    width="100%" height="500"
-    style="border:0;" allowfullscreen>
-  </iframe>
+<div class="vet-header">
+  <a class="back-btn" href="{{ url_for('dashboard') }}">← Back</a>
+  <h2>🐾 PawCare</h2>
+  <p>Find vets & book appointments near you</p>
 </div>
 
+<div class="tabs-wrap">
+  <button class="tab-btn active" id="tab1Btn" onclick="switchTab(1)">📍 Find Vets</button>
+  <button class="tab-btn" id="tab2Btn" onclick="switchTab(2)">📅 Book Appointment</button>
+</div>
+
+<!-- ═══ PANEL 1: FIND VETS ═══ -->
+<div class="panel active" id="panel1">
+
+  <div class="status-card">
+    <div class="status-icon">📍</div>
+    <div>
+      <p class="status-title" id="statusTitle">Location not detected</p>
+      <p class="status-sub"  id="statusSub">Tap below to find vets within 25 km</p>
+    </div>
+  </div>
+
+  <div class="locate-wrap">
+    <button class="locate-btn" id="locateBtn" onclick="findVets()">
+      <span>📍</span> Detect My Location & Find Vets
+    </button>
+  </div>
+
+  <div class="spinner-wrap" id="spinnerWrap"><div class="spinner"></div></div>
+
+  <div class="map-wrap" id="mapWrap">
+    <iframe id="vetMap" src="" allowfullscreen></iframe>
+  </div>
+
+  <a class="open-maps-btn" id="openMapsBtn" href="#" target="_blank">
+    🗺️ Open in Google Maps for Full Results
+  </a>
+
+  <!-- Real doctors from DB -->
+  <div id="doctorListSection" style="display:none">
+    <div class="section-head">
+      Registered Veterinarians
+      <div class="section-sub">Doctors on PawCare — tap to select for booking</div>
+    </div>
+    <div class="doctor-list" id="doctorList"></div>
+  </div>
+
+  <div class="tips-card">
+    <div class="tips-title">💡 Tips</div>
+    <div class="tip-row"><div class="tip-dot"></div>Allow location access when your browser asks</div>
+    <div class="tip-row"><div class="tip-dot"></div>Green badge = doctor is currently on duty</div>
+    <div class="tip-row"><div class="tip-dot"></div>Tap a doctor card then switch to Book Appointment</div>
+    <div class="tip-row"><div class="tip-dot"></div>Your request goes directly to the doctor for approval</div>
+  </div>
+</div>
+
+<!-- ═══ PANEL 2: BOOK APPOINTMENT ═══ -->
+<div class="panel" id="panel2">
+
+  <div class="error-msg" id="errorMsg"></div>
+
+  <div class="selected-doc-banner" id="selectedDocBanner">
+    <div class="avatar">🩺</div>
+    <div class="info">
+      <h4 id="bannerDocName">No doctor selected</h4>
+      <p id="bannerDocSpec">Go to Find Vets tab and select a doctor</p>
+    </div>
+    <button class="change-doc-btn" onclick="switchTab(1)">Change</button>
+  </div>
+
+  <!-- Success -->
+  <div class="success-state" id="successState">
+    <div class="big">🎉</div>
+    <h3>Request Sent!</h3>
+    <p>Your appointment request has been sent to the vet.<br>They will review and confirm or suggest an alternative time.</p>
+    <div class="ref" id="refCode">REF: #000000</div>
+    <br>
+    <button class="new-booking-btn" onclick="resetForm()">Book Another Appointment</button>
+  </div>
+
+  <div id="formContent">
+  <div class="form-wrap">
+
+    <!-- Doctor select -->
+    <div class="form-card">
+      <div class="form-section-title">🩺 Select Doctor</div>
+      <div class="form-group">
+        <label class="form-label">Choose Veterinarian <span class="req">*</span></label>
+        <select class="form-select" id="doctorSelect" onchange="onDoctorSelectChange()">
+          <option value="">-- Select a vet --</option>
+        </select>
+      </div>
+      <div id="availHint" style="display:none"></div>
+    </div>
+
+    <!-- Owner info -->
+    <div class="form-card">
+      <div class="form-section-title">👤 Your Information</div>
+      <div class="form-group">
+        <label class="form-label">Your Full Name <span class="req">*</span></label>
+        <input class="form-input" id="ownerName" type="text" placeholder="e.g. Ramesh Sharma"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Phone <span class="req">*</span></label>
+          <input class="form-input" id="ownerPhone" type="tel" placeholder="+91 ..."/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" id="ownerEmail" type="email" placeholder="you@email.com"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pet info -->
+    <div class="form-card">
+      <div class="form-section-title">🐾 Pet Information</div>
+      <div class="form-group">
+        <label class="form-label">Pet Type <span class="req">*</span></label>
+        <div class="pet-type-grid">
+          <button class="pet-type-btn" onclick="selectPetType(this,'Dog')"><span class="emoji">🐶</span>Dog</button>
+          <button class="pet-type-btn" onclick="selectPetType(this,'Cat')"><span class="emoji">🐱</span>Cat</button>
+          <button class="pet-type-btn" onclick="selectPetType(this,'Bird')"><span class="emoji">🐦</span>Bird</button>
+          <button class="pet-type-btn" onclick="selectPetType(this,'Rabbit')"><span class="emoji">🐰</span>Rabbit</button>
+          <button class="pet-type-btn" onclick="selectPetType(this,'Fish')"><span class="emoji">🐠</span>Fish</button>
+          <button class="pet-type-btn" onclick="selectPetType(this,'Hamster')"><span class="emoji">🐹</span>Hamster</button>
+          <button class="pet-type-btn" onclick="selectPetType(this,'Turtle')"><span class="emoji">🐢</span>Turtle</button>
+          <button class="pet-type-btn" onclick="selectPetType(this,'Other')"><span class="emoji">🐾</span>Other</button>
+        </div>
+        <input type="hidden" id="petType"/>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Pet Name <span class="req">*</span></label>
+          <input class="form-input" id="petName" type="text" placeholder="e.g. Bruno"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Age / Weight</label>
+          <input class="form-input" id="petAge" type="text" placeholder="e.g. 3 yrs / 12 kg"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Breed / Species</label>
+        <input class="form-input" id="petBreed" type="text" placeholder="e.g. Golden Retriever"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Vaccination History (if known)</label>
+        <textarea class="form-textarea" id="vaccinationHistory" placeholder="e.g. Rabies done June 2023, Parvo pending..."></textarea>
+      </div>
+    </div>
+
+    <!-- Symptoms -->
+    <div class="form-card">
+      <div class="form-section-title">🤒 Symptoms & Visit Details</div>
+      <div class="form-group">
+        <label class="form-label">Quick symptom tags</label>
+        <div class="symptom-tags">
+          <button class="stag" onclick="toggleSymptom(this)">Vomiting</button>
+          <button class="stag" onclick="toggleSymptom(this)">Diarrhea</button>
+          <button class="stag" onclick="toggleSymptom(this)">Lethargy</button>
+          <button class="stag" onclick="toggleSymptom(this)">Not Eating</button>
+          <button class="stag" onclick="toggleSymptom(this)">Limping</button>
+          <button class="stag" onclick="toggleSymptom(this)">Itching / Rash</button>
+          <button class="stag" onclick="toggleSymptom(this)">Coughing</button>
+          <button class="stag" onclick="toggleSymptom(this)">Eye Discharge</button>
+          <button class="stag" onclick="toggleSymptom(this)">Fever</button>
+          <button class="stag" onclick="toggleSymptom(this)">Vaccination Due</button>
+          <button class="stag" onclick="toggleSymptom(this)">Routine Checkup</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Describe in detail <span class="req">*</span></label>
+        <textarea class="form-textarea" id="symptoms" placeholder="Describe what your pet is experiencing, since when, any changes in behaviour..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Upload Photos / Reports</label>
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+          <div style="font-size:28px">📎</div>
+          <p>Tap to upload photos or PDF reports</p>
+        </div>
+        <input type="file" id="fileInput" multiple accept="image/*,.pdf" style="display:none" onchange="handleFiles(this)"/>
+        <div class="upload-preview" id="uploadPreview"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Visit Type</label>
+        <select class="form-select" id="visitType">
+          <option value="clinic">🏥 Clinic Visit</option>
+          <option value="home">🏠 Home Visit (if available)</option>
+          <option value="video">📹 Video Consultation</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Date & Time -->
+    <div class="form-card">
+      <div class="form-section-title">📅 Preferred Date & Time</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Preferred Date <span class="req">*</span></label>
+          <input class="form-input" id="prefDate" type="date"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Time <span class="req">*</span></label>
+          <select class="form-select" id="prefTime">
+            <option value="09:00">9:00 AM</option>
+            <option value="09:30">9:30 AM</option>
+            <option value="10:00">10:00 AM</option>
+            <option value="10:30">10:30 AM</option>
+            <option value="11:00">11:00 AM</option>
+            <option value="11:30">11:30 AM</option>
+            <option value="12:00">12:00 PM</option>
+            <option value="14:00">2:00 PM</option>
+            <option value="14:30">2:30 PM</option>
+            <option value="15:00">3:00 PM</option>
+            <option value="15:30">3:30 PM</option>
+            <option value="16:00">4:00 PM</option>
+            <option value="16:30">4:30 PM</option>
+            <option value="17:00">5:00 PM</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Alternate Date (optional)</label>
+        <input class="form-input" id="altDate" type="date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Additional notes for the doctor</label>
+        <textarea class="form-textarea" id="extraNotes" placeholder="Allergies, previous treatments, medications..."></textarea>
+      </div>
+    </div>
+
+    <div style="margin:0 0 12px">
+      <button class="submit-btn" id="submitBtn" onclick="submitBooking()">
+        <span>📤</span> Send Appointment Request
+      </button>
+    </div>
+
+  </div>
+  </div><!-- /formContent -->
+</div><!-- /panel2 -->
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────────────
+let userLat = null, userLng = null;
+let selectedDoctor = null;   // full doctor object from /api/doctors
+let allDoctors = [];         // fetched from DB
+
+// ── LOAD DOCTORS FROM DB ──────────────────────────────────────────────────
+async function loadDoctors() {
+  try {
+    const res  = await fetch('/api/doctors');
+    allDoctors = await res.json();
+  } catch(e) {
+    allDoctors = [];
+  }
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function switchTab(n) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i===n-1));
+  if (n === 2) setupBookingTab();
+}
+
+// ── FIND VETS ─────────────────────────────────────────────────────────────
+function findVets() {
+  const btn     = document.getElementById('locateBtn');
+  const spinner = document.getElementById('spinnerWrap');
+  const stTitle = document.getElementById('statusTitle');
+  const stSub   = document.getElementById('statusSub');
+
+  if (!navigator.geolocation) {
+    stTitle.textContent = 'Not supported';
+    stSub.textContent   = 'Browser does not support geolocation.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span> Detecting location...';
+  spinner.classList.add('show');
+
+  navigator.geolocation.getCurrentPosition(
+    async function(pos) {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+
+      stTitle.textContent = '✅ Location found!';
+      stSub.textContent   = 'Showing registered vets — select one to book';
+
+      // Show map
+      const src = 'https://maps.google.com/maps?q=veterinarian+near+'
+                + userLat + ',' + userLng
+                + '&t=&z=13&ie=UTF8&iwloc=&output=embed';
+      document.getElementById('vetMap').src = src;
+      document.getElementById('mapWrap').classList.add('show');
+
+      const ob = document.getElementById('openMapsBtn');
+      ob.href = 'https://www.google.com/maps/search/veterinarian/@'+userLat+','+userLng+',13z';
+      ob.classList.add('show');
+
+      spinner.classList.remove('show');
+      btn.disabled = false;
+      btn.innerHTML = '<span>🔄</span> Refresh Location';
+
+      // Fetch & render real doctors
+      await loadDoctors();
+      renderDoctorList();
+      document.getElementById('doctorListSection').style.display = 'block';
+    },
+    function(err) {
+      spinner.classList.remove('show');
+      btn.disabled = false;
+      btn.innerHTML = '<span>📍</span> Detect My Location & Find Vets';
+      const msgs = {1:'Access denied. Allow location in settings.',2:'Location unavailable.',3:'Request timed out.'};
+      stTitle.textContent = '❌ Error';
+      stSub.textContent   = msgs[err.code] || 'Could not get location.';
+    },
+    {timeout: 10000, enableHighAccuracy: true}
+  );
+}
+
+// ── RENDER DOCTOR CARDS ───────────────────────────────────────────────────
+function renderDoctorList() {
+  const container = document.getElementById('doctorList');
+
+  if (!allDoctors.length) {
+    container.innerHTML = `
+      <div class="empty-doctors">
+        <div class="big">🩺</div>
+        <p>No veterinarians registered on PawCare yet.<br>Check back soon!</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = '';
+  allDoctors.forEach(doc => {
+    const isSelected = selectedDoctor && selectedDoctor.id === doc.id;
+    const onDuty     = doc.is_on_duty;
+    const dutyBadge  = onDuty
+      ? `<span class="doc-badge avail">✅ On Duty</span>`
+      : `<span class="doc-badge off">🔴 Off Duty</span>`;
+
+    container.innerHTML += `
+      <div class="doctor-card ${isSelected ? 'selected' : ''}" id="dc_${doc.id}">
+        <div class="doc-avatar">🩺</div>
+        <div style="flex:1">
+          <div class="doc-name">${doc.name}</div>
+          <div class="doc-spec">${doc.specialization || 'Veterinarian'}</div>
+          <div class="doc-meta">
+            ${dutyBadge}
+            ${doc.clinic ? `<span class="doc-badge">🏥 ${doc.clinic}</span>` : ''}
+            ${doc.experience ? `<span class="doc-badge">⏱️ ${doc.experience} yrs exp</span>` : ''}
+          </div>
+          ${doc.address ? `<div style="font-size:11px;color:#6B7280;margin-top:5px;font-weight:600">📍 ${doc.address}</div>` : ''}
+        </div>
+        <button class="doc-select-btn" ${!onDuty ? 'disabled title="Doctor is off duty"' : ''}
+                onclick="selectDoctor(${doc.id})">
+          ${onDuty ? 'Book →' : 'Off Duty'}
+        </button>
+      </div>`;
+  });
+}
+
+function selectDoctor(id) {
+  selectedDoctor = allDoctors.find(d => d.id === id);
+  renderDoctorList();
+  updateSelectedBanner();
+  populateDoctorSelect();
+  switchTab(2);
+}
+
+// ── BOOKING TAB SETUP ─────────────────────────────────────────────────────
+function setupBookingTab() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('prefDate').min = today;
+  document.getElementById('altDate').min  = today;
+  populateDoctorSelect();
+  updateSelectedBanner();
+}
+
+function populateDoctorSelect() {
+  const sel = document.getElementById('doctorSelect');
+  sel.innerHTML = '<option value="">-- Select a vet --</option>';
+  allDoctors.forEach(d => {
+    const label = `${d.name} — ${d.specialization || 'Vet'}${d.is_on_duty ? '' : ' (Off Duty)'}`;
+    sel.innerHTML += `<option value="${d.id}"
+      ${selectedDoctor && selectedDoctor.id === d.id ? 'selected' : ''}
+      ${!d.is_on_duty ? 'disabled' : ''}>
+      ${label}
+    </option>`;
+  });
+  if (selectedDoctor) onDoctorSelectChange();
+}
+
+async function onDoctorSelectChange() {
+  const id = parseInt(document.getElementById('doctorSelect').value);
+  if (!id) { document.getElementById('availHint').style.display = 'none'; return; }
+
+  selectedDoctor = allDoctors.find(d => d.id === id);
+  updateSelectedBanner();
+
+  // Fetch availability from backend
+  try {
+    const res  = await fetch(`/api/doctor/${id}/availability`);
+    const data = await res.json();
+    const hint = document.getElementById('availHint');
+    hint.style.display = 'block';
+
+    const openDays = data.schedule
+      .filter(s => s.is_open)
+      .map(s => `${s.day.slice(0,3)}: ${s.from_time}–${s.to_time}`)
+      .join(', ');
+
+    const holidays = data.holidays.length
+      ? data.holidays.join(', ')
+      : 'None';
+
+    hint.innerHTML = `
+      <div class="${data.is_on_duty ? 'avail-hint' : 'avail-warn'}">
+        <p>
+          ${data.is_on_duty ? '✅ Doctor is currently On Duty' : '🔴 Doctor is currently Off Duty'}<br>
+          🕐 <b>Working:</b> ${openDays || 'Schedule not set'}<br>
+          🏖️ <b>Holidays:</b> ${holidays}
+        </p>
+      </div>`;
+  } catch(e) {
+    document.getElementById('availHint').style.display = 'none';
+  }
+}
+
+function updateSelectedBanner() {
+  const banner = document.getElementById('selectedDocBanner');
+  if (selectedDoctor) {
+    banner.classList.add('show');
+    document.getElementById('bannerDocName').textContent = selectedDoctor.name;
+    document.getElementById('bannerDocSpec').textContent =
+      (selectedDoctor.specialization || 'Veterinarian') +
+      (selectedDoctor.clinic ? ' · ' + selectedDoctor.clinic : '');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+// ── PET TYPE ──────────────────────────────────────────────────────────────
+function selectPetType(el, type) {
+  document.querySelectorAll('.pet-type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('petType').value = type;
+}
+
+// ── SYMPTOM TAGS ──────────────────────────────────────────────────────────
+function toggleSymptom(el) { el.classList.toggle('active'); }
+function getSelectedSymptoms() {
+  return [...document.querySelectorAll('.stag.active')].map(t => t.textContent).join(', ');
+}
+
+// ── FILE UPLOAD ───────────────────────────────────────────────────────────
+function handleFiles(input) {
+  const preview = document.getElementById('uploadPreview');
+  [...input.files].forEach(f => {
+    if (f.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement('img');
+        img.src = e.target.result; img.className = 'upload-thumb';
+        preview.appendChild(img);
+      };
+      reader.readAsDataURL(f);
+    } else {
+      const chip = document.createElement('div');
+      chip.className = 'file-chip';
+      chip.innerHTML = `📄 ${f.name}`;
+      preview.appendChild(chip);
+    }
+  });
+}
+
+// ── SUBMIT BOOKING ────────────────────────────────────────────────────────
+async function submitBooking() {
+  const doctorId  = document.getElementById('doctorSelect').value;
+  const ownerName = document.getElementById('ownerName').value.trim();
+  const ownerPhone= document.getElementById('ownerPhone').value.trim();
+  const petType   = document.getElementById('petType').value;
+  const petName   = document.getElementById('petName').value.trim();
+  const symptoms  = document.getElementById('symptoms').value.trim();
+  const prefDate  = document.getElementById('prefDate').value;
+  const prefTime  = document.getElementById('prefTime').value;
+
+  // Client-side validation
+  if (!doctorId)   return showError('Please select a veterinarian.');
+  if (!ownerName)  return showError('Please enter your name.');
+  if (!ownerPhone) return showError('Please enter your phone number.');
+  if (!petType)    return showError('Please select a pet type.');
+  if (!petName)    return showError("Please enter your pet's name.");
+  if (!symptoms)   return showError('Please describe the symptoms or reason for visit.');
+  if (!prefDate)   return showError('Please select a preferred date.');
+
+  hideError();
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span>⏳</span> Sending...';
+
+  try {
+    const res = await fetch('/book-appointment', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        doctor_id:          parseInt(doctorId),
+        owner_name:         ownerName,
+        owner_phone:        ownerPhone,
+        owner_email:        document.getElementById('ownerEmail').value,
+        pet_type:           petType,
+        pet_name:           petName,
+        pet_breed:          document.getElementById('petBreed').value,
+        pet_age:            document.getElementById('petAge').value,
+        vaccination_history:document.getElementById('vaccinationHistory').value,
+        symptoms:           symptoms,
+        symptom_tags:       getSelectedSymptoms(),
+        visit_type:         document.getElementById('visitType').value,
+        pref_date:          prefDate,
+        pref_time:          prefTime,
+        alt_date:           document.getElementById('altDate').value || null,
+        extra_notes:        document.getElementById('extraNotes').value,
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('refCode').textContent = 'REF: #' + data.ref_code;
+      document.getElementById('formContent').style.display  = 'none';
+      document.getElementById('successState').style.display = 'block';
+      document.getElementById('selectedDocBanner').classList.remove('show');
+    } else {
+      showError(data.error || 'Could not send request. Please try again.');
+    }
+  } catch(e) {
+    showError('Network error. Please check your connection and try again.');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<span>📤</span> Send Appointment Request';
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = '⚠️ ' + msg;
+  el.classList.add('show');
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function hideError() {
+  document.getElementById('errorMsg').classList.remove('show');
+}
+
+function resetForm() {
+  document.getElementById('formContent').style.display  = 'block';
+  document.getElementById('successState').style.display = 'none';
+  hideError();
+  ['ownerName','ownerPhone','ownerEmail','petName','petAge','petBreed',
+   'vaccinationHistory','symptoms','prefDate','altDate','extraNotes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.querySelectorAll('.pet-type-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('.stag').forEach(b => b.classList.remove('active'));
+  document.getElementById('uploadPreview').innerHTML = '';
+  document.getElementById('petType').value = '';
+  document.getElementById('availHint').style.display = 'none';
+  document.getElementById('availHint').innerHTML = '';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+window.onload = async () => {
+  await loadDoctors();          // pre-load for booking tab
+  setupBookingTab();
+};
+</script>
+</body>
+</html>
 {% endblock %}

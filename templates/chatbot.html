@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+.chat-wrap {
+    display: flex; flex-direction: column;
+    height: calc(100vh - var(--top-height) - var(--nav-height) - 32px);
+    min-height: 400px; background: transparent;
+}
+.chat-head {
+    background: linear-gradient(135deg, #7c3aed, #6366f1);
+    border-radius: 18px 18px 0 0; padding: 14px 18px;
+    display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 4px 18px rgba(99,102,241,0.3); flex-shrink: 0;
+}
+.chat-head-avatar {
+    width: 44px; height: 44px; background: rgba(255,255,255,0.2);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; border: 2px solid rgba(255,255,255,0.4); flex-shrink: 0;
+}
+.chat-head-info h4 { font-family:'Sora',sans-serif; font-size:15px; font-weight:800; color:white; margin:0 0 2px; }
+.chat-head-info span { font-size:11px; color:rgba(255,255,255,0.75); font-weight:600; }
+.online-dot { width:8px; height:8px; background:#22c55e; border-radius:50%; display:inline-block; margin-right:4px; box-shadow:0 0 6px #22c55e; animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.voice-toggle {
+    margin-left: auto; background: rgba(255,255,255,0.18); border: none;
+    border-radius: 20px; padding: 5px 12px; color: white; font-size: 12px;
+    font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: background 0.2s;
+}
+.voice-toggle:hover { background: rgba(255,255,255,0.32); }
+.voice-toggle.off { background: rgba(255,255,255,0.08); opacity: 0.7; }
+.voice-toggle.speaking { background: #22c55e !important; animation: speakPulse 0.8s infinite; }
+@keyframes speakPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)}50%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
+.chat-messages {
+    flex:1; overflow-y:auto; padding:16px 14px; background:#f0ecff;
+    display:flex; flex-direction:column; gap:10px;
+    scrollbar-width:thin; scrollbar-color:#c4b5fd transparent;
+}
+.chat-messages::-webkit-scrollbar{width:4px}
+.chat-messages::-webkit-scrollbar-thumb{background:#c4b5fd;border-radius:4px}
+.msg { max-width:78%; padding:10px 14px; border-radius:18px; font-size:14px; font-weight:600; line-height:1.5; animation:msgIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes msgIn{from{opacity:0;transform:translateY(10px) scale(0.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.msg.bot { background:white; color:#1e1b4b; align-self:flex-start; border-bottom-left-radius:4px; box-shadow:0 2px 10px rgba(99,102,241,0.1); }
+.msg.user { background:linear-gradient(135deg,#7c3aed,#6366f1); color:white; align-self:flex-end; border-bottom-right-radius:4px; box-shadow:0 4px 14px rgba(99,102,241,0.3); }
+.msg.error { background:#ffe4e6; color:#be123c; align-self:flex-start; border-bottom-left-radius:4px; font-size:13px; }
+.typing-indicator { display:none; align-self:flex-start; background:white; border-radius:18px; border-bottom-left-radius:4px; padding:12px 16px; box-shadow:0 2px 10px rgba(99,102,241,0.1); }
+.typing-indicator.show{display:flex;gap:4px;align-items:center}
+.typing-indicator span{width:7px;height:7px;background:#a78bfa;border-radius:50%;animation:typingBounce 1.2s ease-in-out infinite}
+.typing-indicator span:nth-child(2){animation-delay:.2s}.typing-indicator span:nth-child(3){animation-delay:.4s}
+@keyframes typingBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.quick-replies{display:flex;gap:8px;flex-wrap:wrap;padding:10px 14px 4px;background:#f0ecff;flex-shrink:0}
+.quick-btn{background:white;border:1.5px solid #c4b5fd;color:#7c3aed;border-radius:50px;padding:6px 14px;font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.quick-btn:hover{background:#7c3aed;color:white;border-color:#7c3aed;transform:translateY(-1px)}
+.chat-input-bar{display:flex;align-items:center;gap:10px;padding:12px 14px;background:white;border-radius:0 0 18px 18px;border-top:1.5px solid #ede9fe;flex-shrink:0;box-shadow:0 -2px 10px rgba(99,102,241,0.06)}
+.chat-input-bar input{flex:1;padding:11px 16px;border-radius:50px;border:1.5px solid #e0d9ff;background:#faf8ff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;color:#1e1b4b;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+.chat-input-bar input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,0.1)}
+.chat-input-bar input::placeholder{color:#a89fc4;font-weight:500}
+.send-btn,.voice-btn{width:42px;height:42px;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);flex-shrink:0}
+.send-btn{background:linear-gradient(135deg,#7c3aed,#6366f1);color:white;box-shadow:0 4px 14px rgba(99,102,241,0.35)}
+.send-btn:hover{transform:scale(1.1)}.send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none!important}
+.voice-btn{background:#f3f0ff;color:#7c3aed;border:1.5px solid #e0d9ff}
+.voice-btn:hover{background:#7c3aed;color:white;transform:scale(1.1)}
+.voice-btn.listening{background:#ef4444;color:white;animation:voicePulse 0.8s ease-in-out infinite}
+@keyframes voicePulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+</style>
+
+<div class="chat-wrap">
+    <div class="chat-head">
+        <div class="chat-head-avatar">🐾</div>
+        <div class="chat-head-info">
+            <h4>AgriPet Assistant</h4>
+            <span><span class="online-dot"></span>AI-Powered · Always here</span>
+        </div>
+        <button class="voice-toggle" id="voiceToggle" onclick="toggleVoiceReply()">
+            🔊 <span id="voiceToggleLabel">Voice On</span>
+        </button>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+        <div class="msg bot">👋 Hello! I'm your AI-powered AgriPet Assistant. Ask me <strong>anything</strong> about pet health, diet, vaccinations, livestock, or farming!</div>
+        <div class="typing-indicator" id="typingIndicator"><span></span><span></span><span></span></div>
+    </div>
+
+    <div class="quick-replies" id="quickReplies">
+        <button class="quick-btn" onclick="quickSend('Diet tips for dogs')">🥗 Diet tips</button>
+        <button class="quick-btn" onclick="quickSend('Vaccination schedule for cattle')">💉 Vaccines</button>
+        <button class="quick-btn" onclick="quickSend('Livestock care tips')">🐄 Livestock</button>
+        <button class="quick-btn" onclick="quickSend('Dog health tips')">🐶 Dog health</button>
+        <button class="quick-btn" onclick="quickSend('Cat care guide')">🐱 Cat care</button>
+    </div>
+
+    <div class="chat-input-bar">
+        <input id="userInput" type="text" placeholder="Ask anything about pets or farming..."
+               onkeydown="if(event.key==='Enter') sendMessage()">
+        <button class="voice-btn" id="voiceBtn" onclick="startVoice()" title="Voice input">🎤</button>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+</div>
+
+<script>
+let voiceReplyEnabled = true;
+
+function toggleVoiceReply() {
+    voiceReplyEnabled = !voiceReplyEnabled;
+    const btn = document.getElementById('voiceToggle');
+    const label = document.getElementById('voiceToggleLabel');
+    btn.classList.toggle('off', !voiceReplyEnabled);
+    label.textContent = voiceReplyEnabled ? 'Voice On' : 'Voice Off';
+    if (!voiceReplyEnabled) window.speechSynthesis.cancel();
+}
+
+function speakText(text) {
+    if (!voiceReplyEnabled || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const clean = text.replace(/[\u{1F000}-\u{1FFFF}]/gu, '').replace(/[\u2600-\u27BF]/g, '').trim();
+    if (!clean) return;
+    const utter = new SpeechSynthesisUtterance(clean);
+    utter.lang = 'en-IN'; utter.rate = 0.92; utter.pitch = 1.05;
+    const voices = window.speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang.startsWith('en-IN')) ||
+                      voices.find(v => v.lang.startsWith('en') && v.localService) || voices[0];
+    if (preferred) utter.voice = preferred;
+    const btn = document.getElementById('voiceToggle');
+    btn.classList.add('speaking');
+    utter.onend = utter.onerror = () => btn.classList.remove('speaking');
+    window.speechSynthesis.speak(utter);
+}
+
+function appendMsg(text, type) {
+    const container = document.getElementById('chatMessages');
+    const typing = document.getElementById('typingIndicator');
+    const div = document.createElement('div');
+    div.className = 'msg ' + type;
+    div.innerText = text;
+    container.insertBefore(div, typing);
+    container.scrollTop = container.scrollHeight;
+}
+
+async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    appendMsg(msg, 'user');
+    input.value = '';
+    document.getElementById('quickReplies').style.display = 'none';
+
+    const typing = document.getElementById('typingIndicator');
+    typing.classList.add('show');
+    document.getElementById('chatMessages').scrollTop = 99999;
+    sendBtn.disabled = true;
+
+    try {
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        });
+        const data = await res.json();
+        typing.classList.remove('show');
+
+        if (data.reply) {
+            appendMsg(data.reply, 'bot');
+            speakText(data.reply);
+        } else {
+            appendMsg('⚠️ ' + (data.error || 'No response. Please try again.'), 'error');
+        }
+    } catch (err) {
+        typing.classList.remove('show');
+        appendMsg('⚠️ Could not reach the server. Please try again.', 'error');
+    } finally {
+        sendBtn.disabled = false;
+    }
+}
+
+function quickSend(text) { document.getElementById('userInput').value = text; sendMessage(); }
+
+function startVoice() {
+    const btn = document.getElementById('voiceBtn');
+    if (!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window)) {
+        alert('Voice input not supported. Try Chrome.'); return;
+    }
+    window.speechSynthesis.cancel();
+    const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    rec.lang = 'en-IN'; rec.start();
+    btn.classList.add('listening');
+    rec.onresult = e => { document.getElementById('userInput').value = e.results[0][0].transcript; btn.classList.remove('listening'); sendMessage(); };
+    rec.onerror = rec.onend = () => btn.classList.remove('listening');
+}
+
+if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+</script>
+{% endblock %}

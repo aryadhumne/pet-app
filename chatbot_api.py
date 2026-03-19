@@ -81,7 +81,7 @@ RESPONSES = {
         )
     }
 },
-# ---------- VACCINATION ----------
+# ---------- VACCINATION ---------- #
 "vaccine": {
     "dog": {
         "en-IN": "🐶 **Dog Vaccines**\n✔ 6–8 weeks: DHPP\n✔ 12 weeks: Rabies\n✔ Yearly booster",

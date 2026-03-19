@@ -2,370 +2,237 @@
 {% block content %}
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* GLASSMORPHISM - LETS PETS SHINE THROUGH */
+* { box-sizing: border-box; }
+
 .page-content {
-    background: rgba(255, 255, 255, 0.06) !important;
-    backdrop-filter: blur(30px) !important;
-    -webkit-backdrop-filter: blur(30px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    border-radius: 24px !important;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.12) !important;
-    padding: 24px 20px !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 16px 16px 24px !important;
     margin-bottom: var(--nav-height) !important;
 }
 
-/* GREETING - PURPLE GLASS */
+/* ── GREETING CARD ── */
 .greeting-card {
-    background: rgba(124, 58, 237, 0.80) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: linear-gradient(135deg, #7C3AED 0%, #6366F1 50%, #0EA5E9 100%) !important;
+    border: none;
     border-radius: 24px;
-    padding: 24px 22px;
-    margin-bottom: 24px;
+    padding: 22px 20px;
+    margin-bottom: 20px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 16px 48px rgba(124,58,237,0.4);
+    box-shadow: 0 12px 36px rgba(99,102,241,0.35);
     animation: fadeUp 0.5s ease both;
 }
-
 .greeting-card::before {
     content: "🐾";
     position: absolute;
     top: 10px; right: 15px;
-    font-size: 32px;
-    opacity: 0.15;
+    font-size: 48px;
+    opacity: 0.1;
     z-index: 0;
 }
-
+.greeting-card::after {
+    content: '';
+    position: absolute;
+    width: 160px; height: 160px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+    bottom: -50px; right: -30px;
+}
 .greeting-top {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 18px;
-    position: relative;
-    z-index: 1;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 16px; position: relative; z-index: 1;
 }
-
 .greeting-avatar {
-    width: 56px; height: 56px;
-    background: rgba(255,255,255,0.25);
-    border-radius: 18px;
+    width: 52px; height: 52px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 28px;
-    flex-shrink: 0;
-    border: 2px solid rgba(255,255,255,0.4);
-    backdrop-filter: blur(10px);
+    font-size: 26px; flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.35);
 }
-
 .greeting-text h4 {
     font-family: 'Sora', sans-serif;
-    font-size: 22px;
-    font-weight: 700;
-    color: white;
-    margin: 0 0 4px 0;
-    line-height: 1.2;
+    font-size: 20px; font-weight: 800; color: white;
+    margin: 0 0 3px; line-height: 1.2;
 }
-.greeting-text p { 
-    color: rgba(255,255,255,0.75); 
-    font-size: 14px; 
-    margin: 0;
-    font-weight: 500;
-}
-
-.greeting-stats {
-    display: flex;
-    gap: 12px;
-}
-
+.greeting-text p { color: rgba(255,255,255,0.78); font-size: 13px; margin: 0; font-weight: 600; }
+.greeting-stats { display: flex; gap: 10px; position: relative; z-index: 1; }
 .stat-chip {
-    background: rgba(255,255,255,0.20);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 14px;
-    padding: 12px 16px;
-    color: white;
-    flex: 1;
-    text-align: center;
-    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.28);
+    border-radius: 16px; padding: 10px 12px;
+    color: white; flex: 1; text-align: center;
 }
-.stat-chip .stat-num {
-    font-family: 'Sora', sans-serif;
-    font-size: 24px;
-    font-weight: 800;
-    display: block;
-    line-height: 1.1;
-}
-.stat-chip .stat-lbl {
-    font-size: 12px;
-    opacity: 0.85;
-    font-weight: 700;
-    display: block;
-    margin-top: 4px;
-    letter-spacing: 0.3px;
-}
+.stat-chip .stat-num { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 800; display: block; line-height: 1.1; }
+.stat-chip .stat-lbl { font-size: 11px; opacity: 0.85; font-weight: 700; display: block; margin-top: 3px; }
 
-/* PETS SECTION */
+/* ── SECTION LABEL ── */
 .section-label {
-    font-family: 'Sora', sans-serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: rgba(30,27,75,0.95);
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 800;
+    color: #1e1b4b; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
     animation: fadeUp 0.4s ease 0.1s both;
 }
 
+/* ── PET SCROLL ── */
 .pet-scroll {
-    display: flex;
-    overflow-x: auto;
-    gap: 14px;
-    padding: 8px 4px 16px;
-    margin-bottom: 28px;
-    scrollbar-width: none;
-    animation: fadeUp 0.4s ease 0.15s both;
+    display: flex; overflow-x: auto; gap: 14px;
+    padding: 6px 4px 14px; margin-bottom: 22px;
+    scrollbar-width: none; animation: fadeUp 0.4s ease 0.15s both;
 }
 .pet-scroll::-webkit-scrollbar { display: none; }
 
 .pet-mini-card {
-    min-width: 84px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    color: var(--text);
-    transition: all 0.25s;
+    min-width: 80px;
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    text-decoration: none; color: #1e1b4b;
+    transition: all 0.25s; flex-shrink: 0;
+}
+.pet-mini-card:hover { transform: translateY(-6px) scale(1.05); }
+
+/* ── GRADIENT RING WRAPPER ── */
+.pet-img-wrap {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, #7C3AED, #6366F1, #0EA5E9);
+    box-shadow: 0 6px 18px rgba(99,102,241,0.28);
     flex-shrink: 0;
 }
-.pet-mini-card:hover { 
-    transform: translateY(-8px) scale(1.05);
-    filter: drop-shadow(0 8px 20px rgba(124,58,237,0.3));
-}
 
-.pet-img-wrap {
-    position: relative;
-    padding: 4px;
-    background: linear-gradient(135deg, rgba(124,58,237,0.8), rgba(168,85,247,0.6), rgba(245,158,11,0.7));
+/* ── INNER CIRCLE (white gap between ring and content) ── */
+.pet-img-inner {
+    width: 100%; height: 100%;
     border-radius: 50%;
-    box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+    background: white;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
 }
 
-.pet-mini-card img,
-.pet-placeholder {
-    width: 68px; height: 68px;
+/* ── ACTUAL PET IMAGE ── */
+.pet-img-inner img {
+    width: 100%; height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    background: rgba(255, 255, 255, 0.95);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    object-position: center;
+    display: block;
+}
+
+/* ── LETTER FALLBACK — same size, perfectly centered ── */
+.pet-letter {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7C3AED, #6366F1);
+    display: flex; align-items: center; justify-content: center;
     font-family: 'Sora', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--primary);
-    border: 3px solid white;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    font-size: 24px; font-weight: 800; color: white;
+    line-height: 1;
 }
 
 .pet-mini-card .pet-name {
-    font-size: 12px;
-    font-weight: 700;
-    color: rgba(30,27,75,0.9);
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 80px;
+    font-size: 11px; font-weight: 700; color: #374151;
+    text-align: center; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 76px;
 }
 
 .no-pets {
-    background: rgba(255,255,255,0.15) !important;
-    backdrop-filter: blur(15px) !important;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 20px;
-    padding: 24px 28px;
-    text-align: center;
-    width: 100%;
-    color: rgba(30,27,75,0.9);
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 28px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    background: white; border: 1.5px dashed #C7D2FE;
+    border-radius: 18px; padding: 20px 24px;
+    text-align: center; width: 100%; color: #6B7280;
+    font-size: 14px; font-weight: 700; margin-bottom: 22px;
 }
 
-/* INFO CARDS */
+/* ── INFO CARDS ── */
 .info-cards {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 28px;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 22px;
     animation: fadeUp 0.4s ease 0.25s both;
 }
-
 .info-card {
-    background: rgba(255, 255, 255, 0.15) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 24px;
-    padding: 24px 20px;
-    color: white;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.3s;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    border-radius: 20px; padding: 20px 16px;
+    color: white; position: relative; overflow: hidden;
+    cursor: pointer; transition: transform 0.25s, box-shadow 0.25s;
+    border: none !important;
 }
-.info-card:hover { 
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+.info-card:hover { transform: translateY(-5px); box-shadow: 0 16px 36px rgba(0,0,0,0.18) !important; }
+.info-card::after {
+    content: ''; position: absolute;
+    bottom: -20px; right: -20px;
+    width: 72px; height: 72px;
+    border-radius: 50%; background: rgba(255,255,255,0.12);
 }
-
 .info-card.appointment {
-    background: rgba(59, 130, 246, 0.25) !important;
-    border-left: 5px solid rgba(55, 84, 131, 0.8);
+    background: linear-gradient(135deg, #3B82F6, #1D4ED8) !important;
+    box-shadow: 0 8px 24px rgba(59,130,246,0.32) !important;
 }
 .info-card.vaccine {
-    background: rgba(168, 85, 247, 0.25) !important;
-    border-left: 5px solid rgba(44, 15, 72, 0.8);
+    background: linear-gradient(135deg, #10B981, #059669) !important;
+    box-shadow: 0 8px 24px rgba(16,185,129,0.32) !important;
 }
+.info-card .card-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+.info-card .card-tag { font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; opacity: 0.85; margin-bottom: 5px; display: block; }
+.info-card .card-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+.info-card .card-sub { font-size: 12px; opacity: 0.82; font-weight: 600; }
 
-.info-card .card-icon { 
-    font-size: 32px; 
-    margin-bottom: 12px; 
-    display: block;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+/* ── DIVIDER ── */
+.fancy-divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 20px 0; animation: fadeUp 0.4s ease 0.2s both;
 }
-.info-card .card-tag {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    opacity: 0.9;
-    margin-bottom: 6px;
-    display: block;
+.fancy-divider::before, .fancy-divider::after {
+    content: ""; flex: 1; height: 1.5px;
+    background: linear-gradient(90deg, transparent, #E0E7FF, transparent);
 }
-.info-card .card-title {
-    font-family: 'Sora', sans-serif;
-    font-size: 16px;
-    font-weight: 800;
-    margin-bottom: 6px;
-}
-.info-card .card-sub { 
-    font-size: 13px; 
-    opacity: 0.85;
-    font-weight: 600;
-}
+.fancy-divider span { font-size: 18px; color: #9CA3AF; }
 
-/* FORM */
+/* ── FORM CARD ── */
 .form-card {
-    background: rgba(255, 255, 255, 0.18) !important;
-    backdrop-filter: blur(25px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 28px;
-    padding: 28px 24px;
-    box-shadow: 0 12px 48px rgba(0,0,0,0.15);
-    margin-top: 20px;
+    background: white; border: 1.5px solid #E0E7FF;
+    border-radius: 24px; padding: 24px 20px;
+    box-shadow: 0 6px 24px rgba(99,102,241,0.09); margin-top: 4px;
 }
-
 .form-card-title {
-    font-family: 'Sora', sans-serif;
-    font-size: 18px;
-    font-weight: 800;
-    color: rgba(30,27,75,0.95);
-    margin-bottom: 20px;
-    padding-bottom: 16px;
-    border-bottom: 2px solid rgba(255,255,255,0.3);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-family: 'Sora', sans-serif; font-size: 17px; font-weight: 800;
+    color: #1e1b4b; margin-bottom: 18px; padding-bottom: 14px;
+    border-bottom: 2px solid #EEF2FF;
+    display: flex; align-items: center; gap: 8px;
 }
-
 .form-field {
-    width: 100%;
-    padding: 16px 20px;
-    border-radius: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.35) !important;
-    font-family: 'Nunito', sans-serif;
-    font-size: 15px;
-    font-weight: 600;
-    color: rgba(30,27,75,0.95);
-    transition: all 0.3s;
-    outline: none;
-    margin-bottom: 14px;
-    backdrop-filter: blur(15px);
+    width: 100%; padding: 13px 16px; border-radius: 14px;
+    border: 1.5px solid #C7D2FE; background: #F5F3FF !important;
+    font-family: 'Nunito', sans-serif; font-size: 14px; font-weight: 600;
+    color: #1e1b4b; transition: all 0.2s; outline: none; margin-bottom: 12px;
 }
 .form-field:focus {
-    border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.5) !important;
-    box-shadow: 0 0 0 4px rgba(124,58,237,0.25);
-    transform: translateY(-2px);
+    border-color: #6366F1; background: white !important;
+    box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
 }
-.form-field::placeholder { 
-    color: rgba(109,106,138,0.7); 
-    font-weight: 500; 
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-}
+.form-field::placeholder { color: #9CA3AF; font-weight: 500; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .form-row .form-field { margin-bottom: 0; }
-
 .submit-btn {
-    width: 100%;
-    padding: 18px;
-    border: none;
-    border-radius: 18px;
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
-    color: white;
-    font-family: 'Sora', sans-serif;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: 0 12px 32px rgba(124,58,237,0.45);
-    transition: all 0.3s;
-    margin-top: 16px;
-    letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden;
+    width: 100%; padding: 16px; border: none; border-radius: 16px;
+    background: linear-gradient(135deg, #7C3AED, #6366F1);
+    color: white; font-family: 'Sora', sans-serif;
+    font-size: 15px; font-weight: 800; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+    transition: all 0.2s; margin-top: 14px; letter-spacing: 0.3px;
 }
-.submit-btn:hover { 
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px rgba(124,58,237,0.55);
-}
-.submit-btn:active { transform: translateY(-2px); }
-
-.fancy-divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 28px 0;
-    animation: fadeUp 0.4s ease 0.2s both;
-}
-.fancy-divider::before,
-.fancy-divider::after {
-    content: "";
-    flex: 1;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(124,58,237,0.3), transparent);
-}
-.fancy-divider span { 
-    font-size: 20px; 
-    color: rgba(109,106,138,0.8);
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.1));
-}
+.submit-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(99,102,241,0.45); }
 
 @media (max-width: 380px) {
-    .greeting-text h4 { font-size: 20px; }
-    .info-cards { gap: 12px; grid-template-columns: 1fr; }
+    .greeting-text h4 { font-size: 18px; }
+    .info-cards { gap: 10px; grid-template-columns: 1fr; }
     .form-row { grid-template-columns: 1fr; }
 }
 </style>
@@ -399,22 +266,22 @@
     {% for pet in user.pets %}
     <a href="{{ url_for('pet_profile', pet_id=pet.id) }}" class="pet-mini-card">
         <div class="pet-img-wrap">
-            {# ── PHOTO FIX ──────────────────────────────────────────────────
-               pet.photo stores just the filename (e.g. "buddy_1.jpg").
-               We look it up in static/uploads/ — same folder the pet
-               profile page saves to.  If no photo exists we fall back
-               to the initial-letter placeholder, never to a1.jpeg.
-            ────────────────────────────────────────────────────────────── #}
-            {% if pet.photo and pet.photo.strip() %}
-                <img src="{{ url_for('static', filename='uploads/' + pet.photo) }}"
-                     alt="{{ pet.name }}"
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="pet-placeholder" style="display:none;">{{ pet.name[0]|upper }}</div>
-            {% else %}
-                <div class="pet-placeholder">{{ pet.name[0]|upper }}</div>
-            {% endif %}
+            <div class="pet-img-inner">
+                {% if pet.photo and pet.photo.strip() %}
+                    <img
+                        src="/static/uploads/{{ pet.photo | replace('static/uploads/', '') | replace('uploads/', '') }}"
+                        alt="{{ pet.name }}"
+                        data-letter="{{ pet.name[0]|upper }}"
+                        data-photo="{{ pet.photo }}"
+                        onerror="petImgFail(this)">
+                {% else %}
+                    <div class="pet-letter">{{ pet.name[0]|upper }}</div>
+                {% endif %}
+            </div>
         </div>
         <span class="pet-name">{{ pet.name }}</span>
+        <!-- TEMP DEBUG: remove after fixing -->
+        <span style="font-size:8px;color:red;word-break:break-all;max-width:80px;text-align:center;">{{ pet.photo }}</span>
     </a>
     {% else %}
     <div class="no-pets">🐶 No pets yet — add one below!</div>
@@ -423,7 +290,7 @@
 
 <div class="fancy-divider"><span>📅</span></div>
 
-<div class="section-label">Appointments & Vaccines</div>
+<div class="section-label">Appointments &amp; Vaccines</div>
 <div class="info-cards">
     <div class="info-card appointment">
         <span class="card-icon">📅</span>
@@ -438,7 +305,42 @@
         <div class="card-sub">View schedule</div>
     </div>
 </div>
+<!-- MY APPOINTMENTS STATUS -->
+<div class="section-label" style="margin-top:20px">📅 My Appointment Requests</div>
+<div id="myApptsList" style="margin-bottom:22px">
+  <div style="text-align:center;padding:16px;font-size:13px;color:#6B7280;font-weight:600">
+    Loading...
+  </div>
+</div>
 
+<script>
+// Load appointments on dashboard
+fetch('/my-appointments')
+  .then(r => r.json())
+  .then(appts => {
+    const container = document.getElementById('myApptsList');
+    if (!appts.length) {
+      container.innerHTML = `<div style="background:white;border-radius:18px;padding:16px;text-align:center;font-size:13px;color:#6B7280;font-weight:600;box-shadow:0 3px 12px rgba(0,0,0,0.06)">No appointment requests yet.</div>`;
+      return;
+    }
+    container.innerHTML = appts.map(a => {
+      const statusColor = a.status === 'confirmed' ? '#065F46' : a.status === 'rejected' ? '#991B1B' : '#92400E';
+      const statusBg    = a.status === 'confirmed' ? '#D1FAE5' : a.status === 'rejected' ? '#FEE2E2' : '#FEF3C7';
+      const statusIcon  = a.status === 'confirmed' ? '✅' : a.status === 'rejected' ? '❌' : '⏳';
+      return `
+        <div style="background:white;border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 3px 12px rgba(0,0,0,0.07);border-left:4px solid ${statusColor}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div>
+              <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:#1e1b4b">🐾 ${a.pet_name}</div>
+              <div style="font-size:11px;color:#6B7280;font-weight:600;margin-top:2px">📅 ${a.pref_date} · ${a.pref_time} · #${a.ref_code}</div>
+            </div>
+            <span style="background:${statusBg};color:${statusColor};font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;white-space:nowrap">${statusIcon} ${a.status.charAt(0).toUpperCase()+a.status.slice(1)}</span>
+          </div>
+          ${a.doctor_message ? `<div style="background:#EFF6FF;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:600;color:#0369A1;border-left:3px solid #0EA5E9">💬 <strong>Doctor says:</strong> ${a.doctor_message}</div>` : ''}
+        </div>`;
+    }).join('');
+  });
+</script>
 <div class="fancy-divider"><span>➕</span></div>
 
 <div class="form-card">
@@ -461,5 +363,56 @@
         <button type="submit" class="submit-btn">Add Pet 🐾</button>
     </form>
 </div>
+
+<script>
+function petImgFail(img) {
+    var originalSrc = img.src;
+    var photo = img.getAttribute('data-photo') || '';
+    var letter = img.getAttribute('data-letter') || '?';
+
+    // Build list of fallback paths to try
+    var bare = photo.replace(/^.*uploads\//, '').replace(/^.*static\//, '');
+    var fallbacks = [
+        '/static/uploads/' + bare,
+        '/uploads/' + bare,
+        '/' + photo,
+        photo
+    ];
+
+    // Remove the one we already tried
+    fallbacks = fallbacks.filter(function(p) {
+        return !originalSrc.endsWith(p) && p !== originalSrc;
+    });
+
+    console.warn('❌ Failed:', originalSrc, '— trying fallbacks:', fallbacks);
+
+    if (fallbacks.length > 0) {
+        img.removeAttribute('onerror');
+        img.onerror = function() {
+            // All fallbacks failed — show letter
+            console.warn('❌ All fallbacks failed for photo:', photo);
+            var div = document.createElement('div');
+            div.className = 'pet-letter';
+            div.textContent = letter;
+            img.parentElement.replaceChild(div, img);
+        };
+        img.src = fallbacks[0];
+    } else {
+        var div = document.createElement('div');
+        div.className = 'pet-letter';
+        div.textContent = letter;
+        img.parentElement.replaceChild(div, img);
+    }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.pet-img-inner img').forEach(function(img) {
+        console.log('🐾 Trying to load pet image:', img.src, '| db value:', img.getAttribute('data-photo'));
+        img.addEventListener('load', function() {
+            console.log('✅ Loaded OK:', img.src);
+        });
+    });
+});
+</script>
 
 {% endblock %}

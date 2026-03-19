@@ -2,213 +2,335 @@
 {% block content %}
 
 <style>
-body{
-margin:0;
-font-family:'Segoe UI', sans-serif;
-background: linear-gradient(180deg,#ecfdf5,#ffffff);
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Nunito', sans-serif;
+    background: #F0FDF4;
 }
 
-.header{
-text-align:center;
-padding:20px;
+/* ── HEADER ── */
+.header {
+    background: linear-gradient(135deg, #16A34A 0%, #059669 50%, #0D9488 100%);
+    padding: 32px 20px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.header::before {
+    content: '';
+    position: absolute;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,0.07);
+    border-radius: 50%;
+    top: -70px; right: -60px;
+}
+.header::after {
+    content: '';
+    position: absolute;
+    bottom: -18px; left: 0; right: 0;
+    height: 36px;
+    background: #F0FDF4;
+    border-radius: 36px 36px 0 0;
+}
+.header h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 6px;
+    background: none;
+    -webkit-text-fill-color: white;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+.header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.82);
+    font-weight: 600;
+    margin: 0;
 }
 
-.header h1{
-font-size:30px;
-background:linear-gradient(90deg,#16a34a,#22c55e);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
+/* ── SYNC BAR ── */
+.sync-bar {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 18px;
+    background: #DCFCE7;
+    color: #15803D;
+    border-radius: 20px;
+    max-width: 200px;
+    margin: 18px auto 0;
+    font-family: 'Nunito', sans-serif;
+}
+.sync-bar.error { background: #FEE2E2; color: #991B1B; }
+
+/* ── SEARCH ── */
+.search-box {
+    padding: 16px 16px 0;
+    text-align: left;
+}
+.search-box input {
+    width: 100%;
+    padding: 13px 18px;
+    border-radius: 16px;
+    border: 1.5px solid #BBF7D0;
+    background: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #064E3B;
+    outline: none;
+    box-shadow: 0 4px 14px rgba(16,163,74,0.09);
+    transition: border-color 0.2s;
+}
+.search-box input:focus { border-color: #16A34A; }
+.search-box input::placeholder { color: #9CA3AF; font-weight: 500; }
+
+/* ── TABS ── */
+.tabs {
+    display: flex;
+    gap: 10px;
+    padding: 14px 16px 0;
+    text-align: left;
+    margin: 0;
+}
+.tab-btn {
+    flex: 1;
+    padding: 11px 8px;
+    border: 2px solid #BBF7D0;
+    background: white;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 13px;
+    color: #16A34A;
+    font-family: 'Nunito', sans-serif;
+    transition: all 0.2s;
+    margin: 0;
+}
+.tab-btn.active {
+    background: #16A34A;
+    color: white;
+    border-color: #16A34A;
+    box-shadow: 0 6px 18px rgba(16,163,74,0.3);
+}
+.tab-btn:hover:not(.active) { background: #F0FDF4; }
+
+/* ── PET GRID ── */
+.pets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+    gap: 14px;
+    padding: 16px;
 }
 
-.header p{
-color:#166534;
+/* ── PET CARD ── */
+.pet-card {
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px rgba(16,163,74,0.1);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.22s, box-shadow 0.22s;
+}
+.pet-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(16,163,74,0.18);
+}
+.pet-card img {
+    width: 100%;
+    height: 148px;
+    object-fit: cover;
+    display: block;
+}
+.pet-body { padding: 12px; }
+.pet-body h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: #064E3B;
+    margin: 0 0 3px;
+}
+.pet-body p {
+    font-size: 12px;
+    color: #6B7280;
+    font-weight: 600;
+    margin: 0 0 10px;
 }
 
-.search-box{
-text-align:center;
-margin:20px;
+/* price replaces old .price */
+.price {
+    display: inline-block;
+    background: #DCFCE7;
+    color: #15803D;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    font-family: 'Sora', sans-serif;
 }
 
-.search-box input{
-width:50%;
-padding:12px;
-border-radius:10px;
-border:1px solid #ccc;
+/* buy-btn */
+.buy-btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background: linear-gradient(135deg, #16A34A, #059669);
+    color: white;
+    border-radius: 12px;
+    margin-top: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    transition: opacity 0.2s, transform 0.2s;
+}
+.buy-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+/* remove-btn */
+.remove-btn {
+    width: 100%;
+    padding: 9px;
+    border: none;
+    background: #FEE2E2;
+    color: #DC2626;
+    border-radius: 12px;
+    margin-top: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    transition: background 0.2s;
+}
+.remove-btn:hover { background: #FECACA; }
+
+/* seller badge */
+.seller-badge {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    background: rgba(16,163,74,0.92);
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-family: 'Nunito', sans-serif;
 }
 
-.tabs{
-text-align:center;
-margin:20px;
+/* empty state */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #9CA3AF;
+    font-size: 14px;
+    font-weight: 700;
+    grid-column: 1 / -1;
+    font-family: 'Nunito', sans-serif;
 }
 
-.tab-btn{
-padding:10px 30px;
-border:none;
-background:#e5e7eb;
-margin:5px;
-border-radius:10px;
-cursor:pointer;
-font-weight:bold;
+/* ── SELL BOX ── */
+.sell-box {
+    background: white;
+    padding: 24px 20px;
+    width: calc(100% - 32px);
+    max-width: 460px;
+    margin: 16px auto;
+    border-radius: 22px;
+    box-shadow: 0 6px 24px rgba(16,163,74,0.1);
 }
-
-.tab-btn.active{
-background:#16a34a;
-color:white;
+.sell-box h3 {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: #064E3B;
+    margin: 0 0 18px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #DCFCE7;
 }
-
-.pets{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:20px;
-padding:20px;
-}
-
-.pet-card{
-background:white;
-border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,0.1);
-overflow:hidden;
-position:relative;
-}
-
-.pet-card img{
-width:100%;
-height:200px;
-object-fit:cover;
-}
-
-.pet-body{
-padding:15px;
-}
-
-.price{
-color:#16a34a;
-font-size:22px;
-font-weight:bold;
-margin-top:10px;
-}
-
-.buy-btn{
-width:100%;
-padding:10px;
-border:none;
-background:#16a34a;
-color:white;
-border-radius:10px;
-margin-top:10px;
-cursor:pointer;
-}
-
-.remove-btn{
-width:100%;
-padding:10px;
-border:none;
-background:#ef4444;
-color:white;
-border-radius:10px;
-margin-top:6px;
-cursor:pointer;
-}
-
-.seller-badge{
-position:absolute;
-top:10px;
-right:10px;
-background:rgba(22,163,74,0.9);
-color:white;
-font-size:11px;
-font-weight:700;
-padding:3px 8px;
-border-radius:20px;
-}
-
-.sell-box{
-background:white;
-padding:20px;
-width:400px;
-margin:auto;
-border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,0.1);
-}
-
 .sell-box input,
-.sell-box select{
-width:100%;
-margin:8px 0;
-padding:10px;
-border-radius:8px;
-border:1px solid #ccc;
-box-sizing:border-box;
+.sell-box select {
+    width: 100%;
+    margin: 0 0 10px 0;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 1.5px solid #D1FAE5;
+    background: #F9FFF9;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #064E3B;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+.sell-box input:focus,
+.sell-box select:focus { border-color: #16A34A; background: white; }
+.sell-box input::placeholder { color: #9CA3AF; font-weight: 500; }
+.sell-box button {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #16A34A, #059669);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    box-shadow: 0 8px 24px rgba(16,163,74,0.32);
+    margin-top: 6px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.sell-box button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(16,163,74,0.42);
 }
 
-.sell-box button{
-width:100%;
-padding:12px;
-background:#16a34a;
-color:white;
-border:none;
-border-radius:10px;
-cursor:pointer;
+/* big preview */
+.big-preview {
+    height: 160px;
+    border: 2.5px dashed #BBF7D0;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: #F0FDF4;
+    color: #9CA3AF;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
 }
+.big-preview img { width: 100%; height: 100%; object-fit: cover; }
 
-.big-preview{
-height:200px;
-border:2px dashed gray;
-display:flex;
-align-items:center;
-justify-content:center;
-margin-bottom:10px;
-overflow:hidden;
+/* ── LOADING ── */
+.loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(255,255,255,0.75);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
 }
-
-.big-preview img{
-width:100%;
-height:100%;
-object-fit:cover;
+.loading-overlay.show { display: flex; }
+.spinner {
+    width: 42px; height: 42px;
+    border: 5px solid #BBF7D0;
+    border-top-color: #16A34A;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
 }
-
-.empty-state{
-text-align:center;
-padding:40px;
-color:#6b7280;
-grid-column:1/-1;
-}
-
-.sync-bar{
-text-align:center;
-font-size:12px;
-padding:4px 12px;
-background:#dcfce7;
-color:#15803d;
-border-radius:20px;
-max-width:250px;
-margin:0 auto 10px;
-}
-
-.sync-bar.error{
-background:#fee2e2;
-color:#991b1b;
-}
-
-/* Loading */
-.loading-overlay{
-display:none;
-position:fixed;
-inset:0;
-background:rgba(255,255,255,0.75);
-z-index:9999;
-align-items:center;
-justify-content:center;
-}
-.loading-overlay.show{ display:flex; }
-.spinner{
-width:42px; height:42px;
-border:5px solid #bbf7d0;
-border-top-color:#16a34a;
-border-radius:50%;
-animation:spin .8s linear infinite;
-}
-@keyframes spin{ to{transform:rotate(360deg)} }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 
 
@@ -225,13 +347,13 @@ animation:spin .8s linear infinite;
 <div class="sync-bar" id="syncBar">Connecting...</div>
 
 <div class="search-box">
-    <input id="searchInput" placeholder="Search..." oninput="renderPets()">
+    <input id="searchInput" placeholder="🔍  Search animals..." oninput="renderPets()">
 </div>
 
 <div class="tabs">
-    <button class="tab-btn" onclick="openTab(event,'sell')">Sell</button>
-    <button class="tab-btn active" onclick="openTab(event,'buy')">Buy</button>
-    <button class="tab-btn" onclick="openTab(event,'adopt')">Adopt</button>
+    <button class="tab-btn" onclick="openTab(event,'sell')">➕ Sell</button>
+    <button class="tab-btn active" onclick="openTab(event,'buy')">🛒 Buy</button>
+    <button class="tab-btn" onclick="openTab(event,'adopt')">❤️ Adopt</button>
 </div>
 
 <!-- BUY -->
@@ -247,8 +369,8 @@ animation:spin .8s linear infinite;
 <!-- SELL -->
 <div id="sell" class="section" style="display:none;">
     <div class="sell-box">
-        <h3>Sell or Give for Adoption</h3>
-        <div class="big-preview" id="mainPreview">Upload Image</div>
+        <h3>🌾 Sell or Give for Adoption</h3>
+        <div class="big-preview" id="mainPreview">📷 Upload Image</div>
         <input type="file" accept="image/*" onchange="previewMain(event)">
         <input id="petName" placeholder="Animal Name *">
         <select id="petType">
@@ -267,8 +389,8 @@ animation:spin .8s linear infinite;
         <input id="petBreed" placeholder="Breed">
         <input id="petAge" placeholder="Age">
         <input id="petPrice" type="number" placeholder="Price (leave empty for free adoption)">
-        <input id="ownerPhone" placeholder="Phone">
-        <button onclick="addPet()">Submit</button>
+        <input id="ownerPhone" placeholder="📞 Phone">
+        <button onclick="addPet()">Submit Listing 🌾</button>
     </div>
 </div>
 
@@ -279,18 +401,15 @@ const POLL_INTERVAL = 8000;
 let pets = [];
 let mainImage = "";
 
-// ─── SYNC BAR ────────────────────────────────────────────────────────────────
 function setSyncBar(msg, cls) {
     const bar = document.getElementById("syncBar");
     bar.textContent = msg;
     bar.className = "sync-bar " + (cls || "");
 }
 
-// ─── LOADING ─────────────────────────────────────────────────────────────────
 function showLoading() { document.getElementById("loadingOverlay").classList.add("show"); }
 function hideLoading() { document.getElementById("loadingOverlay").classList.remove("show"); }
 
-// ─── FETCH FROM SERVER ───────────────────────────────────────────────────────
 async function loadPets() {
     try {
         const res = await fetch('/api/agripets');
@@ -301,7 +420,6 @@ async function loadPets() {
     }
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
 async function init() {
     showLoading();
     pets = await loadPets();
@@ -319,7 +437,6 @@ async function init() {
     }, POLL_INTERVAL);
 }
 
-// ─── ADD PET ─────────────────────────────────────────────────────────────────
 async function addPet() {
     const name = document.getElementById("petName").value.trim();
     if (!name) { alert("Enter Animal Name"); return; }
@@ -344,7 +461,6 @@ async function addPet() {
             pets = await loadPets();
             renderPets();
             alert("Animal added! Visible to all users.");
-            // Reset form
             document.getElementById("petName").value = "";
             document.getElementById("petBreed").value = "";
             document.getElementById("petAge").value = "";
@@ -352,7 +468,7 @@ async function addPet() {
             document.getElementById("ownerPhone").value = "";
             document.getElementById("petType").selectedIndex = 0;
             mainImage = "";
-            document.getElementById("mainPreview").innerHTML = "Upload Image";
+            document.getElementById("mainPreview").innerHTML = "📷 Upload Image";
         } else {
             alert("Error: " + (result.error || "Could not add."));
         }
@@ -362,7 +478,6 @@ async function addPet() {
     hideLoading();
 }
 
-// ─── REMOVE PET ──────────────────────────────────────────────────────────────
 async function removePet(id) {
     const pet = pets.find(function(p) { return p.id == id; });
     if (!pet) return;
@@ -383,7 +498,6 @@ async function removePet(id) {
     hideLoading();
 }
 
-// ─── RENDER ──────────────────────────────────────────────────────────────────
 function renderPets() {
     const buyList   = document.getElementById("buyList");
     const adoptList = document.getElementById("adoptList");
@@ -429,7 +543,6 @@ function renderPets() {
     });
 }
 
-// ─── TABS ────────────────────────────────────────────────────────────────────
 function openTab(event, tab) {
     document.querySelectorAll('.section').forEach(function(s) { s.style.display = 'none'; });
     document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
@@ -437,7 +550,6 @@ function openTab(event, tab) {
     event.target.classList.add('active');
 }
 
-// ─── IMAGE PREVIEW ───────────────────────────────────────────────────────────
 function previewMain(e) {
     const r = new FileReader();
     r.onload = function() {
@@ -447,7 +559,6 @@ function previewMain(e) {
     r.readAsDataURL(e.target.files[0]);
 }
 
-// ─── START ───────────────────────────────────────────────────────────────────
 init();
 </script>
 

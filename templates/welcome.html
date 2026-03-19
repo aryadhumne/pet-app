@@ -2,133 +2,262 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Smart Agripet Care</title>
+  <title>Smart AgriPet Care</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      height: 100%;
-    }
+    html, body { height: 100%; font-family: 'Nunito', sans-serif; }
 
-    /* ===== BACKGROUND WITH BLUR ===== */
+    /* ── BACKGROUND ── */
     .welcome-bg {
       min-height: 100vh;
       width: 100%;
       background-image: url("{{ url_for('static', filename='images/welcome2.jpeg') }}");
-      background-repeat: no-repeat;
       background-size: cover;
       background-position: center;
-
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      padding: 20px;
+      padding: 28px 20px;
     }
 
-    /* blur overlay */
+    /* rich gradient overlay */
     .welcome-bg::before {
-      content: "";
+      content: '';
       position: absolute;
       inset: 0;
-      background: rgba(230, 230, 255, 0.75); /* lavender overlay */
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: linear-gradient(
+        150deg,
+        rgba(124, 58, 237, 0.60) 0%,
+        rgba(99, 102, 241, 0.55) 45%,
+        rgba(14, 165, 233, 0.50) 100%
+      );
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
     }
 
-    /* ===== CONTENT CARD ===== */
+    /* floating paw dots */
+    .paw {
+      position: absolute;
+      font-size: 26px;
+      opacity: 0.16;
+      z-index: 1;
+      animation: floatPaw 4s ease-in-out infinite;
+    }
+    .paw:nth-child(1) { top: 7%;  left: 7%;  font-size: 20px; animation-delay: 0s; }
+    .paw:nth-child(2) { top: 12%; right: 9%; font-size: 30px; animation-delay: 0.9s; }
+    .paw:nth-child(3) { bottom: 20%; left: 10%; font-size: 18px; animation-delay: 1.6s; }
+    .paw:nth-child(4) { bottom: 14%; right: 7%; font-size: 24px; animation-delay: 2.2s; }
+
+    @keyframes floatPaw {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%       { transform: translateY(-10px) rotate(14deg); }
+    }
+
+    /* ── CARD ── */
     .welcome-page {
       position: relative;
-      background: rgba(245, 245, 255, 0.95); /* light lavender card */
-      border-radius: 26px;
-      padding: 40px 26px;
-      max-width: 420px;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.93);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1.5px solid rgba(255, 255, 255, 0.7);
+      border-radius: 30px;
+      padding: 38px 28px 34px;
+      max-width: 360px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 14px 34px rgba(0,0,0,0.18);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22), 0 0 0 1px rgba(255,255,255,0.3) inset;
+      animation: riseUp 0.65s cubic-bezier(.22,.68,0,1.2) both;
     }
 
-    .pet-img {
-      width: 180px;
-      margin-bottom: 30px;
-      border-radius: 16px;
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    h1 {
-      font-size: 26px;
-      color: #4b3cb6; /* deep lavender */
-      margin-bottom: 12px;
-    }
-
-    p {
-      font-size: 15px;
-      color: #6c63ff; /* soft lavender text */
-      margin-bottom: 32px;
-      line-height: 1.6;
-    }
-
-    .start-btn {
-      background: #7c4dff; /* lavender button */
-      color: #fff;
-      padding: 14px 34px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-size: 16px;
-      font-weight: 600;
+    /* ── APP BADGE ── */
+    .app-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: 0.3s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      gap: 6px;
+      background: linear-gradient(135deg, #7C3AED, #6366F1);
+      color: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      margin-bottom: 20px;
     }
 
+    /* ── IMAGE ── */
+    .pet-img-wrap {
+      position: relative;
+      display: block;
+      width: fit-content;
+      margin: 0 auto 22px;
+    }
+    .pet-img-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        #7C3AED, #6366F1, #0EA5E9, #7C3AED
+      );
+      animation: spinRing 5s linear infinite;
+      z-index: 0;
+    }
+    @keyframes spinRing { to { transform: rotate(360deg); } }
+
+    .pet-img {
+      position: relative;
+      z-index: 1;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid white;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.16);
+      display: block;
+      animation: floatImg 3.2s ease-in-out infinite;
+    }
+    @keyframes floatImg {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-9px); }
+    }
+
+    /* ── HEADING ── */
+    .welcome-page h1 {
+      font-family: 'Sora', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #1e1b4b;
+      margin-bottom: 10px;
+      line-height: 1.2;
+    }
+    .welcome-page h1 span {
+      background: linear-gradient(90deg, #7C3AED, #0EA5E9);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ── DESCRIPTION ── */
+    .welcome-page p {
+      font-size: 13px;
+      color: #6B7280;
+      font-weight: 600;
+      margin-bottom: 28px;
+      line-height: 1.65;
+    }
+
+    /* ── FEATURE CHIPS ── */
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 26px;
+    }
+    .feat-chip {
+      background: #F5F3FF;
+      color: #5B21B6;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid #DDD6FE;
+    }
+
+    /* ── BUTTON ── */
+    .start-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 16px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #7C3AED, #6366F1, #0EA5E9);
+      color: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 10px 28px rgba(124, 58, 237, 0.40);
+      transition: transform 0.22s, box-shadow 0.22s;
+      letter-spacing: 0.3px;
+      background-size: 200% 100%;
+      animation: shimmerBtn 3s ease infinite;
+    }
+    @keyframes shimmerBtn {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
     .start-btn:hover {
-      background: #5e35b1; /* darker hover lavender */
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 36px rgba(124, 58, 237, 0.50);
+    }
+    .start-btn:active { transform: translateY(-1px); }
+
+    /* ── FOOTER ── */
+    .footer-note {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #9CA3AF;
+      font-weight: 600;
     }
   </style>
-
 </head>
 
 <body>
+<div class="welcome-bg">
 
-  <div class="welcome-bg">
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
 
-    <div class="welcome-page">
+  <div class="welcome-page">
 
-      <!-- Pet Image -->
-      <img 
-        src="{{ url_for('static', filename='images/dog1.jpeg') }}" 
-        alt="Dog"
-        class="pet-img"
-      >
-
-      <!-- Text -->
-      <h1>Hello..!!</h1>
-
-      <p>
-        Find your perfect pet companion and begin a beautiful journey of care and love.
-        Discover dogs and cats waiting for a forever home, easily adopt pets, book visits,
-        and track approvals. Get access to health tips, vaccination reminders, and expert
-        support, all in one place. Connect with trusted shelters and professionals to give
-        your pet the happy and healthy life it deserves. 🐾
-      </p>
-
-      <!-- Button -->
-      <a href="{{ url_for('onboarding') }}" class="start-btn">
-        Get Started 🐾
-      </a>
-
+    <div class="pet-img-wrap">
+      <img src="{{ url_for('static', filename='images/dog1.jpeg') }}"
+           alt="Dog" class="pet-img">
     </div>
+
+    <div class="app-badge">🌿 Smart AgriPet Care</div>
+
+    <h1>Hello there! <span>🐾</span></h1>
+
+    <p>
+      Find your perfect pet companion and begin a beautiful journey of care and love.
+      Adopt pets, book vet visits, track health &amp; vaccinations — all in one place.
+    </p>
+
+    <div class="features">
+      <span class="feat-chip">🐶 Adopt Pets</span>
+      <span class="feat-chip">🩺 Vet Booking</span>
+      <span class="feat-chip">💉 Vaccines</span>
+      <span class="feat-chip">🌾 AgriPet</span>
+      <span class="feat-chip">🛒 Pet Shop</span>
+    </div>
+
+    <a href="{{ url_for('onboarding') }}" class="start-btn">
+      Get Started 🐾
+    </a>
+
+    <div class="footer-note">Your pet's happy life starts here ✨</div>
 
   </div>
 
+</div>
 </body>
 </html>

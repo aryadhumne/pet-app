@@ -2,127 +2,322 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Get Started</title>
+  <title>Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: Poppins, sans-serif;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Nunito', sans-serif; }
 
-    /* ===== FULL BACKGROUND ===== */
+    /* ── BACKGROUND ── */
     .page {
       min-height: 100vh;
-      width: 100%;
-      background-image: url("{{ url_for('static', filename='images/welcome2.jpeg') }}");
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-position: center;
+      background: url("{{ url_for('static', filename='images/welcome2.jpeg') }}")
+                  no-repeat center center / cover;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
+      padding: 24px 20px;
     }
-
-    /* ===== BLUR + LAVENDER OVERLAY ===== */
     .page::before {
-      content: "";
+      content: '';
       position: absolute;
       inset: 0;
-      background: rgba(230, 230, 255, 0.75); /* lavender overlay */
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: linear-gradient(
+        160deg,
+        rgba(14, 165, 233, 0.55) 0%,
+        rgba(99, 102, 241, 0.52) 50%,
+        rgba(168, 85, 247, 0.48) 100%
+      );
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
     }
 
-    /* ===== CARD ===== */
-    .content {
+    /* floating paws */
+    .paw {
+      position: absolute;
+      opacity: 0.16;
+      animation: floatPaw 4s ease-in-out infinite;
+      z-index: 1;
+    }
+    .paw:nth-child(1) { top: 8%;  left: 7%;  font-size: 20px; animation-delay: 0s; }
+    .paw:nth-child(2) { top: 13%; right: 9%; font-size: 30px; animation-delay: 0.9s; }
+    .paw:nth-child(3) { bottom: 20%; left: 10%; font-size: 18px; animation-delay: 1.6s; }
+    .paw:nth-child(4) { bottom: 13%; right: 8%; font-size: 24px; animation-delay: 2.2s; }
+    @keyframes floatPaw {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%       { transform: translateY(-10px) rotate(14deg); }
+    }
+
+    /* ── CARD ── */
+    .login-card {
       position: relative;
-      background: rgba(245, 245, 255, 0.95); /* light lavender card */
-      padding: 36px 26px;
-      border-radius: 22px;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.93);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1.5px solid rgba(255, 255, 255, 0.7);
+      padding: 36px 28px 32px;
+      border-radius: 28px;
+      width: 100%;
+      max-width: 340px;
       text-align: center;
-      width: 70%;
-      max-width: 350px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.3) inset;
+      animation: riseUp 0.6s cubic-bezier(.22,.68,0,1.2) both;
+    }
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(28px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* ===== IMAGE INSIDE CARD ===== */
-    .pet-img {
-      width: 160px;
-      margin-bottom: 22px;
-      border-radius: 14px;
-    }
-
-    h2 {
-      color: #4b3cb6; /* deep lavender */
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: #6c63ff; /* soft lavender text */
-      font-size: 14px;
-      margin-bottom: 28px;
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn {
-      width: 90%;
-      background: #7c4dff; /* lavender button */
-      color: white;
-      padding: 14px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: 600;
-      margin-bottom: 14px;
+    /* ── IMAGE ── */
+    .login-img {
+      position: relative;
       display: block;
-      transition: 0.3s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      width: fit-content;
+      margin: 0 auto 18px;
+    }
+    .login-img::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #0EA5E9, #6366F1, #A855F7, #0EA5E9);
+      animation: spinRing 5s linear infinite;
+      z-index: 0;
+    }
+    @keyframes spinRing { to { transform: rotate(360deg); } }
+    .login-img img {
+      position: relative;
+      z-index: 1;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid white;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      display: block;
     }
 
-    .btn:hover {
-      background: #5e35b1; /* darker hover lavender */
-      transform: translateY(-2px);
+    /* ── HEADING ── */
+    .login-card h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #1e1b4b;
+      margin-bottom: 6px;
     }
 
-    .btn-outline {
+    /* ── ROLE HINT PILL ── */
+    .role-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 18px;
+    }
+    .role-hint-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1.5px solid #C7D2FE;
+      background: #F5F3FF;
+      font-family: 'Sora', sans-serif;
+      font-size: 11px;
+      font-weight: 800;
+      color: #6366F1;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .role-hint-btn:hover,
+    .role-hint-btn.active {
+      background: linear-gradient(135deg, #0EA5E9, #6366F1);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+    }
+    .role-hint-sep {
+      font-size: 11px;
+      color: #D1D5DB;
+      font-weight: 700;
+    }
+
+    /* ── FLASH MESSAGES ── */
+    .alert {
+      padding: 10px 14px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: left;
+    }
+    .alert.success { background: #DCFCE7; color: #166534; }
+    .alert.danger  { background: #FEE2E2; color: #991B1B; }
+
+    /* ── FORM ── */
+    label {
+      display: block;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 800;
+      color: #6366F1;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 13px 16px;
+      border-radius: 14px;
+      border: 1.5px solid #C7D2FE;
+      background: #F5F3FF;
+      font-family: 'Nunito', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e1b4b;
+      outline: none;
+      margin-bottom: 14px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #6366F1;
       background: white;
-      color: #7c4dff; /* lavender border/text */
-      border: 2px solid #7c4dff;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
     }
+    input::placeholder { color: #9CA3AF; font-weight: 500; }
 
-    .btn-outline:hover {
-      background: #eae6ff; /* light lavender hover */
-      transform: translateY(-2px);
+    /* hidden role input */
+    input[type="hidden"] { display: none; }
+
+    /* ── SUBMIT BUTTON ── */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0EA5E9, #6366F1);
+      color: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
     }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(99,102,241,0.45);
+    }
+    .btn:active { transform: translateY(0); }
+
+    /* ── LINKS ── */
+    .links {
+      margin-top: 18px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #6B7280;
+    }
+    .links a {
+      color: #6366F1;
+      font-weight: 800;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .links a:hover { color: #4F46E5; text-decoration: underline; }
+    .links span { color: #D1D5DB; margin: 0 6px; }
   </style>
 </head>
 
 <body>
-
 <div class="page">
 
-  <div class="content">
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
 
-    <!-- Card image -->
-    <img src="{{ url_for('static', filename='images/cat.jpeg') }}"
-         class="pet-img" alt="Welcome">
+  <div class="login-card">
 
-    <h2>Let’s get you started</h2>
-    <p>Create an account or log in if you already have one</p>
+    <div class="login-img">
+      <img src="{{ url_for('static', filename='images/alls.jpg') }}" alt="Login">
+    </div>
 
-    <a href="{{ url_for('register') }}" class="btn">
-      Register 🐾
-    </a>
+    <h2>Welcome Back 🐾</h2>
 
-    <a href="{{ url_for('login') }}" class="btn btn-outline">
-      Log in
-    </a>
+    <!-- Role quick-select hint -->
+    <div class="role-hint">
+      <button type="button" class="role-hint-btn active" id="btnPetOwner"
+              onclick="setLoginRole('pet_owner')">
+        🐶 Pet Owner
+      </button>
+      <span class="role-hint-sep">·</span>
+      <button type="button" class="role-hint-btn" id="btnDoctor"
+              onclick="setLoginRole('doctor')">
+        🩺 Veterinarian
+      </button>
+    </div>
+
+    <!-- flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" id="loginForm">
+
+      <!-- hidden field — sends selected role to Flask -->
+      <input type="hidden" name="role" id="loginRole" value="pet_owner">
+
+      <label>Username</label>
+      <input type="text" name="username" placeholder="Enter your username" required>
+
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Enter your password" required>
+
+      <button type="submit" class="btn" id="loginBtn">
+        Login as Pet Owner 🐶
+      </button>
+    </form>
+
+    <div class="links">
+      <a href="{{ url_for('register') }}">Register</a>
+      <span>|</span>
+      <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+    </div>
 
   </div>
-
 </div>
 
+<script>
+  function setLoginRole(role) {
+    const roleInput = document.getElementById('loginRole');
+    const loginBtn  = document.getElementById('loginBtn');
+    const btnPet    = document.getElementById('btnPetOwner');
+    const btnDoc    = document.getElementById('btnDoctor');
+
+    roleInput.value = role;
+
+    if (role === 'doctor') {
+      loginBtn.textContent = 'Login as Veterinarian 🩺';
+      btnDoc.classList.add('active');
+      btnPet.classList.remove('active');
+    } else {
+      loginBtn.textContent = 'Login as Pet Owner 🐶';
+      btnPet.classList.add('active');
+      btnDoc.classList.remove('active');
+    }
+  }
+</script>
 </body>
 </html>

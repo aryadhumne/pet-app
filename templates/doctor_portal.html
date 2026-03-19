@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PawCare — Doctor Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --sky:#0EA5E9;--indigo:#6366F1;--emerald:#10B981;--rose:#F43F5E;
+  --amber:#F59E0B;--bg:#F0FDF4;--card:#fff;--text:#1e1b4b;--sub:#6B7280;
+  --border:#E5E7EB;--green:#059669;
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh}
+.doc-header{
+  background:linear-gradient(135deg,#059669 0%,#10B981 60%,#0EA5E9 100%);
+  padding:28px 20px 50px;text-align:center;position:relative;overflow:hidden;
+}
+.doc-header::before{content:'🩺';font-size:120px;position:absolute;right:-20px;top:-20px;opacity:0.12;pointer-events:none;}
+.doc-header::after{content:'';position:absolute;bottom:-18px;left:0;right:0;height:36px;background:var(--bg);border-radius:36px 36px 0 0;}
+.back-btn{position:absolute;left:16px;top:28px;background:rgba(255,255,255,0.2);border:none;border-radius:10px;padding:6px 12px;color:#fff;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;}
+.doc-header h2{font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:white;margin:0 0 4px;}
+.doc-header p{font-size:13px;color:rgba(255,255,255,0.85);font-weight:600}
+.profile-pill{display:flex;align-items:center;gap:12px;margin:16px 16px 0;background:white;border-radius:18px;padding:14px 16px;box-shadow:0 4px 16px rgba(5,150,105,0.13);}
+.profile-avatar{width:50px;height:50px;border-radius:16px;flex-shrink:0;background:linear-gradient(135deg,#059669,#10B981);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.profile-name{font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:var(--text)}
+.profile-spec{font-size:12px;color:var(--sub);font-weight:600}
+.profile-edit-btn{margin-left:auto;background:transparent;border:2px solid #BBF7D0;border-radius:10px;padding:6px 12px;color:var(--green);font-family:'Sora',sans-serif;font-size:11px;font-weight:800;cursor:pointer;}
+.on-duty-toggle{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;font-weight:700;color:var(--text);}
+.toggle-switch{position:relative;width:44px;height:24px;cursor:pointer;}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;inset:0;background:#D1D5DB;border-radius:24px;transition:background 0.2s;}
+.toggle-slider::before{content:'';position:absolute;width:18px;height:18px;background:white;border-radius:50%;left:3px;top:3px;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+.toggle-switch input:checked + .toggle-slider{background:var(--emerald)}
+.toggle-switch input:checked + .toggle-slider::before{transform:translateX(20px)}
+.tabs-wrap{display:flex;gap:0;margin:16px 16px 0;background:white;border-radius:16px;padding:5px;box-shadow:0 4px 16px rgba(5,150,105,0.1);}
+.tab-btn{flex:1;padding:10px 6px;border:none;border-radius:12px;font-family:'Sora',sans-serif;font-size:11px;font-weight:800;cursor:pointer;background:transparent;color:var(--sub);transition:all 0.25s;}
+.tab-btn.active{background:linear-gradient(135deg,#059669,#10B981);color:white;box-shadow:0 4px 12px rgba(5,150,105,0.3);}
+.panel{display:none;padding-bottom:40px}
+.panel.active{display:block}
+.sec-head{margin:18px 16px 10px;font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:var(--text);}
+.sec-sub{font-size:12px;color:var(--sub);font-weight:600;margin-top:2px}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 16px 0;}
+.stat-card{background:white;border-radius:16px;padding:14px 12px;text-align:center;box-shadow:0 3px 12px rgba(5,150,105,0.09);}
+.stat-val{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:var(--text);}
+.stat-lbl{font-size:10px;font-weight:700;color:var(--sub);margin-top:2px}
+.stat-dot{width:8px;height:8px;border-radius:50%;margin:0 auto 6px;}
+.appt-list{margin:0 16px}
+.appt-card{background:white;border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 4px 14px rgba(5,150,105,0.08);border-left:4px solid var(--emerald);}
+.appt-card.pending{border-left-color:var(--amber)}
+.appt-card.rejected{border-left-color:var(--rose)}
+.appt-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.appt-pet-icon{width:42px;height:42px;border-radius:13px;background:#F0FDF4;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.appt-pet-name{font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:var(--text)}
+.appt-owner{font-size:12px;color:var(--sub);font-weight:600}
+.appt-status-pill{margin-left:auto;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800;white-space:nowrap;}
+.status-pending{background:#FEF3C7;color:#92400E}
+.status-confirmed{background:#D1FAE5;color:#065F46}
+.status-rejected{background:#FFE4E6;color:#9F1239}
+.appt-detail-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.detail-chip{font-size:11px;font-weight:700;padding:3px 9px;border-radius:8px;background:#F0F9FF;color:#0369A1;}
+.symptoms-box{background:#FFF7ED;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:600;color:#78350F;margin-bottom:10px;}
+.symptoms-box strong{display:block;margin-bottom:2px;font-weight:800}
+.doctor-msg-box{background:#EFF6FF;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:600;color:#0369A1;margin-bottom:8px;border-left:3px solid var(--sky);}
+.action-row{display:flex;gap:8px;margin-top:10px}
+.accept-btn,.reject-btn,.msg-btn{flex:1;padding:10px;border:none;border-radius:12px;font-family:'Sora',sans-serif;font-size:12px;font-weight:800;cursor:pointer;transition:all 0.2s;}
+.accept-btn{background:linear-gradient(135deg,#059669,#10B981);color:white}
+.reject-btn{background:#FFF1F2;color:var(--rose);border:2px solid #FFE4E6}
+.msg-btn{background:#EFF6FF;color:var(--sky);border:2px solid #BAE6FD}
+.empty-state{text-align:center;padding:40px 20px;color:var(--sub);font-weight:600;font-size:14px;}
+.empty-state .big{font-size:48px;margin-bottom:12px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100;align-items:flex-end;justify-content:center;}
+.modal-overlay.show{display:flex}
+.modal-box{background:white;border-radius:24px 24px 0 0;padding:24px 20px 32px;width:100%;max-width:500px;}
+.modal-title{font-family:'Sora',sans-serif;font-size:15px;font-weight:800;color:var(--text);margin-bottom:14px}
+.modal-textarea{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;resize:vertical;min-height:100px;outline:none;color:var(--text);}
+.modal-textarea:focus{border-color:var(--sky)}
+.modal-btns{display:flex;gap:10px;margin-top:12px}
+.modal-send-btn{flex:1;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--sky),var(--indigo));color:white;font-family:'Sora',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+.modal-cancel-btn{padding:13px 20px;border:2px solid var(--border);border-radius:14px;background:white;font-family:'Sora',sans-serif;font-size:13px;font-weight:800;color:var(--sub);cursor:pointer;}
+.avail-card{background:white;border-radius:18px;padding:18px;margin:0 16px 14px;box-shadow:0 4px 14px rgba(5,150,105,0.08);}
+.avail-title{font-family:'Sora',sans-serif;font-size:13px;font-weight:800;color:var(--text);margin-bottom:14px}
+.day-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F3F4F6;}
+.day-row:last-child{border-bottom:none}
+.day-name{font-size:13px;font-weight:800;color:var(--text);width:80px;flex-shrink:0}
+.time-inputs{display:flex;gap:8px;align-items:center;flex:1;flex-wrap:wrap}
+.time-input{padding:6px 10px;border:2px solid var(--border);border-radius:10px;font-size:12px;font-weight:600;color:var(--text);width:90px;font-family:'Nunito',sans-serif;outline:none;}
+.time-input:focus{border-color:var(--emerald)}
+.time-sep{font-size:12px;color:var(--sub);font-weight:700}
+.closed-label{font-size:12px;font-weight:700;color:var(--rose);}
+.holiday-card{background:white;border-radius:18px;padding:18px;margin:0 16px 14px;box-shadow:0 4px 14px rgba(5,150,105,0.08);}
+.holiday-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.holiday-chip{display:flex;align-items:center;gap:6px;padding:6px 10px;background:#FFF7ED;border-radius:10px;font-size:12px;font-weight:700;color:#92400E;}
+.holiday-remove{background:none;border:none;cursor:pointer;color:#D97706;font-size:14px;}
+.add-holiday-row{display:flex;gap:8px}
+.add-holiday-input{flex:1;padding:10px 12px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none;}
+.add-holiday-input:focus{border-color:var(--amber)}
+.add-holiday-btn{padding:10px 16px;border:none;border-radius:12px;background:var(--amber);color:white;font-family:'Sora',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.save-avail-btn{width:100%;padding:15px;border:none;border-radius:16px;background:linear-gradient(135deg,#059669,#10B981);color:white;font-family:'Sora',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin:0 0 16px;box-shadow:0 6px 20px rgba(5,150,105,0.3);}
+.vax-header-row{display:flex;align-items:center;justify-content:space-between;margin:16px 16px 10px;}
+.add-vax-btn{padding:8px 14px;border:none;border-radius:12px;background:linear-gradient(135deg,#059669,#10B981);color:white;font-family:'Sora',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.vax-card{background:white;border-radius:18px;padding:16px;margin:0 16px 12px;box-shadow:0 4px 14px rgba(5,150,105,0.08);}
+.vax-name{font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:var(--text);margin-bottom:4px}
+.vax-symptoms{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
+.symptom-chip{padding:3px 9px;border-radius:8px;background:#EFF6FF;font-size:11px;font-weight:700;color:#0369A1;}
+.vax-notes{font-size:12px;color:var(--sub);font-weight:600;line-height:1.5}
+.vax-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.vax-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:8px;background:#F0FDF4;color:#065F46;}
+.vax-remove-btn{margin-top:10px;background:transparent;border:2px solid #FFE4E6;border-radius:10px;padding:6px 12px;color:var(--rose);font-family:'Sora',sans-serif;font-size:11px;font-weight:800;cursor:pointer;}
+.add-vax-form{background:white;border-radius:18px;padding:18px;margin:0 16px 14px;box-shadow:0 4px 14px rgba(5,150,105,0.08);display:none;}
+.add-vax-form.show{display:block}
+.form-group{margin-bottom:12px}
+.form-label{display:block;font-size:12px;font-weight:800;color:var(--text);margin-bottom:5px}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px 13px;border:2px solid var(--border);border-radius:12px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:var(--text);outline:none;background:white;-webkit-appearance:none;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--emerald)}
+.form-textarea{resize:vertical;min-height:80px}
+.save-vax-btn{width:100%;padding:13px;border:none;border-radius:14px;background:linear-gradient(135deg,#059669,#10B981);color:white;font-family:'Sora',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+.profile-form{background:white;border-radius:18px;padding:18px;margin:16px 16px 0;box-shadow:0 4px 14px rgba(5,150,105,0.08);display:none;}
+.profile-form.show{display:block}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e1b4b;color:white;padding:12px 20px;border-radius:14px;font-family:'Sora',sans-serif;font-size:13px;font-weight:700;z-index:200;transition:transform 0.3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="doc-header">
+  <a class="back-btn" href="{{ url_for('dashboard') }}">← Back</a>
+  <h2>🩺 Doctor Portal</h2>
+  <p>Manage your practice, appointments & records</p>
+</div>
+
+<!-- Profile pill — real data from Flask -->
+<div class="profile-pill">
+  <div class="profile-avatar">👨‍⚕️</div>
+  <div style="flex:1">
+    <div class="profile-name" id="docProfileName">
+      {{ doctor.doctor_fullname or doctor.username }}
+    </div>
+    <div class="profile-spec" id="docProfileSpec">
+      {{ doctor.specialization or 'Veterinarian' }}{% if doctor.clinic_name %} · {{ doctor.clinic_name }}{% endif %}
+    </div>
+    <div class="on-duty-toggle">
+      <label class="toggle-switch">
+        <input type="checkbox" id="onDutyToggle"
+               {{ 'checked' if doctor.is_on_duty else '' }}
+               onchange="toggleDuty()"/>
+        <span class="toggle-slider"></span>
+      </label>
+      <span id="dutyLabel">{{ 'On Duty' if doctor.is_on_duty else 'Off Duty' }}</span>
+    </div>
+  </div>
+  <button class="profile-edit-btn" onclick="toggleProfileForm()">Edit ✏️</button>
+</div>
+
+<!-- Profile edit form -->
+<div class="profile-form" id="profileForm">
+  <div class="form-group">
+    <label class="form-label">Full Name / Display Name</label>
+    <input class="form-input" id="editName" value="{{ doctor.doctor_fullname or doctor.username }}"/>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Specialization</label>
+    <input class="form-input" id="editSpec" value="{{ doctor.specialization or '' }}"/>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Clinic Name</label>
+    <input class="form-input" id="editClinic" value="{{ doctor.clinic_name or '' }}"/>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Phone</label>
+    <input class="form-input" id="editPhone" type="tel" value="{{ doctor.mobile or '' }}"/>
+  </div>
+  <button class="save-avail-btn" onclick="saveProfile()">Save Profile</button>
+</div>
+
+<!-- Stats — real counts from Flask -->
+<div class="stat-row">
+  <div class="stat-card">
+    <div class="stat-dot" style="background:var(--amber)"></div>
+    <div class="stat-val">{{ pending_count }}</div>
+    <div class="stat-lbl">Pending</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-dot" style="background:var(--emerald)"></div>
+    <div class="stat-val">{{ confirmed_count }}</div>
+    <div class="stat-lbl">Confirmed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-dot" style="background:var(--sky)"></div>
+    <div class="stat-val">{{ today_count }}</div>
+    <div class="stat-lbl">Today</div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs-wrap">
+  <button class="tab-btn active" id="t1" onclick="docTab(1)">📋 Requests</button>
+  <button class="tab-btn" id="t2" onclick="docTab(2)">🗓️ Schedule</button>
+  <button class="tab-btn" id="t3" onclick="docTab(3)">💉 Vaccines</button>
+</div>
+
+<!-- ═══ PANEL 1: APPOINTMENT REQUESTS ═══ -->
+<div class="panel active" id="dp1">
+  <div class="sec-head">
+    Appointment Requests
+    <div class="sec-sub">Accept, Reject or Message each request</div>
+  </div>
+
+  <div class="appt-list">
+    {% if appointments %}
+      {% for a in appointments %}
+      {% set pet_emoji = {'Dog':'🐶','Cat':'🐱','Bird':'🐦','Rabbit':'🐰','Fish':'🐠','Hamster':'🐹','Turtle':'🐢'}.get(a.pet_type, '🐾') %}
+      <div class="appt-card {{ a.status }}" id="ac_{{ a.id }}">
+        <div class="appt-top">
+          <div class="appt-pet-icon">{{ pet_emoji }}</div>
+          <div style="flex:1">
+            <div class="appt-pet-name">{{ a.pet_name }} ({{ a.pet_type }})</div>
+            <div class="appt-owner">👤 {{ a.owner_name }} · 📞 {{ a.owner_phone }}</div>
+          </div>
+          <span class="appt-status-pill status-{{ a.status }}">
+            {% if a.status == 'pending' %}⏳ Pending
+            {% elif a.status == 'confirmed' %}✅ Confirmed
+            {% else %}❌ Rejected{% endif %}
+          </span>
+        </div>
+
+        <div class="appt-detail-row">
+          <span class="detail-chip">📅 {{ a.pref_date }} {{ a.pref_time }}</span>
+          <span class="detail-chip">🏥 {{ a.visit_type }}</span>
+          <span class="detail-chip">#{{ a.ref_code }}</span>
+          {% if a.pet_breed %}<span class="detail-chip">🐾 {{ a.pet_breed }}</span>{% endif %}
+          {% if a.pet_age %}<span class="detail-chip">⚖️ {{ a.pet_age }}</span>{% endif %}
+        </div>
+
+        {% if a.symptom_tags %}
+        <div style="margin-bottom:6px">
+          <span style="font-size:11px;font-weight:700;color:var(--sub)">Tags: </span>
+          <span style="font-size:11px;font-weight:700;color:var(--rose)">{{ a.symptom_tags }}</span>
+        </div>
+        {% endif %}
+
+        <div class="symptoms-box">
+          <strong>🤒 Symptoms / Reason:</strong>
+          {{ a.symptoms }}
+          {% if a.extra_notes %}
+          <br><br><strong>📝 Notes:</strong> {{ a.extra_notes }}
+          {% endif %}
+          {% if a.vaccination_history %}
+          <br><br><strong>💉 Vaccination History:</strong> {{ a.vaccination_history }}
+          {% endif %}
+        </div>
+
+        {% if a.doctor_message %}
+        <div class="doctor-msg-box">
+          💬 <strong>Your message:</strong> {{ a.doctor_message }}
+        </div>
+        {% endif %}
+
+        <div class="action-row">
+          {% if a.status == 'pending' %}
+          <button class="accept-btn" onclick="updateStatus({{ a.id }}, 'confirmed')">✅ Accept</button>
+          <button class="reject-btn" onclick="updateStatus({{ a.id }}, 'rejected')">❌ Reject</button>
+          {% endif %}
+          <button class="msg-btn" onclick="openMsg({{ a.id }})">💬 Message</button>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <div class="big">📋</div>
+        <p>No appointment requests yet.<br>They will appear here when pet owners book.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- ═══ PANEL 2: SCHEDULE / AVAILABILITY ═══ -->
+<div class="panel" id="dp2">
+  <div class="sec-head">
+    Working Hours
+    <div class="sec-sub">Set your available hours for each day</div>
+  </div>
+
+  <div class="avail-card">
+    <div class="avail-title">📅 Weekly Schedule</div>
+    <div id="dayRows"></div>
+  </div>
+
+  <div class="holiday-card">
+    <div class="avail-title">🏖️ Holidays & Days Off</div>
+    <div class="holiday-list" id="holidayList">
+      {% if holidays %}
+        {% for h in holidays %}
+        <div class="holiday-chip" id="hchip_{{ h.id }}">
+          🗓️ {{ h.holiday_date.strftime('%d %B %Y') }}
+          {% if h.note %} — {{ h.note }}{% endif %}
+          <button class="holiday-remove" onclick="removeHoliday({{ h.id }})">×</button>
+        </div>
+        {% endfor %}
+      {% else %}
+        <span style="font-size:12px;color:var(--sub);font-weight:600">No holidays added yet.</span>
+      {% endif %}
+    </div>
+    <div class="add-holiday-row">
+      <input class="add-holiday-input" id="holidayInput" type="date"/>
+      <input class="add-holiday-input" id="holidayNote" type="text" placeholder="Note (optional)" style="max-width:130px"/>
+      <button class="add-holiday-btn" onclick="addHoliday()">+ Add</button>
+    </div>
+  </div>
+
+  <div style="padding:0 16px">
+    <button class="save-avail-btn" onclick="saveSchedule()">💾 Save Schedule</button>
+  </div>
+</div>
+
+<!-- ═══ PANEL 3: VACCINATION RECORDS ═══ -->
+<div class="panel" id="dp3">
+  <div class="vax-header-row">
+    <div class="sec-head" style="margin:0">
+      Vaccination Info
+      <div class="sec-sub">Add vaccines you provide — visible to pet owners</div>
+    </div>
+    <button class="add-vax-btn" onclick="toggleVaxForm()">+ Add</button>
+  </div>
+
+  <!-- Add vaccine form -->
+  <div class="add-vax-form" id="addVaxForm">
+    <div class="avail-title">➕ Add Vaccination Record</div>
+    <div class="form-group">
+      <label class="form-label">Vaccine Name *</label>
+      <input class="form-input" id="vaxName" placeholder="e.g. Rabies, Parvo, DHLPP"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Target Species *</label>
+      <select class="form-select" id="vaxSpecies">
+        <option>Dogs</option><option>Cats</option><option>Birds</option>
+        <option>Rabbits</option><option>All Pets</option><option>Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Symptoms / Diseases it Prevents *</label>
+      <input class="form-input" id="vaxSymptoms" placeholder="e.g. Rabies, Leptospirosis (comma separated)"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Recommended Age</label>
+      <input class="form-input" id="vaxAge" placeholder="e.g. 6–8 weeks old, annual booster"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Dosage Schedule</label>
+      <input class="form-input" id="vaxDosage" placeholder="e.g. 2 doses, 3 weeks apart"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Side Effects (if any)</label>
+      <input class="form-input" id="vaxSideEffects" placeholder="e.g. Mild lethargy for 24 hrs"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Price Range (₹)</label>
+      <input class="form-input" id="vaxPrice" placeholder="e.g. ₹800–₹1200"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes for Pet Owner</label>
+      <textarea class="form-textarea" id="vaxNotes" placeholder="Precautions, follow-ups, what to watch for..."></textarea>
+    </div>
+    <button class="save-vax-btn" onclick="saveVaccine()">💉 Save Vaccine Info</button>
+  </div>
+
+  <!-- Vaccines from DB -->
+  <div id="vaxList">
+    {% if vaccines %}
+      {% for v in vaccines %}
+      <div class="vax-card" id="vcard_{{ v.id }}">
+        <div class="vax-name">💉 {{ v.vaccine_name }}</div>
+        <div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:4px">🐾 For: {{ v.species }}</div>
+        {% if v.symptoms %}
+        <div class="vax-symptoms">
+          {% for s in v.symptoms.split(',') %}
+            <span class="symptom-chip">{{ s.strip() }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div class="vax-meta">
+          {% if v.rec_age %}<span class="vax-badge">📅 {{ v.rec_age }}</span>{% endif %}
+          {% if v.dosage %}<span class="vax-badge">💊 {{ v.dosage }}</span>{% endif %}
+          {% if v.price_range %}<span class="vax-badge">₹ {{ v.price_range }}</span>{% endif %}
+        </div>
+        {% if v.side_effects %}<div class="vax-notes" style="margin-top:8px">⚠️ <b>Side Effects:</b> {{ v.side_effects }}</div>{% endif %}
+        {% if v.notes %}<div class="vax-notes" style="margin-top:4px">📋 {{ v.notes }}</div>{% endif %}
+        <button class="vax-remove-btn" onclick="deleteVax({{ v.id }})">🗑️ Remove</button>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <div class="big">💉</div>
+        <p>No vaccine records yet.<br>Add vaccines you offer so pet owners can see them.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Message Modal -->
+<div class="modal-overlay" id="msgModal">
+  <div class="modal-box">
+    <div class="modal-title">💬 Send Message to Pet Owner</div>
+    <p style="font-size:12px;color:var(--sub);font-weight:600;margin-bottom:10px">
+      Suggest an alternate time or give care advice for the pet.
+    </p>
+    <textarea class="modal-textarea" id="msgText"
+      placeholder="e.g. I'm unavailable on that date. Please reschedule to Thursday 4PM. In the meantime ensure your pet stays hydrated..."></textarea>
+    <div class="modal-btns">
+      <button class="modal-cancel-btn" onclick="closeModal()">Cancel</button>
+      <button class="modal-send-btn" onclick="sendMessage()">📤 Send Message</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Real schedule data from Flask ──────────────────────────────────────────
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+// Build schedule map from DB rows passed by Flask
+const dbSchedule = {{ schedule | tojson }};
+const scheduleMap = {};
+DAYS.forEach(d => {
+  const row = dbSchedule.find(r => r.day_name === d);
+  scheduleMap[d] = row
+    ? { open: row.is_open, from: row.from_time || '09:00', to: row.to_time || '18:00' }
+    : { open: d !== 'Sunday', from: '09:00', to: '18:00' };
+});
+
+// ── TABS ───────────────────────────────────────────────────────────────────
+function docTab(n) {
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i===n-1));
+}
+
+// ── DUTY TOGGLE ────────────────────────────────────────────────────────────
+function toggleDuty() {
+  const on = document.getElementById('onDutyToggle').checked;
+  document.getElementById('dutyLabel').textContent = on ? 'On Duty' : 'Off Duty';
+  fetch('/doctor/toggle-duty', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ on_duty: on })
+  }).then(() => showToast(on ? '✅ You are now On Duty' : '🔴 You are now Off Duty'));
+}
+
+// ── PROFILE ────────────────────────────────────────────────────────────────
+function toggleProfileForm() {
+  document.getElementById('profileForm').classList.toggle('show');
+}
+
+function saveProfile() {
+  const fullname = document.getElementById('editName').value.trim();
+  const spec     = document.getElementById('editSpec').value.trim();
+  const clinic   = document.getElementById('editClinic').value.trim();
+  const phone    = document.getElementById('editPhone').value.trim();
+
+  fetch('/doctor/update-profile', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ fullname, specialization: spec, clinic_name: clinic, phone })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      document.getElementById('docProfileName').textContent = fullname || '—';
+      document.getElementById('docProfileSpec').textContent = spec + (clinic ? ' · ' + clinic : '');
+      document.getElementById('profileForm').classList.remove('show');
+      showToast('✅ Profile saved!');
+    }
+  });
+}
+
+// ── APPOINTMENT STATUS ─────────────────────────────────────────────────────
+function updateStatus(apptId, status) {
+  fetch(`/doctor/appointment/${apptId}/status`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ status })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      showToast(status === 'confirmed' ? '✅ Appointment confirmed!' : '❌ Appointment rejected.');
+      setTimeout(() => location.reload(), 1200);
+    }
+  });
+}
+
+// ── MESSAGE MODAL ──────────────────────────────────────────────────────────
+let currentApptId = null;
+
+function openMsg(apptId) {
+  currentApptId = apptId;
+  document.getElementById('msgText').value = '';
+  document.getElementById('msgModal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('msgModal').classList.remove('show');
+  currentApptId = null;
+}
+function sendMessage() {
+  const msg = document.getElementById('msgText').value.trim();
+  if (!msg) { alert('Please enter a message.'); return; }
+
+  fetch(`/doctor/appointment/${currentApptId}/message`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ message: msg })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      closeModal();
+      showToast('💬 Message sent to pet owner!');
+      setTimeout(() => location.reload(), 1200);
+    }
+  });
+}
+
+// ── SCHEDULE ───────────────────────────────────────────────────────────────
+function renderSchedule() {
+  const container = document.getElementById('dayRows');
+  container.innerHTML = '';
+  DAYS.forEach(day => {
+    const d = scheduleMap[day];
+    container.innerHTML += `
+      <div class="day-row">
+        <div class="day-name">${day.slice(0,3)}</div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="chk_${day}" ${d.open?'checked':''} onchange="toggleDay('${day}')"/>
+          <span class="toggle-slider"></span>
+        </label>
+        <div class="time-inputs" id="ti_${day}" style="${d.open?'':'display:none'}">
+          <input class="time-input" type="time" id="from_${day}" value="${d.from}"/>
+          <span class="time-sep">–</span>
+          <input class="time-input" type="time" id="to_${day}" value="${d.to}"/>
+        </div>
+        <span class="closed-label" id="cl_${day}" style="${d.open?'display:none':''}">Closed</span>
+      </div>`;
+  });
+}
+
+function toggleDay(day) {
+  const open = document.getElementById('chk_'+day).checked;
+  document.getElementById('ti_'+day).style.display = open ? 'flex' : 'none';
+  document.getElementById('cl_'+day).style.display = open ? 'none' : 'block';
+  scheduleMap[day].open = open;
+}
+
+function saveSchedule() {
+  const payload = DAYS.map(day => ({
+    day:       day,
+    is_open:   scheduleMap[day].open,
+    from_time: document.getElementById('from_'+day)?.value || '09:00',
+    to_time:   document.getElementById('to_'+day)?.value   || '18:00',
+  }));
+
+  fetch('/doctor/save-schedule', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) showToast('✅ Schedule saved!');
+  });
+}
+
+// ── HOLIDAYS ───────────────────────────────────────────────────────────────
+function addHoliday() {
+  const dateVal = document.getElementById('holidayInput').value;
+  const note    = document.getElementById('holidayNote').value.trim();
+  if (!dateVal) { alert('Please select a date.'); return; }
+
+  fetch('/doctor/add-holiday', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ date: dateVal, note })
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      const list = document.getElementById('holidayList');
+      // Remove "no holidays" placeholder if present
+      const placeholder = list.querySelector('span');
+      if (placeholder) placeholder.remove();
+
+      const d = new Date(dateVal);
+      const label = d.toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+      const chip = document.createElement('div');
+      chip.className = 'holiday-chip';
+      chip.id = 'hchip_' + data.id;
+      chip.innerHTML = `🗓️ ${label}${note?' — '+note:''} <button class="holiday-remove" onclick="removeHoliday(${data.id})">×</button>`;
+      list.appendChild(chip);
+
+      document.getElementById('holidayInput').value = '';
+      document.getElementById('holidayNote').value  = '';
+      showToast('🏖️ Holiday added!');
+    } else {
+      showToast('⚠️ ' + (data.error || 'Could not add holiday'));
+    }
+  });
+}
+
+function removeHoliday(id) {
+  fetch(`/doctor/remove-holiday/${id}`, { method: 'DELETE' })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      const chip = document.getElementById('hchip_' + id);
+      if (chip) chip.remove();
+      showToast('🗑️ Holiday removed.');
+    }
+  });
+}
+
+// ── VACCINES ───────────────────────────────────────────────────────────────
+function toggleVaxForm() {
+  document.getElementById('addVaxForm').classList.toggle('show');
+}
+
+function saveVaccine() {
+  const name = document.getElementById('vaxName').value.trim();
+  if (!name) { alert('Vaccine name is required.'); return; }
+
+  const payload = {
+    vaccine_name: name,
+    species:      document.getElementById('vaxSpecies').value,
+    symptoms:     document.getElementById('vaxSymptoms').value,
+    rec_age:      document.getElementById('vaxAge').value,
+    dosage:       document.getElementById('vaxDosage').value,
+    side_effects: document.getElementById('vaxSideEffects').value,
+    price_range:  document.getElementById('vaxPrice').value,
+    notes:        document.getElementById('vaxNotes').value,
+  };
+
+  fetch('/doctor/add-vaccine', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      showToast('💉 Vaccine saved!');
+      document.getElementById('addVaxForm').classList.remove('show');
+      setTimeout(() => location.reload(), 1000);
+    }
+  });
+}
+
+function deleteVax(id) {
+  if (!confirm('Remove this vaccine record?')) return;
+  fetch(`/doctor/delete-vaccine/${id}`, { method: 'DELETE' })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      const card = document.getElementById('vcard_' + id);
+      if (card) card.remove();
+      showToast('🗑️ Vaccine removed.');
+    }
+  });
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+window.onload = () => {
+  renderSchedule();
+};
+</script>
+</body>
+</html>

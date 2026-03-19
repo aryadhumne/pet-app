@@ -1,157 +1,184 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Back Button -->
-<a href="{{ url_for('health', pet_id=pet_id)
- }}" class="back-btn">🔙</a>
-
-<div class="page-wrapper">
-
-    <div class="health-card">
-        <h2 class="title">Health Checkup 🩺</h2>
-
-        <form id="healthCheckupForm">
-
-            <label class="form-label">Date 📅</label>
-            <input type="date" name="date" class="form-control input-box" required>
-
-            <label class="form-label">Weight (kg) ⚖</label>
-            <input type="number" name="weight" class="form-control input-box" required>
-
-            <label class="form-label">Temperature (°C) 🌡</label>
-            <input type="number" name="temperature" class="form-control input-box" required>
-
-            <label class="form-label">Next Checkup Date 📅</label>
-            <input type="date" name="next_checkup" class="form-control input-box">
-
-            <button type="submit" class="save-btn">Save Checkup</button>
-        </form>
-
-        <div id="statusMessage" class="mt-2"></div>
-
-    </div>
-</div>
-
-
-<script>
-document.getElementById("healthCheckupForm").addEventListener("submit", function(e){
-    e.preventDefault();
-
-    const form = e.target;
-    const formData = new FormData(form);
-
-    fetch("{{ url_for('health_checkup') }}", {
-        method: "POST",
-        body: formData
-    })
-    .then(resp => resp.json())
-    .then(data => {
-        const msg = document.getElementById("statusMessage");
-        if (data.success){
-            msg.innerHTML = '<div class="alert alert-success">Checkup saved successfully! 🎉</div>';
-            form.reset();
-        } else {
-            msg.innerHTML = '<div class="alert alert-danger">' + data.error + '</div>';
-        }
-    });
-});
-</script>
-
-
 <style>
-/* FULL PAGE CENTER */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+* { box-sizing: border-box; }
+
+body { font-family: 'Nunito', sans-serif; background: #F0F9FF; }
+
 .page-wrapper {
     display: flex;
     justify-content: center;
-    align-items: center;
-    min-height: 90vh;
-    padding: 20px;
+    padding: 20px 16px 100px;
 }
 
-/* MAIN CHECKUP CARD */
 .health-card {
     width: 100%;
-    max-width: 380px;
-    background: rgba(255, 255, 255, 0.85);
-    padding: 25px;
-    border-radius: 25px;
-    text-align: center;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-    backdrop-filter: blur(8px);
-
-    /* smooth floating animation */
-    animation: floatCard 4s ease-in-out infinite;
+    max-width: 400px;
+    background: white;
+    padding: 28px 24px;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(16,185,129,0.12);
+    border: 1.5px solid #D1FAE5;
+    margin-top: 16px;
 }
 
-/* floating animation */
-@keyframes floatCard {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0); }
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #6366F1;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    margin: 16px 16px 0;
+    font-family: 'Sora', sans-serif;
 }
+.back-btn:hover { opacity: 0.75; }
 
-/* Title */
 .title {
-    font-size: 26px;
-    font-weight: 700;
-    color:  #4c17a8;
-    margin-bottom: 18px;
-
-    /* color-changing animation */
-    animation: colorShift 5s infinite alternate;
+    font-family: 'Sora', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #064E3B;
+    margin-bottom: 22px;
+    text-align: center;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #D1FAE5;
 }
 
+.form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 800;
+    color: #10B981;
+    margin-bottom: 5px;
+    letter-spacing: 0.3px;
+}
 
-
-/* Inputs */
 .input-box {
-    margin-bottom: 16px;
-    padding: 18px;
-    border-radius: 15px;
-    border: 1px solid #d0d0d0;
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 1.5px solid #D1FAE5;
+    background: #F0FDF4;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #064E3B;
+    outline: none;
+    margin-bottom: 14px;
+    transition: border-color 0.2s, background 0.2s;
+    display: block;
 }
+.input-box:focus {
+    border-color: #10B981;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(16,185,129,0.1);
+}
+.input-box::placeholder { color: #9CA3AF; font-weight: 500; }
 
-/* Save Button - gradient */
 .save-btn {
     width: 100%;
-    padding: 12px;
-    background: linear-gradient(#ff8c42, #421684);
+    padding: 15px;
+    background: linear-gradient(135deg, #10B981, #059669);
     color: white;
     border: none;
-    border-radius: 15px;
-    font-size: 18px;
-    font-weight: 600;
+    border-radius: 16px;
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
     cursor: pointer;
-    transition: 0.3s;
+    box-shadow: 0 8px 24px rgba(16,185,129,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 4px;
 }
-
 .save-btn:hover {
-    transform: translateY(-3px);
-    filter: brightness(1.15);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(16,185,129,0.45);
 }
+.save-btn:active { transform: translateY(0); }
 
-.save-btn:active {
-    transform: scale(0.95);
-    transition: 0.1s;
-    filter: brightness(0.9);
-}
-
-/* Back Button */
-.back-btn {
-    position: fixed;
-    top: 65px;
-    left: 18px;
-    text-decoration: none;
-    font-size: 28px;
-    font-weight: 600;
-    color: #233b6c;
-    opacity: 0.85;
-    transition: 0.2s;
-}
-.back-btn:hover {
-    opacity: 1;
-    transform: translateX(-4px);
-}
+.status-msg { margin-top: 14px; font-size: 13px; font-weight: 700; text-align: center; padding: 10px; border-radius: 12px; display: none; }
+.status-msg.success { background: #DCFCE7; color: #166534; display: block; }
+.status-msg.error   { background: #FEE2E2; color: #991B1B; display: block; }
 </style>
+
+<a href="/pet/{{ pet_id }}" class="back-btn">← Back to Profile</a>
+
+<div class="page-wrapper">
+    <div class="health-card">
+        <h2 class="title">🩺 Health Checkup</h2>
+
+        <!-- pet_id is passed as hidden field so it saves to the right pet -->
+        <form id="healthCheckupForm">
+            <input type="hidden" name="pet_id" value="{{ pet_id }}">
+
+            <label class="form-label">Date 📅</label>
+            <input type="date" name="date" class="input-box" required>
+
+            <label class="form-label">Weight (kg) ⚖️</label>
+            <input type="number" step="0.1" name="weight" class="input-box" placeholder="e.g. 12.5" required>
+
+            <label class="form-label">Temperature (°F) 🌡️</label>
+            <input type="number" step="0.1" name="temperature" class="input-box" placeholder="e.g. 101.5" required>
+
+            <label class="form-label">Notes 📝</label>
+            <input type="text" name="notes" class="input-box" placeholder="Any observations...">
+
+            <label class="form-label">Next Checkup Date 📅</label>
+            <input type="date" name="next_checkup" class="input-box">
+
+            <button type="submit" class="save-btn">Save Checkup 💾</button>
+        </form>
+
+        <div id="statusMessage" class="status-msg"></div>
+    </div>
+</div>
+
+<script>
+document.getElementById("healthCheckupForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const form    = e.target;
+    const formData = new FormData(form);
+    const btn     = form.querySelector(".save-btn");
+    const msg     = document.getElementById("statusMessage");
+
+    btn.disabled    = true;
+    btn.textContent = "Saving...";
+
+    fetch("/health_checkup", {
+        method: "POST",
+        body: formData
+    })
+    .then(resp => {
+        // If the server redirects (302), it means save was successful
+        if (resp.redirected) {
+            window.location.href = resp.url;
+            return;
+        }
+        return resp.json();
+    })
+    .then(data => {
+        if (!data) return; // already redirected
+        if (data.success) {
+            msg.className     = "status-msg success";
+            msg.textContent   = "✅ Checkup saved! Redirecting...";
+            setTimeout(() => { window.location.href = "/pet/" + formData.get("pet_id"); }, 1200);
+        } else {
+            msg.className   = "status-msg error";
+            msg.textContent = "❌ " + (data.error || "Could not save. Try again.");
+            btn.disabled    = false;
+            btn.textContent = "Save Checkup 💾";
+        }
+    })
+    .catch(() => {
+        // redirect happened at network level
+        window.location.href = "/pet/" + formData.get("pet_id");
+    });
+});
+</script>
 
 {% endblock %}

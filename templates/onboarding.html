@@ -4,115 +4,266 @@
   <meta charset="UTF-8">
   <title>Get Started</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     html, body {
       height: 100%;
-      margin: 0;
-      font-family: Poppins, sans-serif;
+      font-family: 'Nunito', sans-serif;
     }
 
-    /* ===== FULL BACKGROUND ===== */
+    /* ── FULL PAGE BACKGROUND ── */
     .page {
       min-height: 100vh;
       width: 100%;
       background-image: url("{{ url_for('static', filename='images/welcome2.jpeg') }}");
-      background-repeat: no-repeat;
-       background-size: cover;        /* IMPORTANT */
-  background-position: center;              /* 👈 IMAGE BIGGER */
-      /* 👈 SIDE GAP FIX */
-
+      background-size: cover;
+      background-position: center;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
+      padding: 24px 20px;
     }
 
-    /* ===== BLUR + WHITE OVERLAY ===== */
+    /* dark gradient overlay — richer than plain white blur */
     .page::before {
-      content: "";
+      content: '';
       position: absolute;
       inset: 0;
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: linear-gradient(
+        160deg,
+        rgba(14, 165, 233, 0.55) 0%,
+        rgba(99, 102, 241, 0.50) 50%,
+        rgba(168, 85, 247, 0.45) 100%
+      );
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
 
-    /* ===== CARD ===== */
-    .content {
+    /* floating paw decorations */
+    .paw {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0.18;
+      animation: floatPaw 4s ease-in-out infinite;
+      z-index: 1;
+    }
+    .paw:nth-child(1) { top: 8%;  left: 8%;  animation-delay: 0s;   font-size: 22px; }
+    .paw:nth-child(2) { top: 14%; right: 10%; animation-delay: 0.8s; font-size: 32px; }
+    .paw:nth-child(3) { bottom: 18%; left: 12%; animation-delay: 1.4s; font-size: 20px; }
+    .paw:nth-child(4) { bottom: 12%; right: 8%; animation-delay: 2s;   font-size: 26px; }
+
+    @keyframes floatPaw {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%       { transform: translateY(-10px) rotate(12deg); }
+    }
+
+    /* ── CARD ── */
+    .card {
       position: relative;
-    background: rgba(254, 243, 242, 0.92);
-      padding: 36px 26px;
-      border-radius: 22px;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1.5px solid rgba(255, 255, 255, 0.7);
+      padding: 36px 28px 32px;
+      border-radius: 28px;
       text-align: center;
-      width: 70%;
-      max-width: 350px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      width: 100%;
+      max-width: 340px;
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255,255,255,0.3) inset;
+      animation: riseUp 0.6s ease both;
     }
 
-    /* ===== IMAGE INSIDE CARD ===== */
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+   /* FROM */
+.pet-img-wrap {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 22px;
+}
+
+/* TO */
+.pet-img-wrap {
+  position: relative;
+  display: block;
+  width: fit-content;
+  margin: 0 auto 22px;
+}
+    @keyframes spinRing { to { transform: rotate(360deg); } }
+
     .pet-img {
-      width: 160px;
-      margin-bottom: 22px;
-      border-radius: 14px;
-    }
-
-    h2 {
-      color: #2f2f2f;
-      margin-bottom: 10px;
-    }
-
-    p {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 28px;
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn {
-      width: 90%;
-      background: #f4a640;
-      color: white;
-      padding: 14px;
-      border-radius: 30px;
-      text-decoration: none;
-      font-weight: 600;
-      margin-bottom: 14px;
+      position: relative;
+      z-index: 1;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid white;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
       display: block;
+      animation: floatImg 3s ease-in-out infinite;
+    }
+    @keyframes floatImg {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-8px); }
     }
 
-    .btn-outline {
+    /* ── BADGE ── */
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, #0EA5E9, #6366F1);
+      color: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    /* ── HEADINGS ── */
+    .card h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #1e1b4b;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .card p {
+      color: #6B7280;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    /* ── BUTTONS ── */
+    .btn-register {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0EA5E9, #6366F1);
+      color: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      margin-bottom: 12px;
+      box-shadow: 0 8px 24px rgba(14,165,233,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-register:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(14,165,233,0.45);
+    }
+
+    .btn-login {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border-radius: 16px;
       background: white;
-      color: #f4a640;
-      border: 2px solid #f4a640;
+      color: #6366F1;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      text-decoration: none;
+      border: 2px solid #C7D2FE;
+      box-shadow: 0 4px 12px rgba(99,102,241,0.1);
+      transition: all 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .btn-login:hover {
+      background: #EEF2FF;
+      border-color: #6366F1;
+      transform: translateY(-2px);
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0 12px;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1.5px;
+      background: #E5E7EB;
+      border-radius: 2px;
+    }
+    .divider span {
+      font-size: 12px;
+      color: #9CA3AF;
+      font-weight: 700;
+    }
+
+    /* ── FOOTER NOTE ── */
+    .footer-note {
+      margin-top: 20px;
+      font-size: 11px;
+      color: #9CA3AF;
+      font-weight: 600;
     }
   </style>
 </head>
 
 <body>
-
 <div class="page">
 
-  <div class="content">
+  <!-- floating paws -->
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
 
-    <!-- Card image (NOT background) -->
-    <img src="{{ url_for('static', filename='images/cat.jpeg') }}"
-         class="pet-img" alt="Welcome">
+  <div class="card">
 
-    <h2>Let’s get you started</h2>
-    <p>Create an account or log in if you already have one</p>
+    <!-- spinning ring image -->
+    <div class="pet-img-wrap">
+      <img src="{{ url_for('static', filename='images/cat.jpeg') }}"
+           class="pet-img" alt="Welcome">
+    </div>
 
-    <a href="{{ url_for('register') }}" class="btn">
-      Register 🐾
+    <!-- badge -->
+    <div class="app-badge">🐾 Smart AgriPet Care</div>
+
+    <h2>Let's get you<br>started!</h2>
+    <p>Create an account or log in<br>if you already have one</p>
+
+    <a href="{{ url_for('register') }}" class="btn-register">
+      Create Account 🐾
     </a>
 
-    <a href="{{ url_for('login') }}" class="btn btn-outline">
-      Log in
+    <div class="divider"><span>or</span></div>
+
+    <a href="{{ url_for('login') }}" class="btn-login">
+      Log In
     </a>
+
+    <div class="footer-note">By continuing you agree to our Terms &amp; Privacy Policy</div>
 
   </div>
 
 </div>
-
 </body>
 </html>

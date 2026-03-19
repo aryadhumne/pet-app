@@ -4,24 +4,14 @@
   <meta charset="UTF-8">
   <title>Register</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'Nunito', sans-serif; }
 
-    body, html {
-      height: 100%;
-    }
-
-    /* ===== BACKGROUND ===== */
+    /* ── BACKGROUND ── */
     .page {
       min-height: 100vh;
       background: url("{{ url_for('static', filename='images/register1.jpeg') }}")
@@ -30,138 +20,445 @@
       align-items: center;
       justify-content: center;
       position: relative;
+      padding: 24px 20px;
     }
-
     .page::before {
-      content: "";
+      content: '';
       position: absolute;
       inset: 0;
-      background: rgba(245,243,255,0.75); /* lavender overlay */
-      backdrop-filter: blur(8px);
+      background: linear-gradient(
+        160deg,
+        rgba(14, 165, 233, 0.55) 0%,
+        rgba(99, 102, 241, 0.52) 50%,
+        rgba(168, 85, 247, 0.48) 100%
+      );
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
     }
 
-    /* ===== REGISTER CARD ===== */
+    /* floating paws */
+    .paw {
+      position: absolute;
+      opacity: 0.16;
+      animation: floatPaw 4s ease-in-out infinite;
+      z-index: 1;
+    }
+    .paw:nth-child(1) { top: 6%;  left: 7%;  font-size: 20px; animation-delay: 0s; }
+    .paw:nth-child(2) { top: 12%; right: 9%; font-size: 30px; animation-delay: 0.9s; }
+    .paw:nth-child(3) { bottom: 18%; left: 10%; font-size: 18px; animation-delay: 1.6s; }
+    .paw:nth-child(4) { bottom: 10%; right: 8%; font-size: 24px; animation-delay: 2.2s; }
+    @keyframes floatPaw {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%       { transform: translateY(-10px) rotate(14deg); }
+    }
+
+    /* ── CARD ── */
     .register-card {
       position: relative;
-      background: rgba(255,255,255,0.92); /* white-glass card */
-      padding: 32px 26px;
-      border-radius: 26px;
-      width: 90%;
-      max-width: 360px;
-      box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.93);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1.5px solid rgba(255, 255, 255, 0.7);
+      padding: 32px 28px 28px;
+      border-radius: 28px;
+      width: 100%;
+      max-width: 340px;
       text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.3) inset;
+      animation: riseUp 0.6s cubic-bezier(.22,.68,0,1.2) both;
+    }
+    @keyframes riseUp {
+      from { opacity: 0; transform: translateY(28px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .register-card h2 {
-      margin-bottom: 8px;
-      color: #6d28d9; /* deep lavender */
-    }
-
-    /* ===== IMAGE BELOW REGISTER ===== */
-    .register-img {
-      width: 110px;
-      margin: 10px auto 20px;
+    /* ── IMAGE ── */
+    .register-img-wrap {
+      position: relative;
       display: block;
-      border-radius: 12px;
+      width: fit-content;
+      margin: 0 auto 18px;
+    }
+    .register-img-wrap::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #0EA5E9, #6366F1, #A855F7, #0EA5E9);
+      animation: spinRing 5s linear infinite;
+      z-index: 0;
+    }
+    @keyframes spinRing { to { transform: rotate(360deg); } }
+    .register-img {
+      position: relative;
+      z-index: 1;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid white;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      display: block;
     }
 
+    /* ── HEADING ── */
+    .register-card h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 21px;
+      font-weight: 800;
+      color: #1e1b4b;
+      margin-bottom: 16px;
+    }
+
+    /* ── FLASH MESSAGES ── */
+    .alert {
+      padding: 10px 14px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: left;
+    }
+    .alert.success { background: #DCFCE7; color: #166534; }
+    .alert.danger  { background: #FEE2E2; color: #991B1B; }
+
+    /* ── FORM ── */
     label {
       display: block;
       text-align: left;
-      font-size: 14px;
-      margin-bottom: 6px;
-      color: #6d28d9; /* deep lavender */
-      font-weight: 500;
+      font-size: 12px;
+      font-weight: 800;
+      color: #6366F1;
+      margin-bottom: 5px;
+      letter-spacing: 0.3px;
     }
 
     input {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid #ddd6fe;
-      outline: none;
-      margin-bottom: 14px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      border: 1.5px solid #C7D2FE;
+      background: #F5F3FF;
+      font-family: 'Nunito', sans-serif;
       font-size: 14px;
-      background: #f5f3ff; /* soft lavender background */
+      font-weight: 600;
+      color: #1e1b4b;
+      outline: none;
+      margin-bottom: 12px;
+      transition: border-color 0.2s, background 0.2s;
     }
-
     input:focus {
-      border-color: #8b5cf6;
-      box-shadow: 0 0 5px rgba(139,92,246,0.4);
+      border-color: #6366F1;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.12);
+    }
+    input::placeholder { color: #9CA3AF; font-weight: 500; }
+
+    /* ── ROLE SELECTOR ── */
+    .role-label {
+      display: block;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 800;
+      color: #6366F1;
+      margin-bottom: 8px;
+      letter-spacing: 0.3px;
     }
 
-    /* ===== BUTTON ===== */
+    .role-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .role-option {
+      position: relative;
+    }
+
+    /* hide the real radio */
+    .role-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      margin: 0;
+    }
+
+    .role-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 14px 8px 12px;
+      border-radius: 16px;
+      border: 2px solid #C7D2FE;
+      background: #F5F3FF;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .role-box:hover {
+      border-color: #6366F1;
+      background: #EEF2FF;
+    }
+
+    /* checked state */
+    .role-option input[type="radio"]:checked + .role-box {
+      border-color: #6366F1;
+      background: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(99,102,241,0.12));
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+    }
+
+    .role-emoji {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .role-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      color: #1e1b4b;
+      line-height: 1.2;
+    }
+
+    .role-sub {
+      font-size: 10px;
+      font-weight: 600;
+      color: #9CA3AF;
+      line-height: 1.3;
+      text-align: center;
+    }
+
+    /* check badge shown when selected */
+    .role-check {
+      display: none;
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, #0EA5E9, #6366F1);
+      border-radius: 50%;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: white;
+      margin-top: 2px;
+    }
+    .role-option input[type="radio"]:checked + .role-box .role-check {
+      display: flex;
+    }
+
+    /* doctor-only extra fields — hidden by default */
+    .doctor-fields {
+      display: none;
+      animation: fadeSlide 0.3s ease both;
+    }
+    .doctor-fields.show { display: block; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* small info pill shown above doctor fields */
+    .doctor-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(5,150,105,0.08));
+      border: 1.5px solid #A7F3D0;
+      border-radius: 12px;
+      padding: 9px 12px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .doctor-pill span { font-size: 18px; }
+    .doctor-pill p {
+      font-size: 11px;
+      font-weight: 700;
+      color: #065F46;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* ── BUTTON ── */
     .btn {
       width: 100%;
-      background: #8b5cf6; /* lavender button */
-      color: #fff;
-      padding: 14px;
-      border-radius: 30px;
-      font-weight: 600;
+      padding: 15px;
       border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #0EA5E9, #6366F1);
+      color: white;
+      font-family: 'Sora', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
       cursor: pointer;
-      margin-top: 10px;
-      transition: 0.3s;
+      box-shadow: 0 8px 24px rgba(99,102,241,0.35);
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 4px;
+      letter-spacing: 0.3px;
     }
-
     .btn:hover {
-      background: #7c3aed; /* darker lavender on hover */
       transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(99,102,241,0.45);
     }
+    .btn:active { transform: translateY(0); }
 
-    /* ===== LOGIN TEXT ===== */
+    /* ── LOGIN LINK ── */
     .login-text {
       margin-top: 16px;
-      font-size: 14px;
-      color: #6d28d9;
+      font-size: 13px;
+      font-weight: 700;
+      color: #6B7280;
     }
-
     .login-text a {
-      color: #8b5cf6;
-      font-weight: 600;
-      text-decoration: underline;
+      color: #6366F1;
+      font-weight: 800;
+      text-decoration: none;
     }
+    .login-text a:hover { text-decoration: underline; color: #4F46E5; }
   </style>
-
 </head>
+
 <body>
+<div class="page">
 
-  <div class="page">
-    <div class="register-card">
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
+  <span class="paw">🐾</span>
 
-      <h2>Register 🐾</h2>
+  <div class="register-card">
 
-      <!-- IMAGE BELOW REGISTER TEXT -->
+    <div class="register-img-wrap">
       <img src="{{ url_for('static', filename='images/p4.jpeg') }}"
-           alt="Register Image"
-           class="register-img">
+           alt="Register" class="register-img">
+    </div>
 
-      <form method="POST">
-        <label>Username</label>
-        <input type="text" name="username" required>
+    <h2>Create Account 🐾</h2>
 
-        <label>Password</label>
-        <input type="password" name="password" required>
+    <!-- flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-        <label>Confirm Password</label>
-        <input type="password" name="confirmpassword" required>
+    <form method="POST" id="registerForm">
 
-        <label>Mobile Number</label>
-        <input type="text" name="mobile">
+      <label>Username</label>
+      <input type="text" name="username" placeholder="Choose a username" required>
 
-        <label>Email ID</label>
-        <input type="email" name="email">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Create a password" required>
 
-        <button type="submit" class="btn">Register 🐾</button>
-      </form>
+      <label>Confirm Password</label>
+      <input type="password" name="confirmpassword" placeholder="Repeat your password" required>
 
-      <div class="login-text">
-        Already have an account?
-        <a href="{{ url_for('login') }}">Login</a>
+      <label>Mobile Number</label>
+      <input type="text" name="mobile" placeholder="Your mobile number">
+
+      <label>Email ID</label>
+      <input type="email" name="email" placeholder="Your email address">
+
+      <!-- ── ROLE SELECTOR ── -->
+      <span class="role-label">I am a… <span style="color:#F43F5E">*</span></span>
+      <div class="role-grid">
+
+        <label class="role-option">
+          <input type="radio" name="role" value="pet_owner" required
+                 onchange="onRoleChange(this)">
+          <div class="role-box">
+            <span class="role-emoji">🐶</span>
+            <span class="role-title">Pet Owner</span>
+            <span class="role-sub">Find vets &amp; book appointments</span>
+            <span class="role-check">✓</span>
+          </div>
+        </label>
+
+        <label class="role-option">
+          <input type="radio" name="role" value="doctor"
+                 onchange="onRoleChange(this)">
+          <div class="role-box">
+            <span class="role-emoji">🩺</span>
+            <span class="role-title">Veterinarian</span>
+            <span class="role-sub">Manage patients &amp; schedule</span>
+            <span class="role-check">✓</span>
+          </div>
+        </label>
+
       </div>
 
-    </div>
-  </div>
+      <!-- ── DOCTOR-ONLY FIELDS (shown when Veterinarian is selected) ── -->
+      <div class="doctor-fields" id="doctorFields">
 
+        <div class="doctor-pill">
+          <span>🩺</span>
+          <p>Doctor details help patients<br>find and trust you on PawCare.</p>
+        </div>
+
+        <label>Full Name / Display Name</label>
+        <input type="text" name="doctor_fullname" id="doctorFullname"
+               placeholder="e.g. Dr. Priya Mehta">
+
+        <label>Specialization</label>
+        <input type="text" name="specialization" id="specialization"
+               placeholder="e.g. Small Animal Specialist">
+
+        <label>Clinic / Hospital Name</label>
+        <input type="text" name="clinic_name" id="clinicName"
+               placeholder="e.g. PawCare Veterinary Clinic">
+
+        <label>Clinic Address</label>
+        <input type="text" name="clinic_address" id="clinicAddress"
+               placeholder="Street, City, PIN">
+
+        <label>Years of Experience</label>
+        <input type="number" name="experience" id="experience"
+               placeholder="e.g. 8" min="0" max="60">
+
+        <label>Veterinary License Number</label>
+        <input type="text" name="license_number" id="licenseNumber"
+               placeholder="e.g. VCI-MH-2018-12345">
+
+      </div>
+      <!-- ── END DOCTOR FIELDS ── -->
+
+      <button type="submit" class="btn">Register 🐾</button>
+    </form>
+
+    <div class="login-text">
+      Already have an account?
+      <a href="{{ url_for('login') }}">Login</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function onRoleChange(radio) {
+    const doctorFields = document.getElementById('doctorFields');
+    const isDoctor = radio.value === 'doctor';
+
+    if (isDoctor) {
+      doctorFields.classList.add('show');
+      // make key doctor fields required
+      document.getElementById('doctorFullname').required  = true;
+      document.getElementById('specialization').required  = true;
+      document.getElementById('clinicName').required      = true;
+      document.getElementById('licenseNumber').required   = true;
+    } else {
+      doctorFields.classList.remove('show');
+      // remove required so form can submit
+      document.getElementById('doctorFullname').required  = false;
+      document.getElementById('specialization').required  = false;
+      document.getElementById('clinicName').required      = false;
+      document.getElementById('licenseNumber').required   = false;
+    }
+  }
+</script>
 </body>
 </html>

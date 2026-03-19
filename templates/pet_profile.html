@@ -1,231 +1,1352 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-  <title>{{ pet.name }}'s Profile - Smart AgriPet Care</title>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet"/>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --purple: #6C3FF5; --purple-light: #8B5CF6;
-      --green: #22C55E; --orange: #F97316;
-      --bg: #F5F3FF; --card: #fff; --text: #1e1b4b; --muted: #6B7280;
-    }
-    body { font-family: 'Nunito', sans-serif; background: var(--bg); min-height: 100vh; padding-bottom: 80px; }
+{% extends "base.html" %}
+{% block content %}
 
-    /* TOP NAV */
-    .top-nav { background: var(--purple); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-    .nav-ham { display: flex; flex-direction: column; gap: 5px; cursor: pointer; }
-    .nav-ham span { display: block; width: 22px; height: 2.5px; background: #fff; border-radius: 2px; }
-    .nav-logo { display: flex; align-items: center; gap: 8px; }
-    .nav-logo svg { width: 22px; height: 22px; }
-    .nav-title { color: #fff; font-weight: 800; font-size: 16px; font-family: 'Poppins', sans-serif; }
-    .nav-bell { background: rgba(255,255,255,0.18); border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
 
-    /* PROFILE HERO */
-    .profile-hero { background: linear-gradient(160deg, var(--purple) 0%, var(--purple-light) 100%); padding: 20px 20px 80px; position: relative; }
-    .back-btn { display: inline-flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.85); font-size: 13px; font-weight: 700; text-decoration: none; margin-bottom: 18px; }
-    .back-btn svg { width: 16px; height: 16px; }
-    .profile-title-row { display: flex; align-items: center; justify-content: space-between; }
-    .profile-page-title { color: #fff; font-size: 18px; font-weight: 800; font-family: 'Poppins', sans-serif; }
-    .edit-btn { background: rgba(255,255,255,0.2); color: #fff; border: none; border-radius: 12px; padding: 8px 18px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: 'Nunito', sans-serif; text-decoration: none; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* AVATAR AREA */
-    .avatar-outer { position: absolute; bottom: -56px; left: 0; right: 0; display: flex; justify-content: center; }
-    .avatar-wrap { position: relative; width: 108px; height: 108px; }
-    .pet-avatar { width: 108px; height: 108px; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 4px 24px rgba(108,63,245,0.22); overflow: hidden; background: #E5E7EB; display: flex; align-items: center; justify-content: center; }
-    .pet-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .pet-avatar .avatar-emoji { font-size: 46px; }
-    .camera-btn { position: absolute; bottom: 4px; right: 4px; width: 32px; height: 32px; background: var(--purple); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #fff; }
-    .camera-btn svg { width: 15px; height: 15px; }
-    .upload-input { display: none; }
+:root {
+  --purple: #7C3AED;
+  --indigo: #6366F1;
+  --blue: #0EA5E9;
+  --green: #10B981;
+  --orange: #F97316;
+  --red: #EF4444;
+  --bg: #F5F3FF;
+  --card: #fff;
+  --text: #1e1b4b;
+  --muted: #6B7280;
+}
 
-    /* PROFILE BODY */
-    .profile-body { padding: 72px 16px 20px; }
-    .pet-name { text-align: center; font-size: 22px; font-weight: 800; color: var(--text); font-family: 'Poppins', sans-serif; }
-    .pet-sub { text-align: center; font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 600; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
 
-    /* UPLOAD HINT (shown only if no photo) */
-    .upload-hint { background: #F0FDF4; border: 2px dashed #86EFAC; border-radius: 14px; padding: 14px 16px; text-align: center; font-size: 13px; font-weight: 700; color: #16A34A; cursor: pointer; margin-top: 16px; }
-    .upload-hint.has-photo { display: none; }
+/* ── TABS ── */
+.tabs-bar {
+  background: #fff;
+  display: flex;
+  border-bottom: 2px solid #E0E7FF;
+  position: sticky;
+  top: 66px;
+  z-index: 90;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs-bar::-webkit-scrollbar { display: none; }
 
-    /* INFO CARD */
-    .info-card { background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 4px 16px rgba(108,63,245,0.09); margin-top: 20px; }
-    .info-card-title { font-size: 13px; font-weight: 800; color: var(--purple); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.05em; }
-    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F3F4F6; }
-    .info-row:last-child { border-bottom: none; }
-    .info-key { font-size: 13px; color: var(--muted); font-weight: 600; }
-    .info-val { font-size: 13px; font-weight: 800; color: var(--text); }
+.tab-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 13px 8px 11px;
+  font-size: 11px;
+  font-weight: 800;
+  font-family: 'Sora', sans-serif;
+  color: var(--muted);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: color 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.tab-btn.active {
+  color: var(--indigo);
+  border-bottom-color: var(--indigo);
+}
+.tab-btn span { font-size: 16px; }
 
-    /* ACTION PILLS */
-    .action-pills { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
-    .pill-btn { border: none; border-radius: 18px; padding: 18px 24px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 12px; font-family: 'Nunito', sans-serif; transition: opacity 0.18s; text-decoration: none; justify-content: center; }
-    .pill-btn:hover { opacity: 0.88; }
-    .pill-btn.purple { background: var(--purple); color: #fff; }
-    .pill-btn.green { background: var(--green); color: #fff; }
-    .pill-btn.orange { background: var(--orange); color: #fff; }
+.tab-content {
+  display: none;
+  padding: 16px;
+}
+.tab-content.active { display: block; }
 
-    /* BOTTOM NAV */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: #fff; border-top: 1px solid #E5E7EB; display: flex; align-items: center; justify-content: space-around; padding: 0 8px; z-index: 100; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding: 8px 14px; border-radius: 14px; text-decoration: none; }
-    .nav-item:hover { background: #F5F3FF; }
-    .nav-item.active { background: #F5F3FF; }
-    .nav-item svg { width: 24px; height: 24px; }
-    .nav-item-label { font-size: 10px; font-weight: 700; color: #9CA3AF; }
-    .nav-item.active .nav-item-label { color: var(--purple); }
+/* ── PROFILE HERO ── */
+.profile-hero {
+  background: linear-gradient(160deg, var(--purple) 0%, var(--indigo) 60%, var(--blue) 100%);
+  padding: 12px 20px 80px;
+  position: relative;
+  overflow: visible;
+}
+.profile-hero::after {
+  content: '';
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 50%;
+  bottom: -50px;
+  right: -30px;
+  pointer-events: none;
+}
 
-    /* Upload loading */
-    .uploading { opacity: 0.6; pointer-events: none; }
-  </style>
-</head>
-<body>
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255,255,255,0.92);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: 10px;
+  font-family: 'Nunito', sans-serif;
+}
+.back-btn:hover { color: #fff; }
 
-<!-- TOP NAV -->
-<nav class="top-nav">
-  <div class="nav-ham"><span></span><span></span><span></span></div>
-  <div class="nav-logo">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span class="nav-title">Smart AgriPet Care</span>
-  </div>
-  <div class="nav-bell">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </div>
-</nav>
+.profile-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.profile-page-title {
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  font-family: 'Sora', sans-serif;
+}
 
-<!-- PROFILE HERO -->
+.edit-btn {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  text-decoration: none;
+}
+.delete-btn {
+  background: rgba(239,68,68,0.25);
+  color: #fff;
+  border: 1px solid rgba(239,68,68,0.5);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* ── AVATAR ── */
+.avatar-outer {
+  position: absolute;
+  bottom: -52px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 20;
+}
+.avatar-wrap {
+  position: relative;
+  width: 104px;
+  height: 104px;
+}
+.pet-avatar {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 6px 24px rgba(99,102,241,0.3);
+  overflow: hidden;
+  background: #EEF2FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pet-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+.avatar-letter {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple), var(--indigo));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  letter-spacing: -1px;
+}
+.camera-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 30px;
+  height: 30px;
+  background: var(--indigo);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid #fff;
+  z-index: 2;
+}
+.upload-input { display: none; }
+.upload-spinner {
+  display: none;
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(99,102,241,0.55);
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  font-size: 20px;
+}
+.upload-spinner.show { display: flex; }
+
+/* ── PROFILE BODY ── */
+.profile-body { padding: 62px 0 0; }
+
+.pet-name {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+}
+.pet-sub {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* ── PHOTO UPLOAD ROW ── */
+.photo-upload-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 16px;
+}
+.upload-hint {
+  flex: 1;
+  background: #EEF2FF;
+  border: 2px dashed #A5B4FC;
+  border-radius: 14px;
+  padding: 10px 14px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--indigo);
+  cursor: pointer;
+}
+.upload-hint.has-photo { display: none; }
+
+.submit-photo-btn {
+  background: linear-gradient(135deg, var(--green), #059669);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  display: none;
+}
+.submit-photo-btn.show { display: block; }
+
+/* ── INFO CARD ── */
+.info-card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 4px 16px rgba(99,102,241,0.09);
+  margin-top: 0;
+  border: 1px solid #E0E7FF;
+}
+.info-card-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--indigo);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+.info-row:last-child { border-bottom: none; }
+.info-key {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.info-val {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+/* ── ACTION PILLS ── */
+.action-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-top: 16px;
+}
+.pill-btn {
+  border: none;
+  border-radius: 16px;
+  padding: 15px 24px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Sora', sans-serif;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  justify-content: center;
+}
+.pill-btn:hover { transform: translateY(-2px); }
+.pill-btn.purple {
+  background: linear-gradient(135deg, var(--purple), var(--indigo));
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(99,102,241,0.32);
+}
+.pill-btn.green {
+  background: linear-gradient(135deg, var(--green), #059669);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(16,185,129,0.32);
+}
+.pill-btn.orange {
+  background: linear-gradient(135deg, var(--orange), #EA580C);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(249,115,22,0.32);
+}
+
+/* ── DATA SECTIONS ── */
+.data-section { margin-top: 20px; }
+.data-section-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vaccine-card {
+  background: white;
+  border-radius: 16px;
+  padding: 13px 15px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--indigo);
+  box-shadow: 0 3px 12px rgba(99,102,241,0.09);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.vaccine-name {
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--text);
+}
+.vaccine-dates {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 3px;
+}
+.vaccine-badge {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.badge-due { background: #FEE2E2; color: #DC2626; }
+.badge-ok  { background: #DCFCE7; color: #16A34A; }
+
+.checkup-card {
+  background: white;
+  border-radius: 16px;
+  padding: 13px 15px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--green);
+  box-shadow: 0 3px 12px rgba(16,185,129,0.09);
+}
+.checkup-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.checkup-stat { display: flex; flex-direction: column; }
+.checkup-stat-label {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.checkup-stat-val {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+}
+.checkup-date {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.checkup-notes {
+  font-size: 12px;
+  color: #374151;
+  font-weight: 600;
+  margin-top: 6px;
+  background: #F9FAFB;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.diet-card {
+  background: white;
+  border-radius: 16px;
+  padding: 13px 15px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--orange);
+  box-shadow: 0 3px 12px rgba(249,115,22,0.09);
+}
+.diet-meal-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+.diet-meal-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--orange);
+  text-transform: uppercase;
+  min-width: 70px;
+}
+.diet-meal-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 16px;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 700;
+  background: #F9FAFB;
+  border-radius: 14px;
+  border: 1.5px dashed #E5E7EB;
+}
+
+/* ── SOCIETY TAB ── */
+.society-hero {
+  background: linear-gradient(135deg, #1e3a5f, #2563EB);
+  border-radius: 20px;
+  padding: 20px;
+  color: #fff;
+  margin-bottom: 16px;
+}
+.society-hero-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.society-hero-sub {
+  font-size: 12px;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.stat-tile {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+  border: 1px solid #E0E7FF;
+  text-align: center;
+}
+.stat-tile-num {
+  font-family: 'Sora', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--indigo);
+}
+.stat-tile-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.stat-tile-icon {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.alert-card {
+  background: #FFF7ED;
+  border-radius: 16px;
+  padding: 14px 16px;
+  border-left: 4px solid var(--orange);
+  margin-bottom: 12px;
+}
+.alert-card-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #92400E;
+}
+.alert-card-body {
+  font-size: 12px;
+  color: #78350F;
+  font-weight: 600;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.disease-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  border-left: 4px solid var(--red);
+  box-shadow: 0 3px 12px rgba(239,68,68,0.09);
+  margin-bottom: 10px;
+}
+.disease-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+.disease-desc {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.disease-badge {
+  display: inline-block;
+  background: #FEE2E2;
+  color: #DC2626;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-top: 6px;
+}
+
+.shelter-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 3px 12px rgba(16,185,129,0.09);
+  border: 1px solid #D1FAE5;
+  margin-bottom: 10px;
+}
+.shelter-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+.shelter-addr {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-top: 2px;
+}
+.shelter-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #D1FAE5;
+  color: #065F46;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 10px;
+  margin-top: 8px;
+  text-decoration: none;
+}
+
+.section-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  margin: 16px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── DELETE MODAL ── */
+.pet-delete-modal {
+  display: none !important;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 999;
+  align-items: flex-end;
+  justify-content: center;
+}
+.pet-delete-modal.show { display: flex !important; }
+
+.modal-sheet {
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  padding: 24px 20px 36px;
+  width: 100%;
+  max-width: 480px;
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-handle {
+  width: 40px;
+  height: 4px;
+  background: #E5E7EB;
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+.modal-title {
+  font-family: 'Sora', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.modal-sub {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.reason-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.reason-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.reason-opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #F9FAFB;
+  border: 2px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+.reason-opt.selected {
+  border-color: var(--indigo);
+  background: #EEF2FF;
+  color: var(--indigo);
+}
+.reason-opt input[type="radio"] {
+  accent-color: var(--indigo);
+  width: 16px;
+  height: 16px;
+}
+
+.subreason-box {
+  display: none;
+  background: #FFF1F2;
+  border: 1px solid #FECDD3;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+.subreason-box.show { display: block; }
+.subreason-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #BE185D;
+  margin-bottom: 10px;
+}
+.subreason-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.subreason-chip {
+  background: #fff;
+  border: 2px solid #FECDD3;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #9F1239;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.subreason-chip.selected {
+  background: #BE185D;
+  color: #fff;
+  border-color: #BE185D;
+}
+
+.notes-input {
+  width: 100%;
+  border: 2px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 12px;
+  font-size: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  resize: none;
+  outline: none;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.notes-input:focus { border-color: var(--indigo); }
+
+.community-notice {
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1D4ED8;
+  line-height: 1.5;
+}
+
+.modal-actions { display: flex; gap: 10px; }
+.cancel-btn {
+  flex: 1;
+  background: #F3F4F6;
+  color: var(--text);
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+}
+.confirm-delete-btn {
+  flex: 1;
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: 'Nunito', sans-serif;
+  box-shadow: 0 4px 14px rgba(239,68,68,0.35);
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 300;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.toast.show { opacity: 1; }
+</style>
+
+<!-- ══════════════════════════════════════════════
+     PROFILE HERO
+══════════════════════════════════════════════ -->
 <div class="profile-hero">
-  <a href="/" class="back-btn">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="rgba(255,255,255,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <a href="/dashboard" class="back-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <path d="M19 12H5M12 19l-7-7 7-7" stroke="rgba(255,255,255,0.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
     Back
   </a>
+
   <div class="profile-title-row">
     <div class="profile-page-title">{{ pet.name }}'s Profile</div>
-    <a href="/pet/{{ pet.id }}/edit" class="edit-btn">Edit ✏️</a>
+    <div style="display:flex;gap:8px;">
+      <a href="/pet/{{ pet.id }}/edit" class="edit-btn">Edit ✏️</a>
+      <button class="delete-btn" onclick="openDeleteModal()">🗑️ Delete</button>
+    </div>
   </div>
 
-  <!-- AVATAR -->
+  <!-- AVATAR — floats out of hero -->
   <div class="avatar-outer">
     <div class="avatar-wrap">
       <div class="pet-avatar" id="avatarDisplay">
-        {% if pet.photo_url %}
-          <img id="avatarImg" src="{{ pet.photo_url }}" alt="{{ pet.name }}"/>
+        {% if pet.photo and pet.photo.strip() %}
+          <img id="avatarImg"
+               src="{{ url_for('static', filename='uploads/' + pet.photo) }}"
+               alt="{{ pet.name }}"
+               onerror="this.style.display='none';document.getElementById('avatarLetter').style.display='flex'"/>
+          <div class="avatar-letter" id="avatarLetter" style="display:none">{{ pet.name[0]|upper }}</div>
         {% else %}
-          <span class="avatar-emoji" id="avatarEmoji">🐾</span>
+          <div class="avatar-letter" id="avatarLetter">{{ pet.name[0]|upper }}</div>
+          <img id="avatarImg" style="display:none" alt="{{ pet.name }}"/>
         {% endif %}
+        <div class="upload-spinner" id="uploadSpinner">⏳</div>
       </div>
-      <!-- Click camera icon to upload -->
+
       <label for="pet-photo-upload" class="camera-btn" title="Upload photo">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#fff" stroke-width="2"/><circle cx="12" cy="13" r="4" stroke="#fff" stroke-width="2"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z" stroke="#fff" stroke-width="2"/>
+          <circle cx="12" cy="13" r="4" stroke="#fff" stroke-width="2"/>
+        </svg>
       </label>
+      <input type="file" id="pet-photo-upload" class="upload-input" accept="image/*" onchange="previewPhoto(this)"/>
     </div>
   </div>
 </div>
 
-<!-- UPLOAD FORM (hidden, submits via JS fetch) -->
-<form id="uploadForm" enctype="multipart/form-data">
-  <input type="file" id="pet-photo-upload" class="upload-input" accept="image/*" onchange="uploadPhoto(this)"/>
-</form>
-
-<!-- PROFILE BODY -->
+<!-- ══════════════════════════════════════════════
+     PROFILE BODY
+══════════════════════════════════════════════ -->
 <div class="profile-body">
-  <div class="pet-name">{{ pet.name }}</div>
-  <div class="pet-sub">{{ pet.species }} · {{ pet.breed }} · {{ pet.age }} years old</div>
-
-  <!-- Show upload hint only when there's no photo yet -->
-  <div class="upload-hint {% if pet.photo_url %}has-photo{% endif %}" id="uploadHint"
-       onclick="document.getElementById('pet-photo-upload').click()">
-    📷 No photo yet — tap to upload one! It will show on the Home page too.
+  <div style="padding: 68px 16px 0;">
+    <div class="pet-name">{{ pet.name }}</div>
+    <div class="pet-sub">{{ pet.species }} · {{ pet.breed }} · {{ pet.age }} years old</div>
   </div>
 
-  <!-- INFO CARD -->
-  <div class="info-card">
-    <div class="info-card-title">Pet Details</div>
-    <div class="info-row"><span class="info-key">Species</span><span class="info-val">{{ pet.species }}</span></div>
-    <div class="info-row"><span class="info-key">Breed</span><span class="info-val">{{ pet.breed }}</span></div>
-    <div class="info-row"><span class="info-key">Age</span><span class="info-val">{{ pet.age }} years</span></div>
-    <div class="info-row"><span class="info-key">Gender</span><span class="info-val">{{ pet.gender or 'Not specified' }}</span></div>
-    <div class="info-row"><span class="info-key">Weight</span><span class="info-val">{{ pet.weight or '—' }} kg</span></div>
-    <div class="info-row"><span class="info-key">Last Checkup</span><span class="info-val">{{ pet.last_checkup or '—' }}</span></div>
-  </div>
-
-  <!-- ACTION PILLS -->
-  <div class="action-pills">
-    <a href="/pet/{{ pet.id }}/vaccination" class="pill-btn purple">💉 Vaccination Records</a>
-    <a href="/pet/{{ pet.id }}/health" class="pill-btn green">🩺 Health Checkup</a>
-    <a href="/pet/{{ pet.id }}/diet" class="pill-btn orange">🥗 Diet Plan</a>
+  <!-- PHOTO UPLOAD ROW -->
+  <div class="photo-upload-row">
+    <div class="upload-hint {% if pet.photo and pet.photo.strip() %}has-photo{% endif %}"
+         id="uploadHint"
+         onclick="document.getElementById('pet-photo-upload').click()">
+      📷 No photo yet — tap to upload one!
+    </div>
+    <button class="submit-photo-btn" id="submitPhotoBtn" onclick="submitPhoto()">✅ Submit Photo</button>
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
-<nav class="bottom-nav">
-  <a href="/" class="nav-item">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/></svg>
-    <span class="nav-item-label">Home</span>
-  </a>
-  <a href="/health" class="nav-item">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span class="nav-item-label">Health</span>
-  </a>
-  <a href="/pets" class="nav-item active">
-    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#6C3FF5" stroke-width="2"/><path d="M12 8v4l3 3" stroke="#6C3FF5" stroke-width="2" stroke-linecap="round"/></svg>
-    <span class="nav-item-label" style="color:#6C3FF5">My Pets</span>
-  </a>
-  <a href="/agripet" class="nav-item">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span class="nav-item-label">AgriPet</span>
-  </a>
-  <a href="/doctor" class="nav-item">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="#9CA3AF" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="#9CA3AF" stroke-width="2"/></svg>
-    <span class="nav-item-label">Doctor</span>
-  </a>
-</nav>
+<!-- ══════════════════════════════════════════════
+     TABS BAR
+══════════════════════════════════════════════ -->
+<div class="tabs-bar" id="tabsBar">
+  <button class="tab-btn active" onclick="switchTab('profile', this)">
+    <span>🐾</span>Profile
+  </button>
+  <button class="tab-btn" onclick="switchTab('health', this)">
+    <span>🩺</span>Health
+  </button>
+  <button class="tab-btn" onclick="switchTab('diet', this)">
+    <span>🥗</span>Diet
+  </button>
+  <button class="tab-btn" onclick="switchTab('society', this)">
+    <span>🌍</span>Society
+  </button>
+</div>
 
+<!-- ══════════════════════════════════════════════
+     TAB: PROFILE
+══════════════════════════════════════════════ -->
+<div id="tab-profile" class="tab-content active">
+
+  <!-- PET DETAILS CARD -->
+  <div class="info-card">
+    <div class="info-card-title">Pet Details</div>
+    <div class="info-row">
+      <span class="info-key">Species</span>
+      <span class="info-val">{{ pet.species or '—' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Breed</span>
+      <span class="info-val">{{ pet.breed or '—' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Age</span>
+      <span class="info-val">{{ pet.age or '—' }} years</span>
+    </div>
+    <div class="info-row">
+      <span class="info-key">Gender</span>
+      <span class="info-val">{{ pet.gender or 'Not specified' }}</span>
+    </div>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-pills">
+    <a href="/add_vaccine?pet_id={{ pet.id }}"    class="pill-btn purple">💉 Add Vaccination</a>
+    <a href="/health_checkup?pet_id={{ pet.id }}" class="pill-btn green">🩺 Add Health Checkup</a>
+    <a href="/diet_plan?pet_id={{ pet.id }}"      class="pill-btn orange">🥗 View Diet Plan</a>
+  </div>
+
+  <!-- VACCINATIONS -->
+  <div class="data-section">
+    <div class="data-section-title">💉 Vaccination Records</div>
+    {% if vaccinations %}
+      {% for v in vaccinations %}
+      <div class="vaccine-card">
+        <div>
+          <div class="vaccine-name">{{ v.vaccine_name }}</div>
+          <div class="vaccine-dates">
+            Last: {{ v.last_given_date.strftime('%d %b %Y') if v.last_given_date else '—' }}
+            &nbsp;·&nbsp;
+            Next: {{ v.next_due_date.strftime('%d %b %Y') if v.next_due_date else '—' }}
+          </div>
+        </div>
+        {% if v.next_due_date and v.next_due_date <= today %}
+          <span class="vaccine-badge badge-due">Due!</span>
+        {% else %}
+          <span class="vaccine-badge badge-ok">✓ Done</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">No vaccinations recorded yet. Add one above! 💉</div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB: HEALTH
+══════════════════════════════════════════════ -->
+<div id="tab-health" class="tab-content">
+
+  <div class="data-section">
+    <div class="data-section-title">🩺 Health Checkups</div>
+    {% if healths %}
+      {% for h in healths %}
+      <div class="checkup-card">
+        <div class="checkup-date">📅 {{ h.date.strftime('%d %b %Y') if h.date else '—' }}</div>
+        <div class="checkup-row">
+          <div class="checkup-stat">
+            <span class="checkup-stat-label">Weight</span>
+            <span class="checkup-stat-val">{{ h.weight or '—' }} kg</span>
+          </div>
+          <div class="checkup-stat">
+            <span class="checkup-stat-label">Temp</span>
+            <span class="checkup-stat-val">{{ h.temperature or '—' }} °F</span>
+          </div>
+          {% if h.next_checkup %}
+          <div class="checkup-stat">
+            <span class="checkup-stat-label">Next</span>
+            <span class="checkup-stat-val">{{ h.next_checkup.strftime('%d %b') }}</span>
+          </div>
+          {% endif %}
+        </div>
+        {% if h.notes %}
+          <div class="checkup-notes">📝 {{ h.notes }}</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">No checkups recorded yet. Add one above! 🩺</div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB: DIET
+══════════════════════════════════════════════ -->
+<div id="tab-diet" class="tab-content">
+
+  <div class="data-section">
+    <div class="data-section-title">🥗 Diet Plans</div>
+    {% if diets %}
+      {% for d in diets %}
+      <div class="diet-card">
+        <div class="checkup-date" style="margin-bottom:8px;">
+          {{ d.species or pet.species }} · {{ d.weight or '?' }} kg · {{ d.age_years or pet.age }} yrs
+        </div>
+        {% if d.morning %}
+        <div class="diet-meal-row">
+          <span class="diet-meal-label">🌅 Morning</span>
+          <span class="diet-meal-val">{{ d.morning }}</span>
+        </div>
+        {% endif %}
+        {% if d.afternoon %}
+        <div class="diet-meal-row">
+          <span class="diet-meal-label">☀️ Afternoon</span>
+          <span class="diet-meal-val">{{ d.afternoon }}</span>
+        </div>
+        {% endif %}
+        {% if d.evening %}
+        <div class="diet-meal-row">
+          <span class="diet-meal-label">🌙 Evening</span>
+          <span class="diet-meal-val">{{ d.evening }}</span>
+        </div>
+        {% endif %}
+        {% if d.water %}
+        <div class="diet-meal-row">
+          <span class="diet-meal-label">💧 Water</span>
+          <span class="diet-meal-val">{{ d.water }}</span>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">No diet plan yet. Generate one above! 🥗</div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════
+     TAB: SOCIETY
+══════════════════════════════════════════════ -->
+<div id="tab-society" class="tab-content">
+
+  <div class="society-hero">
+    <div class="society-hero-title">🌍 Help Your Community</div>
+    <div class="society-hero-sub">Real-time data on street animals in India + shelters near you</div>
+  </div>
+
+  <!-- STATS -->
+  <div class="section-title">📊 Street Animal Deaths in India (2024–25)</div>
+  <div class="stat-grid">
+    <div class="stat-tile">
+      <div class="stat-tile-icon">🐕</div>
+      <div class="stat-tile-num">1.2L+</div>
+      <div class="stat-tile-label">Street Dog Deaths</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">🐄</div>
+      <div class="stat-tile-num">38K+</div>
+      <div class="stat-tile-label">Street Cow Deaths</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">🐈</div>
+      <div class="stat-tile-num">72K+</div>
+      <div class="stat-tile-label">Stray Cat Deaths</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-tile-icon">🐂</div>
+      <div class="stat-tile-num">9K+</div>
+      <div class="stat-tile-label">Stray Cattle Deaths</div>
+    </div>
+  </div>
+
+  <!-- TOP CAUSES -->
+  <div class="section-title">⚠️ Top Causes of Street Animal Deaths</div>
+  <div class="alert-card">
+    <div class="alert-card-title">🚗 Road Accidents — #1 Cause</div>
+    <div class="alert-card-body">Over 60% of street animal deaths in India occur due to vehicle accidents, especially at night on highways and city roads.</div>
+  </div>
+  <div class="alert-card" style="border-left-color:var(--red);background:#FFF1F2;">
+    <div class="alert-card-title" style="color:#991B1B;">🦠 Disease Outbreaks</div>
+    <div class="alert-card-body" style="color:#7F1D1D;">Canine Distemper, Parvovirus, FMD (cattle), and Mange are the leading infectious causes of death among street animals.</div>
+  </div>
+
+  <!-- DISEASE AWARENESS -->
+  <div class="section-title">🦠 Disease Awareness & Prevention</div>
+  <div class="disease-card">
+    <div class="disease-name">Canine Distemper Virus (CDV)</div>
+    <div class="disease-desc">Highly contagious viral illness in dogs. Spreads via airborne exposure. Symptoms: fever, discharge, seizures. Fatal if untreated.</div>
+    <span class="disease-badge">🐕 Dogs — High Risk</span>
+    <div style="margin-top:10px;font-size:12px;color:#059669;font-weight:700;">✅ Prevention: Annual CDV vaccination. Avoid contact with unknown animals.</div>
+  </div>
+  <div class="disease-card">
+    <div class="disease-name">Foot & Mouth Disease (FMD)</div>
+    <div class="disease-desc">Viral disease in cattle and pigs. Causes blisters on mouth and feet. Street cattle are especially vulnerable without vaccination.</div>
+    <span class="disease-badge">🐄 Cattle — High Risk</span>
+    <div style="margin-top:10px;font-size:12px;color:#059669;font-weight:700;">✅ Report sightings to your local Pashupalan Department.</div>
+  </div>
+  <div class="disease-card">
+    <div class="disease-name">Mange (Sarcoptic)</div>
+    <div class="disease-desc">Skin disease caused by mites. Extremely common in street dogs. Causes severe itching, hair loss, and secondary infections.</div>
+    <span class="disease-badge">🐕 Dogs — Very Common</span>
+    <div style="margin-top:10px;font-size:12px;color:#059669;font-weight:700;">✅ Treatable with vet-prescribed ivermectin. Help a street dog today!</div>
+  </div>
+
+  <!-- HOW YOU CAN HELP -->
+  <div class="section-title">🤝 How You Can Help</div>
+  <div class="alert-card" style="background:#F0FDF4;border-left-color:var(--green);">
+    <div class="alert-card-title" style="color:#065F46;">Simple ways to make a difference:</div>
+    <div class="alert-card-body" style="color:#064E3B;">
+      🍚 Leave water & food outside your home daily<br/>
+      📸 Report injured animals on the Friendicoes or PFA app<br/>
+      💉 Support local NGO vaccination drives<br/>
+      🏠 Consider fostering a stray — shelters are full!
+    </div>
+  </div>
+
+  <!-- SHELTERS -->
+  <div class="section-title">🏠 Animal Shelters Near You (Pune)</div>
+  <div class="shelter-card">
+    <div class="shelter-name">RESQ Charitable Trust</div>
+    <div class="shelter-addr">📍 Wanowrie, Pune — Dogs, Cats, Birds</div>
+    <a href="tel:+912065005000" class="shelter-phone">📞 020-6500-5000</a>
+  </div>
+  <div class="shelter-card">
+    <div class="shelter-name">Abandoned Animals India</div>
+    <div class="shelter-addr">📍 Baner, Pune — All animals welcome</div>
+    <a href="tel:+919890012345" class="shelter-phone">📞 98900-12345</a>
+  </div>
+  <div class="shelter-card">
+    <div class="shelter-name">Prani - Pet Shelter</div>
+    <div class="shelter-addr">📍 Kothrud, Pune — Adoption & Rescue</div>
+    <a href="tel:+918888001234" class="shelter-phone">📞 88880-01234</a>
+  </div>
+  <div class="shelter-card">
+    <div class="shelter-name">Blue Cross Pune</div>
+    <div class="shelter-addr">📍 Hadapsar, Pune — Cattle & Dogs</div>
+    <a href="tel:+912026993000" class="shelter-phone">📞 020-2699-3000</a>
+  </div>
+
+  <!-- NATIONAL HELPLINES -->
+  <div class="section-title">📞 National Helplines</div>
+  <div class="shelter-card" style="border:2px solid #C7D2FE;">
+    <div class="shelter-name">Animal Welfare Board of India</div>
+    <div class="shelter-addr">Ministry of Fisheries, Animal Husbandry</div>
+    <a href="tel:1962" class="shelter-phone">📞 1962 (Toll Free)</a>
+  </div>
+  <div class="shelter-card" style="border:2px solid #C7D2FE;">
+    <div class="shelter-name">PFA India (People for Animals)</div>
+    <div class="shelter-addr">National animal rescue network</div>
+    <a href="tel:+911123073724" class="shelter-phone">📞 011-2307-3724</a>
+  </div>
+
+</div>
+<!-- END SOCIETY TAB -->
+
+
+<!-- ══════════════════════════════════════════════
+     DELETE MODAL
+══════════════════════════════════════════════ -->
+<div class="pet-delete-modal" id="deleteModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🗑️ Delete Pet Account</div>
+    <div class="modal-sub">We're sorry for your loss or situation. Before deleting, please tell us why — your answer helps us improve care for animals in India.</div>
+
+    <div class="reason-label">Why are you deleting this pet's profile?</div>
+    <div class="reason-options" id="reasonOptions">
+      <label class="reason-opt" onclick="selectReason(this, 'died')">
+        <input type="radio" name="reason" value="died"/>
+        😢 My pet has passed away
+      </label>
+      <label class="reason-opt" onclick="selectReason(this, 'transferred')">
+        <input type="radio" name="reason" value="transferred"/>
+        🏠 I gave my pet to someone else
+      </label>
+      <label class="reason-opt" onclick="selectReason(this, 'lost')">
+        <input type="radio" name="reason" value="lost"/>
+        🔍 My pet is lost / missing
+      </label>
+      <label class="reason-opt" onclick="selectReason(this, 'other')">
+        <input type="radio" name="reason" value="other"/>
+        ✏️ Other reason
+      </label>
+    </div>
+
+    <!-- Sub-reasons shown if pet died -->
+    <div class="subreason-box" id="subreasonBox">
+      <div class="subreason-title">❤️ We're so sorry. What was the cause of death?</div>
+      <div class="subreason-grid">
+        <div class="subreason-chip" onclick="toggleSubreason(this)">🦠 Disease / Illness</div>
+        <div class="subreason-chip" onclick="toggleSubreason(this)">🚗 Accident</div>
+        <div class="subreason-chip" onclick="toggleSubreason(this)">👴 Old Age</div>
+        <div class="subreason-chip" onclick="toggleSubreason(this)">🏥 Surgery Complication</div>
+        <div class="subreason-chip" onclick="toggleSubreason(this)">🐍 Snake Bite / Poison</div>
+        <div class="subreason-chip" onclick="toggleSubreason(this)">❓ Unknown Cause</div>
+      </div>
+    </div>
+
+    <div class="community-notice" id="communityNotice" style="display:none;">
+      🌍 <strong>This information will be shared anonymously</strong> with the local animal welfare community to help prevent similar deaths. Your pet's story can help save others. Thank you. 🐾
+    </div>
+
+    <textarea class="notes-input" rows="3" placeholder="Any additional details? (optional) e.g. symptoms, what happened..."></textarea>
+
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeDeleteModal()">Cancel</button>
+      <button class="confirm-delete-btn" onclick="confirmDelete()">Delete Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
 <script>
-async function uploadPhoto(input) {
-  const file = input.files[0];
-  if (!file) return;
+// ── pet.id injected by Flask — used everywhere instead of hardcoded 1 ──
+const PET_ID = {{ pet.id }};
 
-  const formData = new FormData();
-  formData.append('photo', file);
-  formData.append('pet_id', '{{ pet.id }}');
+// ── TAB SWITCHING ──
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
 
-  // Show preview immediately
+// ── PHOTO PREVIEW ──
+let photoFile = null;
+
+function previewPhoto(input) {
+  if (!input.files[0]) return;
+  photoFile = input.files[0];
   const reader = new FileReader();
   reader.onload = function(e) {
-    const url = e.target.result;
-    const avatarDisplay = document.getElementById('avatarDisplay');
-    const emoji = document.getElementById('avatarEmoji');
-    if (emoji) emoji.style.display = 'none';
-    let img = document.getElementById('avatarImg');
-    if (!img) {
-      img = document.createElement('img');
-      img.id = 'avatarImg';
-      avatarDisplay.insertBefore(img, avatarDisplay.firstChild);
-    }
-    img.src = url;
+    document.getElementById('avatarLetter').style.display = 'none';
+    const img = document.getElementById('avatarImg');
+    img.src = e.target.result;
     img.style.display = 'block';
     document.getElementById('uploadHint').classList.add('has-photo');
+    document.getElementById('submitPhotoBtn').classList.add('show');
   };
-  reader.readAsDataURL(file);
+  reader.readAsDataURL(photoFile);
+}
 
-  // Send to Flask backend
+async function submitPhoto() {
+  if (!photoFile) return;
+  const spinner = document.getElementById('uploadSpinner');
+  spinner.classList.add('show');
+  const formData = new FormData();
+  formData.append('photo', photoFile);
   try {
-    const resp = await fetch('/upload_pet_photo', {
+    const resp = await fetch('/pet/' + PET_ID + '/upload-photo', {
       method: 'POST',
       body: formData
     });
     const data = await resp.json();
-    if (data.success) {
-      console.log('Photo saved:', data.photo_url);
-    } else {
-      alert('Upload failed: ' + (data.error || 'Unknown error'));
+    if (data.success && data.photo_url) {
+      const img = document.getElementById('avatarImg');
+      img.src = data.photo_url + '?t=' + Date.now();
+      img.style.display = 'block';
+      document.getElementById('avatarLetter').style.display = 'none';
     }
   } catch(e) {
     console.error('Upload error:', e);
+  } finally {
+    spinner.classList.remove('show');
+    document.getElementById('submitPhotoBtn').classList.remove('show');
+    showToast('✅ Photo submitted successfully!');
   }
 }
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── DELETE MODAL ──
+function openDeleteModal() {
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('show');
+  document.querySelectorAll('.reason-opt').forEach(o => o.classList.remove('selected'));
+  document.querySelectorAll('.subreason-chip').forEach(c => c.classList.remove('selected'));
+  document.getElementById('subreasonBox').classList.remove('show');
+  document.getElementById('communityNotice').style.display = 'none';
+}
+
+function selectReason(el, val) {
+  document.querySelectorAll('.reason-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  const sub = document.getElementById('subreasonBox');
+  if (val === 'died') {
+    sub.classList.add('show');
+  } else {
+    sub.classList.remove('show');
+    document.getElementById('communityNotice').style.display = 'none';
+  }
+}
+
+function toggleSubreason(el) {
+  document.querySelectorAll('.subreason-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  const diseaseChips = ['🦠 Disease / Illness', '🐍 Snake Bite / Poison'];
+  const notice = document.getElementById('communityNotice');
+  notice.style.display = diseaseChips.includes(el.textContent.trim()) ? 'block' : 'none';
+}
+
+function confirmDelete() {
+  if (!document.querySelector('.reason-opt.selected')) {
+    alert('Please select a reason before deleting.');
+    return;
+  }
+  closeDeleteModal();
+  showToast('🗑️ Pet profile deleted. We\'re sorry for your loss.');
+  fetch('/delete_pet/' + PET_ID, { method: 'POST' })
+    .then(() => {
+      setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+    });
+}
+
+// Close modal on backdrop click
+document.getElementById('deleteModal').addEventListener('click', function(e) {
+  if (e.target === this) closeDeleteModal();
+});
 </script>
 
-</body>
-</html>
+{% endblock %}

@@ -12,14 +12,18 @@ from dotenv import load_dotenv
 from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 from flask import Blueprint, request, redirect, url_for, flash
-from files.models import db, User,Pet,DietPlan
+from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user, login_required
+from files.models import db, User, Pet, DietPlan, Appointment, DoctorSchedule, DoctorHoliday, VetVaccineInfo
 import os, math, json  # just add json here
+import anthropic
 load_dotenv()
 app = Flask(__name__, template_folder="templates", static_folder="static")
 from chatbot_api import chatbot_bp
 app.register_blueprint(chatbot_bp)
-app.config["UPLOAD_FOLDER"] = os.path.join("static", "uploads")
+app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+ANTHROPIC_API_KEY = "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"
 # ---------------------- DATABASE
 app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres.yctdbnvldajettbhsdyu:2097199552542884@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres"
@@ -34,7 +38,25 @@ if not db_password_raw:
     raise RuntimeError("SUPABASE_DB_PASSWORD not set in .env")
 db_password = quote_plus(db_password_raw)
 db.init_app(app)
+
 migrate = Migrate(app, db)
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if 'user_id' not in session:
+            flash('Please log in to continue.', 'danger')
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated
+ 
+def doctor_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if session.get('role') != 'doctor':
+            flash('Access restricted to veterinarians.', 'danger')
+            return redirect(url_for('dashboard'))
+        return f(*args, **kwargs)
+    return decorated
 # ---------------------- SMSFAST2SMS_API_KEY = "PASTE_YOUR_FAST2SMS_API_KEY_HERE"
 def send_sms(phone, message):
     try:
@@ -83,7 +105,7 @@ class PetProfile(db.Model):
     breed = db.Column(db.String(50))
     age = db.Column(db.String(20))
     gender = db.Column(db.String(10))
-    photo = db.Column(db.String(100))
+    photo = db.Column(db.String(100), nullable=True, default=None)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 class PetTimeline(db.Model):
     __tablename__ = "pet_timeline"
@@ -913,29 +935,42 @@ def welcome():
 @app.route("/onboarding")
 def onboarding():
     return render_template("onboarding.html")
-@app.route("/login", methods=["GET", "POST"])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
-
-        if not username or not password:
-            flash("Please enter username and password", "danger")
-            return redirect(url_for("login"))
-
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        role     = request.form.get('role', 'pet_owner')   # NEW — sent by JS
+ 
         user = User.query.filter_by(username=username).first()
-
-        # ✅ FIXED LINE HERE
-        if user and check_password_hash(user.password_hash, password):
-            session["user_id"] = user.id
-            session["username"] = user.username
-            flash("Login successful!", "success")
-            return redirect(url_for("dashboard"))
+ 
+        if not user or not check_password_hash(user.password_hash, password):
+            flash('Invalid username or password.', 'danger')
+            return redirect(url_for('login'))
+ 
+        # ── Role mismatch guard ──────────────────────────────────────────
+        # Prevents a doctor logging in through the Pet Owner button and
+        # vice-versa (optional but recommended for security/UX clarity).
+        if user.role != role:
+            role_label = 'Veterinarian' if user.role == 'doctor' else 'Pet Owner'
+            flash(f'This account is registered as a {role_label}. '
+                  f'Please select the correct role above.', 'danger')
+            return redirect(url_for('login'))
+ 
+        # ── Store in session ─────────────────────────────────────────────
+        session['user_id']  = user.id
+        session['username'] = user.username
+        session['role']     = user.role        # NEW — used everywhere for guards
+ 
+        # ── Role-based redirect ──────────────────────────────────────────
+        if user.role == 'doctor':
+            return redirect(url_for('doctor_portal'))   # → doctor_portal.html
         else:
-            flash("Invalid username or password", "danger")
-            return redirect(url_for("login"))
-
-    return render_template("login.html")
+            return redirect(url_for('dashboard'))       # → your existing pet-owner dashboard
+ 
+    return render_template('login.html')
+ 
+ 
 @app.route("/test-db")
 def test_db():
     from models import User, db
@@ -947,58 +982,57 @@ def test_db():
     db.session.commit()
 
     return "User added successfully!"
-@app.route("/register", methods=["GET", "POST"])
+
+# ── REGISTER ───────────────────────────────────────────────────────────────
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == "POST":
+    if request.method == 'POST':
+        username        = request.form.get('username', '').strip()
+        password        = request.form.get('password', '')
+        confirm         = request.form.get('confirmpassword', '')
+        email           = request.form.get('email', '').strip()
+        role            = request.form.get('role', 'pet_owner')
 
-        username = request.form.get("username")
-        password = request.form.get("password")
-        confirm_password = request.form.get("confirmpassword")
-        email = request.form.get("email")
+        # Doctor-specific fields
+        doctor_fullname = request.form.get('doctor_fullname', '').strip()
+        specialization  = request.form.get('specialization', '').strip()
+        clinic_name     = request.form.get('clinic_name', '').strip()
+        clinic_address  = request.form.get('clinic_address', '').strip()
+        experience      = request.form.get('experience', 0)
+        license_number  = request.form.get('license_number', '').strip()
 
-        print("DEBUG REGISTER DATA:", username, email)
+        if password != confirm:
+            flash('Passwords do not match.', 'danger')
+            return redirect(url_for('register'))
 
-        # Basic validation
-        if not username or not password or not email:
-            flash("All fields are required", "danger")
-            return redirect(url_for("register"))
-
-        # Confirm password check
-        if password != confirm_password:
-            flash("Passwords do not match", "danger")
-            return redirect(url_for("register"))
-
-        # Check existing user
         if User.query.filter_by(username=username).first():
-            flash("Username already exists. Try another.", "danger")
-            return redirect(url_for("register"))
+            flash('Username already taken.', 'danger')
+            return redirect(url_for('register'))
 
-        if User.query.filter_by(email=email).first():
-            flash("Email already registered. Please login.", "warning")
-            return redirect(url_for("login"))
+        if role == 'doctor' and not license_number:
+            flash('Veterinary license number is required for doctors.', 'danger')
+            return redirect(url_for('register'))
 
-        try:
-            hashed_password = generate_password_hash(password)
+        new_user = User(
+            username        = username,
+            email           = email or f"{username}@placeholder.com",
+            password_hash   = generate_password_hash(password),
+            role            = role,
+            doctor_fullname = doctor_fullname if role == 'doctor' else None,
+            specialization  = specialization  if role == 'doctor' else None,
+            clinic_name     = clinic_name     if role == 'doctor' else None,
+            clinic_address  = clinic_address  if role == 'doctor' else None,
+            experience      = int(experience) if experience else None,
+            license_number  = license_number  if role == 'doctor' else None,
+        )
+        db.session.add(new_user)
+        db.session.commit()
 
-            user = User(
-                username=username,
-                email=email,
-                password_hash=hashed_password
-            )
+        flash('Account created! Please log in.', 'success')
+        return redirect(url_for('login'))
 
-            db.session.add(user)
-            db.session.commit()
-
-            flash("Registration successful! Please login.", "success")
-            return redirect(url_for("login"))
-
-        except IntegrityError as e:
-            db.session.rollback()
-            print("DB ERROR:", e)
-            flash("Registration failed. Try again.", "danger")
-            return redirect(url_for("register"))
-
-    return render_template("register.html")
+    return render_template('register.html')
+  
 @app.route("/forgot_password", methods=["GET", "POST"])
 def forgot_password():
     if request.method == "POST":
@@ -1137,10 +1171,11 @@ def user_info():
         mobile=session.get("mobile"),
         email=session.get("email")
     )
-@app.route("/logout")
+@app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for("login"))
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('login'))
 @app.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
@@ -1169,102 +1204,124 @@ def pet_home():
         return redirect(url_for("login"))
     user = db.session.get(User, session["user_id"])
     return render_template("pet_home.html", user=user)
-@app.route('/add_pet', methods=['GET','POST'])
+# ─────────────────────────────────────────────────────────────
+ 
+@app.route('/add_pet', methods=['GET', 'POST'])
 def add_pet():
-
-    name = request.form.get("name")
+    name    = request.form.get("name")
     species = request.form.get("species")
-    breed = request.form.get("breed")
-    age = request.form.get("age")
-    gender = request.form.get("gender")
-    user = db.session.get(User, session["user_id"])
-    new_pet = Pet(name=name, species=species, breed=breed, age=age, gender=gender, user_id=user.id)
-
+    breed   = request.form.get("breed")
+    age     = request.form.get("age")
+    gender  = request.form.get("gender")
+ 
+    user    = db.session.get(User, session["user_id"])
+    new_pet = Pet(
+        name=name, species=species, breed=breed,
+        age=age, gender=gender, user_id=user.id
+    )
     db.session.add(new_pet)
     db.session.commit()
-
     return redirect(url_for("dashboard"))
+ 
+ 
 @app.route("/pet/<int:pet_id>")
 def pet_profile(pet_id):
-    pet = Pet.query.get_or_404(pet_id)
-
-    vaccinations = Vaccine.query.filter_by(pet_id=pet_id).all()
-    healths = HealthCheckup.query.filter_by(pet_id=pet_id).all()
-    diets = DietPlan.query.filter_by(pet_id=pet_id).all()
-
+    pet          = Pet.query.get_or_404(pet_id)
+    vaccinations = Vaccine.query.filter_by(pet_id=pet_id).order_by(Vaccine.next_due_date).all()
+    healths      = HealthCheckup.query.filter_by(pet_id=pet_id).order_by(HealthCheckup.date.desc()).all()
+    diets        = DietPlan.query.filter_by(pet_id=pet_id).order_by(DietPlan.created_at.desc()).all()
+ 
     return render_template(
         "pet_profile.html",
         pet=pet,
-        vaccines=Vaccine,
+        vaccinations=vaccinations,
         healths=healths,
-        diets=diets
+        diets=diets,
+        today=date.today()
     )
-@app.route("/pet/<int:pet_id>/upload-photo", methods=["POST"])
+    
+@app.route('/pet/<int:pet_id>/upload-photo', methods=['POST'])
 def upload_pet_photo(pet_id):
-    file = request.files.get("photo")
-    if file:
-        import uuid
-        filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
-        save_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
-        file.save(save_path)
+    print(f"🔥 UPLOAD ROUTE HIT — pet_id={pet_id}")
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
 
-        pet = Pet.query.get_or_404(pet_id)
-        pet.photo = filename
-        db.session.commit()
+    from sqlalchemy import text
+    pet_row = db.session.execute(
+        text('SELECT id, user_id FROM pets WHERE id = :id'),
+        {'id': pet_id}
+    ).fetchone()
 
-        flash("Photo uploaded successfully!", "success")
-    else:
-        flash("No file uploaded", "danger")
+    if not pet_row:
+        return jsonify({'success': False, 'error': 'Pet not found'}), 404
+    if pet_row.user_id != session['user_id']:
+        return jsonify({'success': False, 'error': 'Unauthorized'}), 403
 
-    return redirect(url_for("pet_profile", pet_id=pet_id))
+    file = request.files.get('photo')
+    if not file or file.filename == '':
+        return jsonify({'success': False, 'error': 'No file'}), 400
 
+    import time
+    ext       = os.path.splitext(file.filename)[1].lower()
+    filename  = f"pet_{pet_id}_{int(time.time())}{ext}"
+    save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
+    print(f"📁 UPLOAD_FOLDER = {app.config['UPLOAD_FOLDER']}")
+    print(f"💾 SAVING TO: {save_path}")
+    file.save(save_path)
+    print(f"✅ FILE EXISTS AFTER SAVE: {os.path.exists(save_path)}")
 
+    db.session.execute(
+        text('UPDATE pets SET photo = :photo WHERE id = :id'),
+        {'photo': filename, 'id': pet_id}
+    )
+    db.session.commit()
+
+    photo_url = url_for('static', filename='uploads/' + filename)
+    return jsonify({'success': True, 'photo_url': photo_url, 'filename': filename})
+  
 @app.route('/add_vaccine', methods=['GET', 'POST'])
 def add_vaccine():
-    pets = Pet.query.all()  # get all pets for the dropdown
-
+    pets = Pet.query.filter_by(user_id=session.get("user_id")).all()
+    selected_pet_id = request.args.get("pet_id", type=int)
+ 
     if request.method == 'POST':
-        pet_id = request.form.get('pets_id')
-
+        pet_id = request.form.get('pets_id') or request.form.get('pet_id')
+ 
         if not pet_id:
             flash("Please select a pet!", "danger")
             return redirect(url_for('add_vaccine'))
-
-        # Ensure pet exists
+ 
         pet = Pet.query.get(int(pet_id))
         if not pet:
             flash("Pet not found!", "danger")
             return redirect(url_for('add_vaccine'))
-
-        # Get vaccine details
-        vaccine_name = request.form.get('vaccine_name')
+ 
+        vaccine_name       = request.form.get('vaccine_name')
         last_given_date_str = request.form.get('last_given_date')
-        next_due_date_str = request.form.get('next_due_date')
-
+        next_due_date_str   = request.form.get('next_due_date')
+ 
         try:
             last_given_date = datetime.strptime(last_given_date_str, "%Y-%m-%d").date()
-            next_due_date = datetime.strptime(next_due_date_str, "%Y-%m-%d").date()
+            next_due_date   = datetime.strptime(next_due_date_str, "%Y-%m-%d").date()
         except ValueError:
             flash("Invalid date format!", "danger")
             return redirect(url_for('add_vaccine'))
-
-        # Create new vaccine record
+ 
         vaccine = Vaccine(
             pet_id=pet.id,
             vaccine_name=vaccine_name,
             last_given_date=last_given_date,
             next_due_date=next_due_date
         )
-
         db.session.add(vaccine)
         db.session.commit()
         flash("Vaccine added successfully!", "success")
-        return redirect(url_for('pet_profile', pet_id=pet.id))
+        return redirect(url_for('pet_profile', pet_id=pet.id))  # ← back to profile
+ 
+    return render_template('add_vaccine.html', pets=pets, selected_pet_id=selected_pet_id)
 
-    # GET request → show form
-    return render_template('add_vaccine.html', pets=pets)
-@app.route('/adopt_agri')
+@app.route('/adoptagri')
 def adopt_agri():
     username = session.get('username', 'anonymous')
     return render_template('adopt_agri.html', username=username)
@@ -1319,47 +1376,107 @@ def api_remove_agripet(pet_id):
     return jsonify({'success': True})
 
 
+ 
 @app.route("/health_checkup", methods=["GET", "POST"])
 def health_checkup():
     if "user_id" not in session:
         return redirect(url_for("login"))
-
+ 
     user = db.session.get(User, session["user_id"])
     pets = user.pets if user else []
-
+    selected_pet_id = request.args.get("pet_id", type=int)
+ 
     if request.method == "POST":
+        pet_id = request.form.get("pet_id")
+ 
+        # ── guard: pet_id must exist ──
+        if not pet_id:
+            return jsonify({"success": False, "error": "No pet selected"})
+ 
         try:
-            pet_id = int(request.form.get("pet_id"))
-            date = datetime.strptime(request.form.get("date"), "%Y-%m-%d").date()
-            weight = float(request.form.get("weight"))
+            pet_id      = int(pet_id)
+            date_val    = datetime.strptime(request.form.get("date"), "%Y-%m-%d").date()
+            weight      = float(request.form.get("weight"))
             temperature = float(request.form.get("temperature"))
-
-            new_checkup = HealthCheckup(
+            notes       = request.form.get("notes", "")
+            next_str    = request.form.get("next_checkup", "")
+            next_checkup = datetime.strptime(next_str, "%Y-%m-%d").date() if next_str else None
+ 
+            checkup = HealthCheckup(
                 pet_id=pet_id,
-                date=date,
+                date=date_val,
                 weight=weight,
-                temperature=temperature
+                temperature=temperature,
+                notes=notes,
+                next_checkup=next_checkup
             )
-
-            db.session.add(new_checkup)
+            db.session.add(checkup)
             db.session.commit()
-
-            return jsonify({"success": True})
-
+ 
+            # redirect back to the pet profile
+            return redirect(url_for("pet_profile", pet_id=pet_id))
+ 
         except Exception as e:
             db.session.rollback()
             return jsonify({"success": False, "error": str(e)})
-
-    return render_template("Checkup.html", user=user, pets=pets)
+ 
+    return render_template(
+        "Checkup.html",
+        user=user,
+        pets=pets,
+        pet_id=selected_pet_id   # ← pre-fill hidden field
+    )
+ 
 @app.route("/diet_plan")
 def diet_plan():
     if "user_id" not in session:
         return redirect(url_for("login"))
-    
+ 
     user = db.session.get(User, session["user_id"])
-    pets = user.pets if user else []
-    
-    return render_template("diet_plan.html", user=user, pets=pets)
+    pet_id = request.args.get("pet_id", type=int)
+    pet = db.session.get(Pet, pet_id) if pet_id else None
+ 
+    return render_template(
+        "diet_plan.html",
+        user=user,
+        pet=pet,
+        pet_id=pet_id    # ← passed to hidden field in template
+    )
+@app.route("/save_diet_plan", methods=["POST"])
+def save_diet_plan():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+ 
+    data   = request.get_json()
+    pet_id = data.get("pet_id")
+ 
+    if not pet_id:
+        return jsonify({"success": False, "error": "No pet_id provided"})
+ 
+    # line 1382 in app.py
+    pet = db.session.get(Pet, pet_id) if pet_id else None
+    if not pet:
+        return jsonify({"success": False, "error": "Pet not found"})
+ 
+    try:
+        plan = DietPlan(
+            pet_id    = int(pet_id),
+            species   = data.get("species", ""),
+            weight    = float(data.get("weight") or 0),
+            age_years = int(data.get("age_years") or 0),
+            morning   = data.get("morning", ""),
+            afternoon = data.get("afternoon", ""),
+            evening   = data.get("evening", ""),
+            water     = data.get("water", ""),
+            notes     = data.get("notes", "")
+        )
+        db.session.add(plan)
+        db.session.commit()
+        return jsonify({"success": True, "id": plan.id})
+ 
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": str(e)})
 # ---------------------- ✅ GENERATE DIET PLAN (POST API)
 @app.route("/generate_diet_plan", methods=["POST"])
 def generate_diet_plan():
@@ -1746,7 +1863,52 @@ def rooster_details(name):
     if not info:
         return f"Rooster breed '{name}' not found", 404
     return render_template("agribreed_details.html", info=info, breed_name=name)
-# ---------------------- CLINIC API
+@app.route("/chatbot")
+def chatbot():
+    return render_template("chatbot.html")
+from functools import wraps
+@app.route('/api/chat', methods=['POST'])
+def chat_api():
+    data = request.get_json()
+    user_message = data.get('message', '').strip()
+    if not user_message:
+        return jsonify({'error': 'Empty message'}), 400
+
+    try:
+        import requests as req
+        GROQ_KEY = os.getenv('GROQ_KEY')
+
+        res = req.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {GROQ_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "llama-3.1-8b-instant",
+                "messages": [
+                    {"role": "system", "content": "You are AgriPet Assistant, an expert in pet care and livestock farming in India. Answer helpfully and concisely."},
+                    {"role": "user", "content": user_message}
+                ],
+                "max_tokens": 500
+            }
+        )
+
+        response_json = res.json()
+        print("Groq response:", response_json)
+
+        if 'choices' not in response_json:
+            error_msg = response_json.get('error', {}).get('message', 'API error')
+            return jsonify({'error': error_msg}), 500
+
+        reply = response_json["choices"][0]["message"]["content"]
+        return jsonify({'reply': reply})
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+
 @app.route("/clinics_within_20km")
 def clinics_within_20km():
     lat = request.args.get("lat")
@@ -1760,7 +1922,442 @@ def clinics_within_20km():
             if calculate_distance(user_lat, user_lon, c.latitude, c.longitude) <= 20:
                 count += 1
     return jsonify({"clinics_within_20km": count})
-# ---------------------- AUTO SMS REMINDER
+# Replace your existing doctor_portal route in app.py with this:
+@app.route("/doctor-portal")
+@login_required
+@doctor_required
+def doctor_portal():
+    from datetime import date as _date
+    doctor      = db.session.get(User, session["user_id"])
+    today       = _date.today()
+ 
+    appointments = (
+        Appointment.query
+        .filter_by(doctor_id=doctor.id)
+        .order_by(Appointment.created_at.desc())
+        .all()
+    )
+ 
+    pending_count   = sum(1 for a in appointments if a.status == "pending")
+    confirmed_count = sum(1 for a in appointments if a.status == "confirmed")
+    today_count     = sum(1 for a in appointments if a.pref_date == today)
+ 
+    schedule_rows = DoctorSchedule.query.filter_by(doctor_id=doctor.id).all()
+    schedule = [
+        {
+            "day_name":  s.day_name,
+            "is_open":   s.is_open,
+            "from_time": s.from_time or "09:00",
+            "to_time":   s.to_time   or "18:00",
+        }
+        for s in schedule_rows
+    ]
+ 
+    holidays = (
+        DoctorHoliday.query
+        .filter_by(doctor_id=doctor.id)
+        .order_by(DoctorHoliday.holiday_date)
+        .all()
+    )
+ 
+    vaccines = (
+        VetVaccineInfo.query
+        .filter_by(doctor_id=doctor.id)
+        .order_by(VetVaccineInfo.created_at.desc())
+        .all()
+    )
+ 
+    return render_template(
+        "doctor_portal.html",
+        doctor          = doctor,
+        appointments    = appointments,
+        pending_count   = pending_count,
+        confirmed_count = confirmed_count,
+        today_count     = today_count,
+        schedule        = schedule,
+        holidays        = holidays,
+        vaccines        = vaccines,
+        today           = today,
+    )
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  TOGGLE ON-DUTY STATUS
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/doctor/toggle-duty", methods=["POST"])
+@login_required
+@doctor_required
+def doctor_toggle_duty():
+    doctor = db.session.get(User, session["user_id"])
+    data   = request.get_json()
+    doctor.is_on_duty = bool(data.get("on_duty", True))
+    db.session.commit()
+    return jsonify({"success": True, "is_on_duty": doctor.is_on_duty})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  UPDATE DOCTOR PROFILE
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/doctor/update-profile", methods=["POST"])
+@login_required
+@doctor_required
+def doctor_update_profile():
+    doctor = db.session.get(User, session["user_id"])
+    data   = request.get_json()
+ 
+    doctor.doctor_fullname = data.get("fullname", doctor.doctor_fullname)
+    doctor.specialization  = data.get("specialization", doctor.specialization)
+    doctor.clinic_name     = data.get("clinic_name", doctor.clinic_name)
+    doctor.mobile          = data.get("phone", doctor.mobile)
+ 
+    db.session.commit()
+    return jsonify({"success": True})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  ACCEPT / REJECT APPOINTMENT
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/doctor/appointment/<int:appt_id>/status", methods=["POST"])
+@login_required
+@doctor_required
+def doctor_update_appointment_status(appt_id):
+    appt = Appointment.query.get_or_404(appt_id)
+ 
+    if appt.doctor_id != session["user_id"]:
+        return jsonify({"error": "Unauthorized"}), 403
+ 
+    data   = request.get_json()
+    status = data.get("status")
+ 
+    if status not in ("confirmed", "rejected"):
+        return jsonify({"error": "Invalid status"}), 400
+ 
+    appt.status = status
+    db.session.commit()
+ 
+    return jsonify({"success": True, "status": appt.status, "ref": appt.ref_code})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  SEND MESSAGE TO PET OWNER
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/doctor/appointment/<int:appt_id>/message", methods=["POST"])
+@login_required
+@doctor_required
+def doctor_send_message(appt_id):
+    appt = Appointment.query.get_or_404(appt_id)
+ 
+    if appt.doctor_id != session["user_id"]:
+        return jsonify({"error": "Unauthorized"}), 403
+ 
+    data = request.get_json()
+    msg  = data.get("message", "").strip()
+ 
+    if not msg:
+        return jsonify({"error": "Message cannot be empty"}), 400
+ 
+    appt.doctor_message = msg
+    db.session.commit()
+ 
+    return jsonify({"success": True, "message": msg})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  SAVE WEEKLY SCHEDULE
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/doctor/save-schedule", methods=["POST"])
+@login_required
+@doctor_required
+def doctor_save_schedule():
+    doctor_id = session["user_id"]
+    data      = request.get_json()
+ 
+    if not isinstance(data, list):
+        return jsonify({"error": "Expected a list of day objects"}), 400
+ 
+    for item in data:
+        day  = item.get("day")
+        row  = DoctorSchedule.query.filter_by(doctor_id=doctor_id, day_name=day).first()
+        if row:
+            row.is_open   = item.get("is_open", True)
+            row.from_time = item.get("from_time", "09:00")
+            row.to_time   = item.get("to_time",   "18:00")
+        else:
+            row = DoctorSchedule(
+                doctor_id = doctor_id,
+                day_name  = day,
+                is_open   = item.get("is_open", True),
+                from_time = item.get("from_time", "09:00"),
+                to_time   = item.get("to_time",   "18:00"),
+            )
+            db.session.add(row)
+ 
+    db.session.commit()
+    return jsonify({"success": True})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  ADD HOLIDAY
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/doctor/add-holiday", methods=["POST"])
+@login_required
+@doctor_required
+def doctor_add_holiday():
+    doctor_id = session["user_id"]
+    data      = request.get_json()
+    date_str  = data.get("date", "")
+    note      = data.get("note", "")
+ 
+    try:
+        hdate = datetime.strptime(date_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"error": "Invalid date format (YYYY-MM-DD)"}), 400
+ 
+    exists = DoctorHoliday.query.filter_by(doctor_id=doctor_id, holiday_date=hdate).first()
+    if exists:
+        return jsonify({"error": "Holiday already added for this date"}), 409
+ 
+    h = DoctorHoliday(doctor_id=doctor_id, holiday_date=hdate, note=note)
+    db.session.add(h)
+    db.session.commit()
+ 
+    return jsonify({"success": True, "id": h.id, "date": date_str, "note": note})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  REMOVE HOLIDAY
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/doctor/remove-holiday/<int:holiday_id>", methods=["DELETE"])
+@login_required
+@doctor_required
+def doctor_remove_holiday(holiday_id):
+    h = DoctorHoliday.query.get_or_404(holiday_id)
+    if h.doctor_id != session["user_id"]:
+        return jsonify({"error": "Unauthorized"}), 403
+ 
+    db.session.delete(h)
+    db.session.commit()
+    return jsonify({"success": True})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  ADD VACCINE RECORD
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/doctor/add-vaccine", methods=["POST"])
+@login_required
+@doctor_required
+def doctor_add_vaccine():
+    doctor_id = session["user_id"]
+    data      = request.get_json()
+ 
+    if not data.get("vaccine_name"):
+        return jsonify({"error": "Vaccine name is required"}), 400
+ 
+    v = VetVaccineInfo(
+        doctor_id    = doctor_id,
+        vaccine_name = data.get("vaccine_name", ""),
+        species      = data.get("species", ""),
+        symptoms     = data.get("symptoms", ""),
+        rec_age      = data.get("rec_age", ""),
+        dosage       = data.get("dosage", ""),
+        side_effects = data.get("side_effects", ""),
+        price_range  = data.get("price_range", ""),
+        notes        = data.get("notes", ""),
+    )
+    db.session.add(v)
+    db.session.commit()
+ 
+    return jsonify({"success": True, "id": v.id})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  DELETE VACCINE RECORD
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/doctor/delete-vaccine/<int:vax_id>", methods=["DELETE"])
+@login_required
+@doctor_required
+def doctor_delete_vaccine(vax_id):
+    v = VetVaccineInfo.query.get_or_404(vax_id)
+    if v.doctor_id != session["user_id"]:
+        return jsonify({"error": "Unauthorized"}), 403
+ 
+    db.session.delete(v)
+    db.session.commit()
+    return jsonify({"success": True})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  BOOK APPOINTMENT
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/book-appointment", methods=["POST"])
+def book_appointment():
+    import uuid as _uuid
+ 
+    data = request.get_json()
+ 
+    required = ["doctor_id", "owner_name", "owner_phone",
+                "pet_name", "pet_type", "symptoms", "pref_date", "pref_time"]
+    for field in required:
+        if not data.get(field):
+            return jsonify({"error": f"'{field}' is required"}), 400
+ 
+    doctor = db.session.get(User, int(data["doctor_id"]))
+    if not doctor or doctor.role != "doctor":
+        return jsonify({"error": "Doctor not found"}), 404
+ 
+    if not getattr(doctor, "is_on_duty", True):
+        return jsonify({"error": "Doctor is currently off duty"}), 409
+ 
+    try:
+        pref_date = datetime.strptime(data["pref_date"], "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"error": "Invalid date format"}), 400
+ 
+    holiday_exists = DoctorHoliday.query.filter_by(
+        doctor_id=doctor.id,
+        holiday_date=pref_date
+    ).first()
+    if holiday_exists:
+        return jsonify({
+            "error": "Doctor is on holiday on that date. Please choose another date."
+        }), 409
+ 
+    day_name = pref_date.strftime("%A")
+    schedule_row = DoctorSchedule.query.filter_by(
+        doctor_id=doctor.id,
+        day_name=day_name
+    ).first()
+    if schedule_row and not schedule_row.is_open:
+        return jsonify({
+            "error": f"Doctor is not available on {day_name}s. Please pick another date."
+        }), 409
+ 
+    alt_date = None
+    if data.get("alt_date"):
+        try:
+            alt_date = datetime.strptime(data["alt_date"], "%Y-%m-%d").date()
+        except ValueError:
+            pass
+ 
+    ref_code = "PC" + _uuid.uuid4().hex[:6].upper()
+ 
+    appt = Appointment(
+        ref_code            = ref_code,
+        doctor_id           = doctor.id,
+        owner_name          = data.get("owner_name", ""),
+        owner_phone         = data.get("owner_phone", ""),
+        owner_email         = data.get("owner_email", ""),
+        pet_name            = data.get("pet_name", ""),
+        pet_type            = data.get("pet_type", ""),
+        pet_breed           = data.get("pet_breed", ""),
+        pet_age             = data.get("pet_age", ""),
+        vaccination_history = data.get("vaccination_history", ""),
+        symptoms            = data.get("symptoms", ""),
+        symptom_tags        = data.get("symptom_tags", ""),
+        visit_type          = data.get("visit_type", "clinic"),
+        pref_date           = pref_date,
+        pref_time           = data.get("pref_time", ""),
+        alt_date            = alt_date,
+        extra_notes         = data.get("extra_notes", ""),
+        status              = "pending",
+    )
+    db.session.add(appt)
+    db.session.commit()
+ 
+    return jsonify({"success": True, "ref_code": ref_code})
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  GET ALL DOCTORS
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/api/doctors")
+def api_get_doctors():
+    doctors = User.query.filter_by(role="doctor").all()
+    return jsonify([{
+        "id":             d.id,
+        "name":           d.doctor_fullname or d.username,
+        "specialization": d.specialization or "",
+        "clinic":         d.clinic_name or "",
+        "address":        d.clinic_address or "",
+        "experience":     d.experience or 0,
+        "is_on_duty":     getattr(d, "is_on_duty", True),
+    } for d in doctors])
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  GET DOCTOR AVAILABILITY
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/api/doctor/<int:doctor_id>/availability")
+def api_doctor_availability(doctor_id):
+    doctor = db.session.get(User, doctor_id)
+    if not doctor or doctor.role != "doctor":
+        return jsonify({"error": "Doctor not found"}), 404
+ 
+    schedule = DoctorSchedule.query.filter_by(doctor_id=doctor_id).all()
+    holidays = DoctorHoliday.query.filter_by(doctor_id=doctor_id).all()
+ 
+    return jsonify({
+        "is_on_duty": getattr(doctor, "is_on_duty", True),
+        "schedule": [{
+            "day":       s.day_name,
+            "is_open":   s.is_open,
+            "from_time": s.from_time,
+            "to_time":   s.to_time,
+        } for s in schedule],
+        "holidays": [str(h.holiday_date) for h in holidays],
+    })
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  GET VACCINE INFO
+# ─────────────────────────────────────────────────────────────────────────────
+@app.route("/api/doctor/<int:doctor_id>/vaccines")
+def api_doctor_vaccines(doctor_id):
+    vaccines = VetVaccineInfo.query.filter_by(doctor_id=doctor_id).all()
+    return jsonify([{
+        "id":           v.id,
+        "vaccine_name": v.vaccine_name,
+        "species":      v.species,
+        "symptoms":     v.symptoms,
+        "rec_age":      v.rec_age,
+        "dosage":       v.dosage,
+        "side_effects": v.side_effects,
+        "price_range":  v.price_range,
+        "notes":        v.notes,
+    } for v in vaccines])
+@app.route('/my-appointments')
+def my_appointments():
+    try:
+        if 'user_id' not in session:
+            return jsonify({'error': 'Not logged in'}), 401
+        
+        appointments = Appointment.query.filter_by(user_id=session['user_id']).all()
+        result = []
+        for a in appointments:
+            result.append({
+                'id': a.id,
+                'ref_code': a.ref_code,
+                'pet_name': a.pet_name,
+                'pet_type': a.pet_type,
+                'pet_breed': a.pet_breed,
+                'visit_type': a.visit_type,
+                'pref_date': str(a.pref_date) if a.pref_date else None,
+                'pref_time': str(a.pref_time) if a.pref_time else None,
+                'alt_date': str(a.alt_date) if a.alt_date else None,
+                'status': a.status,
+                'doctor_message': a.doctor_message,
+                'created_at': str(a.created_at) if a.created_at else None,
+            })
+        return jsonify(result)
+    
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+#  AUTO SMS REMINDER
+# ─────────────────────────────────────────────────────────────────────────────
 def send_vaccine_reminders():
     reminder_day = date.today() + timedelta(days=1)
     vaccines = Vaccine.query.filter(Vaccine.next_due_date == reminder_day).all()
@@ -1770,10 +2367,11 @@ def send_vaccine_reminders():
                 v.pet.owner.phone,
                 f"Reminder! Pet: {v.pet.name}, Vaccine: {v.vaccine_name}, Due: {v.next_due_date}"
             )
-
+ 
 scheduler = BackgroundScheduler()
 scheduler.add_job(send_vaccine_reminders, 'interval', hours=24, id="vaccine_job", replace_existing=True)
 scheduler.start()
+ 
 # ---------------------- RUN APP
 if __name__ == "__main__":
     with app.app_context():

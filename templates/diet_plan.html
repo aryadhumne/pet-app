@@ -2,228 +2,341 @@
 {% block content %}
 
 <style>
-/* ---------- Page Background ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
 
+* { box-sizing: border-box; }
+body { font-family: 'Nunito', sans-serif; background: #FFF8F0; }
 
-/* ---------- Back Button ---------- */
 .back-btn {
-    position: absolute;
-    left: 15px;
-    top: 80px;
-    font-size: 30px;
-    color: #020612;
-    cursor: pointer;
-    transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #6366F1;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    margin: 16px 16px 0;
+    font-family: 'Sora', sans-serif;
 }
-.back-btn:hover {
-    transform: translateX(-5px);
+.back-btn:hover { opacity: 0.75; }
+
+.page-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 16px 16px 100px;
 }
 
-/* ---------- Main Card ---------- */
 .diet-card {
-    width: 88%;
-    max-width: 360px;
-    margin: 90px auto 40px;
-    padding: 25px;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.95);
-    box-shadow: 0 6px 25px rgba(0,0,0,0.15);
-    animation: fadeIn 0.8s ease;
+    width: 100%;
+    max-width: 400px;
+    background: white;
+    border-radius: 24px;
+    padding: 28px 24px;
+    box-shadow: 0 8px 32px rgba(249,115,22,0.12);
+    border: 1.5px solid #FED7AA;
 }
 
-/* ---------- Headings ---------- */
+.diet-icon { display: block; font-size: 36px; text-align: center; margin-bottom: 8px; }
+
 .diet-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 20px; font-weight: 800;
+    color: #7C2D12;
     text-align: center;
-    font-size: 24px;
-    font-weight: 700;
-    color:  #572056;
-    margin-bottom: 10px;
+    margin-bottom: 22px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #FED7AA;
 }
 
-/* ---------- Cute Icon ---------- */
-.diet-icon {
+.form-label {
     display: block;
-    font-size: 40px;
-    text-align: center;
-    animation: pop 0.6s ease;
+    font-size: 12px; font-weight: 800;
+    color: #F97316;
+    margin-bottom: 5px;
+    letter-spacing: 0.3px;
 }
 
-/* ---------- Input Styling ---------- */
 .form-control {
-    border-radius: 10px;
-    padding: 10px;
-    transition: 0.3s;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1.5px solid #FED7AA;
+    background: #FFF7ED;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: #7C2D12;
+    outline: none;
+    margin-bottom: 12px;
+    display: block;
+    transition: border-color 0.2s, background 0.2s;
 }
 .form-control:focus {
-    border-color: #1e90ff;
-    box-shadow: 0 0 8px rgba(30,144,255,0.4);
-    transform: scale(1.03);
+    border-color: #F97316;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(249,115,22,0.1);
 }
+.form-control::placeholder { color: #9CA3AF; font-weight: 500; }
 
-/* ---------- Button ---------- */
 .btn-generate {
-    background:  #6d1667;
+    background: linear-gradient(135deg, #F97316, #EA580C);
     color: white;
     width: 100%;
-    font-size: 17px;
-    padding: 10px;
-    border-radius: 10px;
-    margin-top: 12px;
-    transition: 0.3s;
+    font-family: 'Sora', sans-serif;
+    font-size: 15px; font-weight: 800;
+    padding: 14px;
+    border-radius: 16px;
+    border: none;
+    margin-top: 4px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(249,115,22,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 .btn-generate:hover {
-    background: #92169d;
-    transform: scale(1.03);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(249,115,22,0.45);
 }
 
-/* ---------- Result Section ---------- */
 .result-box {
-    margin-top: 18px;
-    padding: 12px;
-    border-radius: 12px;
-    background: #f1f5f9;
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 18px;
+    background: #FFF7ED;
+    border: 1.5px solid #FED7AA;
+    display: none;
+}
+.result-box.show { display: block; }
+
+.result-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px; font-weight: 800;
+    color: #7C2D12;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1.5px solid #FED7AA;
 }
 
-/* ---------- Animations ---------- */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
+.meal-row {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 10px;
 }
-@keyframes pop {
-    0%   { transform: scale(0.5); }
-    100% { transform: scale(1); }
+.meal-label {
+    font-size: 11px; font-weight: 800;
+    color: #F97316;
+    min-width: 78px;
+    padding-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
+.meal-val {
+    font-size: 13px; font-weight: 600;
+    color: #7C2D12;
+    flex: 1;
+    background: white;
+    border-radius: 10px;
+    padding: 7px 12px;
+    border: 1px solid #FED7AA;
+}
+.notes-box {
+    background: #FFFBEB;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 12px; font-weight: 700;
+    color: #92400E;
+    border: 1px solid #FDE68A;
+    margin-top: 8px;
+}
+
+.btn-save {
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: white;
+    width: 100%;
+    font-family: 'Sora', sans-serif;
+    font-size: 14px; font-weight: 800;
+    padding: 13px;
+    border-radius: 14px;
+    border: none;
+    margin-top: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(16,185,129,0.3);
+    transition: transform 0.2s;
+}
+.btn-save:hover { transform: translateY(-2px); }
+
+.status-msg { margin-top: 12px; font-size: 13px; font-weight: 700; text-align: center; padding: 10px; border-radius: 12px; display: none; }
+.status-msg.success { background: #DCFCE7; color: #166534; display: block; }
+.status-msg.error   { background: #FEE2E2; color: #991B1B; display: block; }
 </style>
 
-<!-- Back Button -->
-<a href="{{ url_for('health', pet_id=pet_id)
- }}" class="back-btn">
-     🔙
-</a>
+<a href="/pet/{{ pet_id }}" class="back-btn">← Back to Profile</a>
 
-<div class="diet-card">
-    
-    <div class="diet-icon">🥗</div>
-    <h2 class="diet-title">Generate Diet Plan 🍽</h2>
+<div class="page-wrapper">
+    <div class="diet-card">
 
-    <div class="row g-3">
+        <span class="diet-icon">🥗</span>
+        <h2 class="diet-title">Generate Diet Plan 🍽️</h2>
 
-        <div class="col-12">
-            <label>🐾 Pet Name</label>
-            <input type="text" class="form-control" id="petName">
+        <!-- pet_id hidden so we know which pet to save for -->
+        <input type="hidden" id="hiddenPetId" value="{{ pet_id }}">
+
+        <label class="form-label">🐾 Pet Name</label>
+        <input type="text" class="form-control" id="petName"
+               value="{{ pet.name if pet else '' }}" placeholder="Pet name">
+
+        <label class="form-label">🧬 Species</label>
+        <select id="petSpecies" class="form-control">
+            <option value="">Select Species</option>
+            <optgroup label="🐾 Pet Animals">
+                <option {% if pet and pet.species == 'Dog' %}selected{% endif %}>Dog</option>
+                <option {% if pet and pet.species == 'Cat' %}selected{% endif %}>Cat</option>
+                <option {% if pet and pet.species == 'Birds' %}selected{% endif %}>Birds</option>
+                <option {% if pet and pet.species == 'Rabbit' %}selected{% endif %}>Rabbit</option>
+                <option {% if pet and pet.species == 'Fish' %}selected{% endif %}>Fish</option>
+                <option {% if pet and pet.species == 'Hamster' %}selected{% endif %}>Hamster</option>
+            </optgroup>
+            <optgroup label="🐄 Agripet Animals">
+                <option>Cow</option><option>Buffalo</option><option>Ox</option>
+                <option>Camel</option><option>Horse</option><option>Donkey</option>
+                <option>Goat</option><option>Sheep</option><option>Pig</option>
+                <option>Chicken</option><option>Rooster</option>
+            </optgroup>
+        </select>
+
+        <label class="form-label">🐕 Breed / Type</label>
+        <input type="text" class="form-control" id="petBreed"
+               value="{{ pet.breed if pet else '' }}" placeholder="e.g. Labrador">
+
+        <label class="form-label">🎂 Age (Years)</label>
+        <input type="number" class="form-control" id="petAgeYears"
+               value="{{ pet.age if pet else '' }}" placeholder="e.g. 3">
+
+        <label class="form-label">⚖️ Weight (kg)</label>
+        <input type="number" step="0.1" class="form-control" id="petWeight" placeholder="e.g. 12.5">
+
+        <label class="form-label">❤️ Health Issues (optional)</label>
+        <input type="text" class="form-control" id="petHealthIssue" placeholder="e.g. obesity, fever">
+
+        <button class="btn-generate" id="generateDiet">Generate Diet Plan 🍏</button>
+
+        <!-- Result Section -->
+        <div class="result-box" id="resultBox">
+            <div class="result-title">📋 Diet Plan Result</div>
+
+            <div class="meal-row">
+                <span class="meal-label">🌅 Morning</span>
+                <span class="meal-val" id="dietMorning">—</span>
+            </div>
+            <div class="meal-row">
+                <span class="meal-label">☀️ Afternoon</span>
+                <span class="meal-val" id="dietAfternoon">—</span>
+            </div>
+            <div class="meal-row">
+                <span class="meal-label">🌙 Evening</span>
+                <span class="meal-val" id="dietEvening">—</span>
+            </div>
+            <div class="meal-row">
+                <span class="meal-label">💧 Water</span>
+                <span class="meal-val" id="dietWater">—</span>
+            </div>
+            <div class="notes-box" id="dietNotes"></div>
+
+            <!-- Save button saves to DB -->
+            <button class="btn-save" id="saveDiet">💾 Save to Pet Profile</button>
         </div>
 
-        <div class="col-12">
-            <label>🧬 Species</label>
-            <select id="petSpecies" class="form-control">
-                <option value="">Select Species</option>
-
-                <optgroup label="🐾 Pet Animals">
-                    <option>Dog</option>
-                    <option>Cat</option>
-                    <option>Birds</option>
-                    <option>Rabbit</option>
-                    <option>Fish</option>
-                    <option>Hamster</option>
-                </optgroup>
-
-                <optgroup label="🐄 Agripet Animals">
-                    <option>Cow</option>
-                    <option>Buffalo</option>
-                    <option>Ox</option>
-                    <option>Camel</option>
-                    <option>Horse</option>
-                    <option>Donkey</option>
-                    <option>Goat</option>
-                    <option>Sheep</option>
-                    <option>Pig</option>
-                    <option>Chicken</option>
-                    <option>Rooster</option>
-                </optgroup>
-            </select>
-        </div>
-
-        <div class="col-12">
-            <label>🐕 Breed / Type</label>
-            <input type="text" class="form-control" id="petBreed">
-        </div>
-
-        <div class="col-12">
-            <label>🎂 Age (Years)</label>
-            <input type="number" class="form-control" id="petAgeYears">
-        </div>
-
-        <div class="col-12">
-            <label>🍼 Age (Months)</label>
-            <input type="number" class="form-control" id="petAgeMonths">
-        </div>
-
-        <div class="col-12">
-            <label>⚖ Weight (kg)</label>
-            <input type="number" class="form-control" id="petWeight">
-        </div>
-
-        <div class="col-12">
-            <label>❤ Health Issues</label>
-            <input type="text" class="form-control" id="petHealthIssue">
-        </div>
-    </div>
-
-    <button class="btn-generate" id="generateDiet">Generate Diet 🍏</button>
-
-    <!-- Diet Result -->
-    <div class="result-box">
-        <h5><strong>📝 Diet Result</strong></h5>
-        
-        <label>🌅 Morning</label>
-        <input class="form-control mt-1" id="dietMorning" placeholder="Morning Food">
-
-        <label class="mt-2">🌤 Afternoon</label>
-        <input class="form-control" id="dietAfternoon" placeholder="Afternoon Food">
-
-        <label class="mt-2">🌙 Evening</label>
-        <input class="form-control" id="dietEvening" placeholder="Evening Food">
-
-        <label class="mt-2">💧 Water Intake</label>
-        <input class="form-control" id="dietWater" placeholder="Water Intake">
-
-        <label class="mt-2">🗒 Notes</label>
-        <textarea class="form-control" id="dietNotes" placeholder="Notes"></textarea>
+        <div id="statusMessage" class="status-msg"></div>
     </div>
 </div>
 
 <script>
-document.getElementById("generateDiet").onclick = async () => {
+let currentDiet = {};
+
+document.getElementById("generateDiet").addEventListener("click", async () => {
+    const btn = document.getElementById("generateDiet");
+    btn.textContent = "Generating...";
+    btn.disabled    = true;
+
     const petData = {
-        name: petName.value,
-        breed: petBreed.value,
-        species: petSpecies.value,
-        ageYears: petAgeYears.value,
-        ageMonths: petAgeMonths.value,
-        weight: petWeight.value,
-        healthIssue: petHealthIssue.value
+        name:        document.getElementById("petName").value,
+        breed:       document.getElementById("petBreed").value,
+        species:     document.getElementById("petSpecies").value,
+        ageYears:    document.getElementById("petAgeYears").value,
+        weight:      document.getElementById("petWeight").value,
+        healthIssue: document.getElementById("petHealthIssue").value
     };
 
     try {
-        const res = await fetch("/generate_diet_plan", {
+        const res  = await fetch("/generate_diet_plan", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(petData)
         });
-
         const data = await res.json();
 
-        dietMorning.value = data.morning || "";
-        dietAfternoon.value = data.afternoon || "";
-        dietEvening.value = data.evening || "";
-        dietWater.value = data.water || "";
-        dietNotes.value = data.notes || "";
+        document.getElementById("dietMorning").textContent   = data.morning   || "—";
+        document.getElementById("dietAfternoon").textContent = data.afternoon || "—";
+        document.getElementById("dietEvening").textContent   = data.evening   || "—";
+        document.getElementById("dietWater").textContent     = data.water     || "—";
+        document.getElementById("dietNotes").textContent     = data.notes     || "";
+
+        currentDiet = data;
+        document.getElementById("resultBox").classList.add("show");
 
     } catch (err) {
-        console.error(err);
-        alert("Failed to generate diet plan");
+        alert("Failed to generate diet plan. Try again.");
     }
-};
+    btn.textContent = "Generate Diet Plan 🍏";
+    btn.disabled    = false;
+});
+
+document.getElementById("saveDiet").addEventListener("click", async () => {
+    const petId = document.getElementById("hiddenPetId").value;
+    const btn   = document.getElementById("saveDiet");
+    const msg   = document.getElementById("statusMessage");
+
+    if (!petId) {
+        msg.className   = "status-msg error";
+        msg.textContent = "❌ No pet selected. Go back and try again.";
+        return;
+    }
+
+    btn.textContent = "Saving...";
+    btn.disabled    = true;
+
+    try {
+        const res  = await fetch("/save_diet_plan", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                pet_id:    petId,
+                species:   document.getElementById("petSpecies").value,
+                weight:    document.getElementById("petWeight").value,
+                age_years: document.getElementById("petAgeYears").value,
+                morning:   currentDiet.morning   || "",
+                afternoon: currentDiet.afternoon || "",
+                evening:   currentDiet.evening   || "",
+                water:     currentDiet.water     || "",
+                notes:     currentDiet.notes     || ""
+            })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            msg.className   = "status-msg success";
+            msg.textContent = "✅ Diet plan saved! Redirecting...";
+            setTimeout(() => { window.location.href = "/pet/" + petId; }, 1200);
+        } else {
+            msg.className   = "status-msg error";
+            msg.textContent = "❌ " + (data.error || "Could not save.");
+            btn.disabled    = false;
+            btn.textContent = "💾 Save to Pet Profile";
+        }
+    } catch (err) {
+        msg.className   = "status-msg error";
+        msg.textContent = "❌ Server error. Try again.";
+        btn.disabled    = false;
+        btn.textContent = "💾 Save to Pet Profile";
+    }
+});
 </script>
 
 {% endblock %}

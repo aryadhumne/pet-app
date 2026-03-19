@@ -1,28 +1,422 @@
 {% extends "base.html" %}
-{% block title %}AgriPet{% endblock %}
-
 {% block content %}
-<h2 class="text-center mb-4">Welcome to AgriPet</h2>
-<p class="text-center mb-5">Here you can find the best products and services for your pets!</p>
 
-<div class="row product-list justify-content-center">
-    <div class="col-md-4 mb-4">
-        <div class="product-card">
-            <h4>Pet Food</h4>
-            <p>High-quality nutrition for your pets.</p>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+* { box-sizing: border-box; }
+
+.ag-wrap {
+    min-height: 100vh;
+    background: #F0FDF4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Nunito', sans-serif;
+    overflow-x: hidden;
+    padding-bottom: 24px;
+}
+
+/* ══════════════════════════════
+   HERO
+══════════════════════════════ */
+.ag-hero {
+    width: 100%;
+    background: linear-gradient(145deg, #16A34A 0%, #059669 45%, #0D9488 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 26px 20px 58px;
+    overflow: hidden;
+}
+
+/* mesh overlay */
+.ag-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 15% 80%, rgba(251,191,36,0.18) 0%, transparent 50%);
+    pointer-events: none;
+}
+.ag-hero::after {
+    content: '';
+    position: absolute;
+    width: 220px; height: 220px;
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 50%;
+    top: -70px; right: -70px;
+}
+
+.ag-blob1 {
+    position: absolute;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(251,191,36,0.4), transparent 70%);
+    border-radius: 50%;
+    bottom: 20px; right: 16px;
+    z-index: 1;
+    animation: blobDrift 6s ease-in-out infinite alternate;
+}
+.ag-blob2 {
+    position: absolute;
+    width: 70px; height: 70px;
+    background: radial-gradient(circle, rgba(251,113,133,0.32), transparent 70%);
+    border-radius: 50%;
+    top: 14px; left: 14px;
+    z-index: 1;
+    animation: blobDrift 8s ease-in-out infinite alternate-reverse;
+}
+@keyframes blobDrift {
+    from { transform: translate(0,0) scale(1); }
+    to   { transform: translate(8px,10px) scale(1.1); }
+}
+
+/* badge */
+.ag-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255,255,255,0.38);
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.6px;
+    z-index: 5;
+    margin-bottom: 18px;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes popIn {
+    from { opacity:0; transform: scale(0.7) translateY(-10px); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+/* spinning ring */
+.ag-img-ring {
+    position: relative;
+    z-index: 4;
+    animation: floatImg 3.5s ease-in-out infinite;
+}
+@keyframes floatImg {
+    0%,100% { transform: translateY(0px) rotate(0deg); }
+    50%      { transform: translateY(-10px) rotate(1deg); }
+}
+.ag-img-ring::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+        #FBBF24, #FB7185, #34D399, #60A5FA, #16A34A, #FBBF24);
+    animation: spinRing 5s linear infinite;
+    z-index: -1;
+    filter: blur(1px);
+}
+.ag-img-ring::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.85);
+    z-index: 1;
+    pointer-events: none;
+}
+@keyframes spinRing { to { transform: rotate(360deg); } }
+
+.ag-hero-img {
+    width: 165px; height: 165px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.28);
+}
+
+/* hero text */
+.ag-hero-text {
+    text-align: center;
+    z-index: 3;
+    margin-top: 16px;
+    animation: riseUp 0.6s ease 0.25s both;
+}
+.ag-hero-text h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 5px;
+    line-height: 1.25;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.18);
+}
+.ag-hero-text p {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.82);
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.3px;
+}
+@keyframes riseUp {
+    from { opacity:0; transform: translateY(18px); }
+    to   { opacity:1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════
+   CHIPS — overlap hero bottom
+══════════════════════════════ */
+.ag-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    width: 92%;
+    margin-top: -22px;
+    z-index: 10;
+    animation: riseUp 0.55s ease 0.35s both;
+}
+.ag-chip {
+    background: white;
+    border-radius: 50px;
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 6px 18px rgba(16,163,74,0.15);
+    font-size: 13px;
+    font-weight: 800;
+    color: #064E3B;
+    white-space: nowrap;
+    flex: 1;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+.ag-chip:active { transform: scale(0.95); }
+.ag-chip span { font-size: 17px; }
+.ag-chip.c1 { border-bottom: 3px solid #16A34A; }
+.ag-chip.c2 { border-bottom: 3px solid #FBBF24; }
+.ag-chip.c3 { border-bottom: 3px solid #0D9488; }
+.ag-chip.c4 { border-bottom: 3px solid #FB7185; }
+
+/* ══════════════════════════════
+   ACTION TILES
+══════════════════════════════ */
+.ag-tiles {
+    width: 92%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+    animation: riseUp 0.6s ease 0.45s both;
+}
+
+.ag-tile {
+    border-radius: 20px;
+    padding: 24px 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s;
+    min-height: 128px;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+}
+.ag-tile:active { transform: scale(0.97); }
+
+/* shine sweep */
+.ag-tile::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -80%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: skewX(-15deg);
+    transition: left 0.5s ease;
+}
+.ag-tile:hover::before { left: 130%; }
+
+/* decorative circle */
+.ag-tile::after {
+    content: '';
+    position: absolute;
+    bottom: -18px; right: -18px;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+}
+.ag-tile:hover { transform: translateY(-5px); }
+
+.tile-shop {
+    background: linear-gradient(145deg, #FB923C, #EA580C);
+    box-shadow: 0 10px 28px rgba(249,115,22,0.38);
+}
+.tile-adopt {
+    background: linear-gradient(145deg, #FB7185, #BE123C);
+    box-shadow: 0 10px 28px rgba(251,113,133,0.4);
+    animation: adoptPulse 2.4s ease-in-out infinite;
+}
+@keyframes adoptPulse {
+    0%,100% { box-shadow: 0 10px 28px rgba(251,113,133,0.4); }
+    50%      { box-shadow: 0 16px 44px rgba(251,113,133,0.68); }
+}
+.tile-agripets {
+    background: linear-gradient(145deg, #34D399, #059669);
+    grid-column: 1 / -1;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    min-height: auto;
+    padding: 20px 22px;
+    box-shadow: 0 10px 28px rgba(16,163,74,0.32);
+}
+
+.t-icon  { font-size: 28px; line-height: 1; }
+.t-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px; font-weight: 800;
+    color: white; line-height: 1;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.12);
+}
+.t-sub { font-size: 12.5px; color: rgba(255,255,255,0.78); font-weight: 600; }
+
+.t-arrow {
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 17px; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: background 0.2s, transform 0.2s;
+}
+.ag-tile:hover .t-arrow {
+    background: rgba(255,255,255,0.38);
+    transform: translateX(3px);
+}
+
+/* ══════════════════════════════
+   BANNER
+══════════════════════════════ */
+.ag-banner {
+    width: 92%;
+    margin-top: 12px;
+    background: linear-gradient(145deg, #0EA5E9, #6366F1);
+    border-radius: 18px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 8px 24px rgba(99,102,241,0.32);
+    animation: riseUp 0.6s ease 0.55s both;
+    text-decoration: none;
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s;
+    position: relative;
+    overflow: hidden;
+}
+.ag-banner::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+}
+.ag-banner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(99,102,241,0.45);
+}
+.ag-banner-icon  { font-size: 32px; flex-shrink: 0; }
+.ag-banner-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px; font-weight: 800;
+    color: white; margin: 0 0 2px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.ag-banner-sub   { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 600; margin: 0; }
+.ag-banner-arrow {
+    margin-left: auto; color: white; font-size: 20px; flex-shrink: 0;
+    background: rgba(255,255,255,0.22);
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
+}
+.ag-banner:hover .ag-banner-arrow { transform: translateX(4px); }
+
+@media (max-width: 360px) {
+    .ag-hero-img     { width: 130px; height: 130px; }
+    .ag-hero-text h2 { font-size: 21px; }
+    .t-label         { font-size: 13px; }
+    .ag-chip         { padding: 7px 9px; font-size: 10.5px; }
+}
+</style>
+
+<div class="ag-wrap">
+
+    <!-- HERO -->
+    <div class="ag-hero">
+        <div class="ag-blob1"></div>
+        <div class="ag-blob2"></div>
+
+        <div class="ag-badge">🌾 AgriPet Services</div>
+
+        <div class="ag-img-ring">
+            <img src="{{ url_for('static', filename='images/pin1.jpeg') }}"
+                 class="ag-hero-img" alt="AgriPet">
+        </div>
+
+        <div class="ag-hero-text">
+            <h2>Smart Farming &amp;<br>Livestock Care 🌱</h2>
+            <p>Modern agriculture &amp; animal management made easy.</p>
         </div>
     </div>
-    <div class="col-md-4 mb-4">
-        <div class="product-card">
-            <h4>Toys & Accessories</h4>
-            <p>Keep your pets entertained and happy.</p>
-        </div>
+
+    <!-- SERVICE CHIPS -->
+    <div class="ag-chips">
+        <div class="ag-chip c2"><span>🐄</span> Livestock</div>
+        <div class="ag-chip c3"><span>🛒</span> Shop</div>
+        <div class="ag-chip c4"><span>❤️</span> Adopt</div>
+        <div class="ag-chip c1"><span>🌾</span> Agri</div>
     </div>
-    <div class="col-md-4 mb-4">
-        <div class="product-card">
-            <h4>Health Products</h4>
-            <p>Vitamins, supplements, and grooming essentials.</p>
-        </div>
+
+    <!-- ACTION TILES -->
+    <div class="ag-tiles">
+
+        <button class="ag-tile tile-shop" onclick="window.location.href='/agrishop'">
+            <span class="t-icon">🛒</span>
+            <span class="t-label">AgriPet Shop</span>
+            <span class="t-sub">Feed, tools &amp; more</span>
+        </button>
+
+        <button class="ag-tile tile-adopt" onclick="window.location.href='/adoptagri'">
+            <span class="t-icon">❤️</span>
+            <span class="t-label">Adopt</span>
+            <span class="t-sub">Find farm animals</span>
+        </button>
+
+        <button class="ag-tile tile-agripets" onclick="window.location.href='/agripets'">
+            <div>
+                <span class="t-icon">🐄</span>
+                <span class="t-label" style="display:block;margin-top:5px;">Browse AgriPets</span>
+                <span class="t-sub">All farm animals listed</span>
+            </div>
+            <div class="t-arrow">→</div>
+        </button>
+
     </div>
+
+   
+
 </div>
+
 {% endblock %}

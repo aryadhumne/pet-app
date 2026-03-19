@@ -4,436 +4,393 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
 
-:root {
-    --primary: #f39a7a;
-    --primary-dark: #e76f51;
-    --primary-light: #fde3d9;
-    --accent: #ff3d81;
-    --coral: #FF6B6B;
-    --peach: #FFA07A;
-    --soft-orange: #FFD166;
-}
-
 * { box-sizing: border-box; }
 
-.pet-home-wrapper {
+.ph-wrap {
     min-height: 100vh;
-    background: #FFF8F5;
+    background: #F0F4FF;
     display: flex;
     flex-direction: column;
     align-items: center;
     font-family: 'Nunito', sans-serif;
     overflow-x: hidden;
-    padding-bottom: 100px;
+    padding-bottom: 24px;
 }
 
-/* ── HERO ── */
-.pet-hero {
+.ph-hero {
     width: 100%;
-    min-height: 58vh;
-    background: linear-gradient(160deg, #FF8C69 0%, #FF6B6B 45%, #FF3D81 100%);
+    background: linear-gradient(145deg, #0EA5E9 0%, #6366F1 50%, #A855F7 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: center;
     position: relative;
-    padding-bottom: 60px;
+    padding: 26px 20px 58px;
     overflow: hidden;
 }
 
-/* big soft circles in bg */
-.pet-hero::before {
+.ph-hero::before {
     content: '';
-    position: absolute;
-    width: 320px; height: 320px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 50%;
-    top: -80px; right: -80px;
+    position: absolute; inset: 0;
+    background:
+        radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 15% 80%, rgba(251,113,133,0.18) 0%, transparent 50%);
+    pointer-events: none;
 }
-.pet-hero::after {
+.ph-hero::after {
     content: '';
     position: absolute;
-    width: 200px; height: 200px;
-    background: rgba(255,255,255,0.06);
+    width: 220px; height: 220px;
+    border: 1.5px solid rgba(255,255,255,0.12);
     border-radius: 50%;
-    bottom: 40px; left: -60px;
+    top: -70px; right: -70px;
 }
 
-.brand-badge {
+.blob-hot1 {
     position: absolute;
-    top: 22px;
-    background: rgba(255,255,255,0.22);
-    backdrop-filter: blur(12px);
-    border: 1.5px solid rgba(255,255,255,0.4);
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(251,113,133,0.4), transparent 70%);
+    border-radius: 50%;
+    bottom: 20px; right: 16px;
+    z-index: 1;
+    animation: blobDrift 6s ease-in-out infinite alternate;
+}
+.blob-hot2 {
+    position: absolute;
+    width: 70px; height: 70px;
+    background: radial-gradient(circle, rgba(251,191,36,0.35), transparent 70%);
+    border-radius: 50%;
+    top: 14px; left: 14px;
+    z-index: 1;
+    animation: blobDrift 8s ease-in-out infinite alternate-reverse;
+}
+@keyframes blobDrift {
+    from { transform: translate(0,0) scale(1); }
+    to   { transform: translate(8px,10px) scale(1.1); }
+}
+
+.ph-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1.5px solid rgba(255,255,255,0.38);
     border-radius: 50px;
     padding: 8px 22px;
     font-family: 'Sora', sans-serif;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
     color: white;
-    letter-spacing: 0.5px;
-    z-index: 3;
-    animation: fadeDown 0.6s ease both;
+    letter-spacing: 0.6px;
+    z-index: 5;
+    margin-bottom: 18px;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes popIn {
+    from { opacity:0; transform: scale(0.7) translateY(-10px); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
 }
 
-@keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-14px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-/* floating paw dots */
-.paw-dot {
-    position: absolute;
-    opacity: 0.18;
-    font-size: 28px;
-    z-index: 1;
-    animation: floatDot 4s ease-in-out infinite;
-}
-.paw-dot:nth-child(2) { top: 60px; left: 20px; animation-delay: 0s; font-size: 20px; }
-.paw-dot:nth-child(3) { top: 100px; right: 30px; animation-delay: 0.8s; font-size: 34px; }
-.paw-dot:nth-child(4) { bottom: 90px; right: 20px; animation-delay: 1.4s; font-size: 18px; }
-
-@keyframes floatDot {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(15deg); }
-}
-
-/* hero image — circular with glow ring */
-.hero-img-ring {
+.ph-img-ring {
     position: relative;
     z-index: 4;
-    animation: floatPet 3.2s ease-in-out infinite;
+    animation: floatPet 3.5s ease-in-out infinite;
 }
-
 @keyframes floatPet {
-    0%, 100% { transform: translateY(0px); }
-    50%       { transform: translateY(-16px); }
+    0%,100% { transform: translateY(0px) rotate(0deg); }
+    50%      { transform: translateY(-10px) rotate(1deg); }
 }
-
-.hero-img-ring::before {
+.ph-img-ring::before {
     content: '';
     position: absolute;
-    inset: -8px;
+    inset: -6px;
     border-radius: 50%;
-    background: conic-gradient(from 0deg, rgba(255,255,255,0.6), rgba(255,255,255,0.1), rgba(255,255,255,0.6));
-    animation: spin 6s linear infinite;
+    background: conic-gradient(from 0deg,
+        #FB7185, #FBBF24, #34D399, #60A5FA, #A78BFA, #FB7185);
+    animation: spinRing 5s linear infinite;
     z-index: -1;
+    filter: blur(1px);
 }
+.ph-img-ring::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.85);
+    z-index: 1;
+    pointer-events: none;
+}
+@keyframes spinRing { to { transform: rotate(360deg); } }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.hero-pet {
-    width: 210px;
-    height: 210px;
+.ph-hero-img {
+    width: 165px; height: 165px;
     border-radius: 50%;
     object-fit: cover;
-    border: 5px solid rgba(255,255,255,0.9);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.22);
     display: block;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.28);
 }
 
-/* ── STATS ROW ── */
-.stats-strip {
-    width: 92%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: -32px;
-    z-index: 10;
-    animation: riseUp 0.7s ease 0.15s both;
-}
-
-@keyframes riseUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-}
-
-.stat-pill {
-    background: white;
-    border-radius: 18px;
-    padding: 14px 8px;
+.ph-hero-text {
     text-align: center;
-    box-shadow: 0 8px 28px rgba(231,111,81,0.14);
+    z-index: 3;
+    margin-top: 16px;
+    animation: riseUp 0.6s ease 0.25s both;
 }
-.stat-pill .s-icon { font-size: 22px; display: block; margin-bottom: 4px; }
-.stat-pill .s-num  {
+.ph-hero-text h2 {
     font-family: 'Sora', sans-serif;
-    font-size: 18px;
+    font-size: 26px;
     font-weight: 800;
-    color: var(--primary-dark);
-    display: block;
-    line-height: 1;
-}
-.stat-pill .s-lbl  {
-    font-size: 10px;
-    font-weight: 700;
-    color: #aaa;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    display: block;
-    margin-top: 3px;
-}
-
-/* ── TAGLINE ── */
-.tagline-block {
-    width: 92%;
-    margin-top: 24px;
-    animation: riseUp 0.7s ease 0.25s both;
-}
-.tagline-block h2 {
-    font-family: 'Sora', sans-serif;
-    font-size: 22px;
-    font-weight: 800;
-    color: #2D1B0E;
-    margin: 0 0 6px 0;
+    color: white;
+    margin: 0 0 5px;
     line-height: 1.25;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.18);
 }
-.tagline-block p {
-    font-size: 13px;
-    color: #888;
+.ph-hero-text p {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.82);
     font-weight: 600;
     margin: 0;
-    line-height: 1.5;
+    letter-spacing: 0.3px;
+}
+@keyframes riseUp {
+    from { opacity:0; transform: translateY(18px); }
+    to   { opacity:1; transform: translateY(0); }
 }
 
-/* ── ACTION CARDS ── */
-.action-grid {
+/* chips overlap hero */
+.ph-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    width: 92%;
+    margin-top: -22px;
+    z-index: 10;
+    animation: riseUp 0.55s ease 0.35s both;
+}
+.ph-chip {
+    background: white;
+    border-radius: 50px;
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 6px 18px rgba(99,102,241,0.15);
+    font-size: 13px;
+    font-weight: 800;
+    color: #1e1b4b;
+    white-space: nowrap;
+    flex: 1;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+.ph-chip:active { transform: scale(0.95); }
+.ph-chip span { font-size: 17px; }
+.ph-chip.hot1  { border-bottom: 3px solid #FB7185; }
+.ph-chip.hot2  { border-bottom: 3px solid #FBBF24; }
+.ph-chip.cool1 { border-bottom: 3px solid #6366F1; }
+.ph-chip.cool2 { border-bottom: 3px solid #0EA5E9; }
+
+/* tiles */
+.ph-tiles {
     width: 92%;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 14px;
-    margin-top: 20px;
-    animation: riseUp 0.7s ease 0.35s both;
+    margin-top: 16px;
+    animation: riseUp 0.6s ease 0.45s both;
 }
-
-.action-tile {
-    border-radius: 22px;
-    padding: 22px 16px;
+.ph-tile {
+    border-radius: 20px;
+    padding: 24px 18px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 6px;
     text-decoration: none;
     position: relative;
     overflow: hidden;
-    transition: transform 0.25s, box-shadow 0.25s;
-    min-height: 120px;
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s;
+    min-height: 128px;
 }
-.action-tile:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 18px 40px rgba(0,0,0,0.15);
-}
-.action-tile::after {
+.ph-tile:active { transform: scale(0.97); }
+.ph-tile::before {
     content: '';
     position: absolute;
-    bottom: -20px; right: -20px;
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.12);
+    top: 0; left: -80%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+    transform: skewX(-15deg);
+    transition: left 0.5s ease;
 }
+.ph-tile:hover::before { left: 130%; }
+.ph-tile::after {
+    content: '';
+    position: absolute;
+    bottom: -18px; right: -18px;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
+}
+.ph-tile:hover { transform: translateY(-5px); }
 
 .tile-shop {
-    background: linear-gradient(135deg, #FF8C42, #FF6000);
-    grid-column: 1;
-    box-shadow: 0 10px 28px rgba(255,96,0,0.32);
+    background: linear-gradient(145deg, #38BDF8, #2563EB);
+    box-shadow: 0 10px 28px rgba(14,165,233,0.38);
 }
 .tile-adopt {
-    background: linear-gradient(135deg, #FF3D81, #C2185B);
-    grid-column: 2;
-    box-shadow: 0 10px 28px rgba(255,61,129,0.35);
-    animation: adoptPulse 2s ease-in-out infinite;
+    background: linear-gradient(145deg, #FB7185, #BE123C);
+    box-shadow: 0 10px 28px rgba(251,113,133,0.4);
+    animation: adoptPulse 2.4s ease-in-out infinite;
+}
+@keyframes adoptPulse {
+    0%,100% { box-shadow: 0 10px 28px rgba(251,113,133,0.4); }
+    50%      { box-shadow: 0 16px 44px rgba(251,113,133,0.68); }
 }
 .tile-pets {
-    background: linear-gradient(135deg, #2ecc71, #16a34a);
+    background: linear-gradient(145deg, #A78BFA, #6366F1);
     grid-column: 1 / -1;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 10px 28px rgba(22,163,74,0.28);
     min-height: auto;
     padding: 20px 22px;
+    box-shadow: 0 10px 28px rgba(139,92,246,0.32);
 }
 
-@keyframes adoptPulse {
-    0%, 100% { box-shadow: 0 10px 28px rgba(255,61,129,0.35); }
-    50%       { box-shadow: 0 14px 40px rgba(255,61,129,0.6); }
-}
-
-.tile-icon {
-    font-size: 30px;
-    line-height: 1;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-}
-.tile-label {
+.t-icon  { font-size: 28px; line-height: 1; }
+.t-label {
     font-family: 'Sora', sans-serif;
-    font-size: 16px;
-    font-weight: 800;
-    color: white;
-    line-height: 1;
+    font-size: 17px; font-weight: 800;
+    color: white; line-height: 1;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.12);
 }
-.tile-sub {
-    font-size: 11px;
-    color: rgba(255,255,255,0.78);
-    font-weight: 600;
-}
-.tile-arrow {
-    background: rgba(255,255,255,0.22);
+.t-sub { font-size: 12.5px; color: rgba(255,255,255,0.78); font-weight: 600; }
+.t-arrow {
+    background: rgba(255,255,255,0.25);
     border-radius: 50%;
-    width: 36px; height: 36px;
+    width: 34px; height: 34px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
-    color: white;
-    flex-shrink: 0;
+    color: white; font-size: 17px; flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    transition: background 0.2s, transform 0.2s;
+}
+.ph-tile:hover .t-arrow {
+    background: rgba(255,255,255,0.38);
+    transform: translateX(3px);
 }
 
-/* ── FEATURES ROW ── */
-.features-row {
+/* banner */
+.ph-banner {
     width: 92%;
-    margin-top: 24px;
-    animation: riseUp 0.7s ease 0.45s both;
-}
-.features-title {
-    font-family: 'Sora', sans-serif;
-    font-size: 15px;
-    font-weight: 800;
-    color: #2D1B0E;
-    margin-bottom: 14px;
-}
-.features-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.feature-item {
-    background: white;
-    border-radius: 16px;
-    padding: 14px 16px;
+    margin-top: 12px;
+    background: linear-gradient(145deg, #FCD34D, #F97316);
+    border-radius: 18px;
+    padding: 18px 20px;
     display: flex;
     align-items: center;
-    gap: 14px;
-    box-shadow: 0 4px 16px rgba(231,111,81,0.08);
+    gap: 16px;
+    box-shadow: 0 8px 24px rgba(249,115,22,0.32);
+    animation: riseUp 0.6s ease 0.55s both;
+    text-decoration: none;
+    transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.22s;
+    position: relative;
+    overflow: hidden;
 }
-.feat-icon-wrap {
-    width: 44px; height: 44px;
-    border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
-    flex-shrink: 0;
+.ph-banner::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.14);
 }
-.feat-title {
-    font-size: 14px;
-    font-weight: 800;
-    color: #2D1B0E;
-    margin: 0 0 2px 0;
+.ph-banner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(249,115,22,0.45);
+}
+.ph-banner-icon  { font-size: 32px; flex-shrink: 0; }
+.ph-banner-title {
     font-family: 'Sora', sans-serif;
+    font-size: 16px; font-weight: 800;
+    color: white; margin: 0 0 2px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
-.feat-sub {
-    font-size: 11px;
-    color: #aaa;
-    font-weight: 600;
-    margin: 0;
+.ph-banner-sub   { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 600; margin: 0; }
+.ph-banner-arrow {
+    margin-left: auto; color: white; font-size: 20px; flex-shrink: 0;
+    background: rgba(255,255,255,0.22);
+    border-radius: 50%;
+    width: 34px; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
 }
+.ph-banner:hover .ph-banner-arrow { transform: translateX(4px); }
 
 @media (max-width: 360px) {
-    .hero-pet { width: 180px; height: 180px; }
-    .action-tile .tile-label { font-size: 14px; }
+    .ph-hero-img     { width: 130px; height: 130px; }
+    .ph-hero-text h2 { font-size: 21px; }
+    .t-label         { font-size: 13px; }
+    .ph-chip         { padding: 7px 9px; font-size: 10.5px; }
 }
 </style>
 
-<div class="pet-home-wrapper">
+<div class="ph-wrap">
 
-    <!-- HERO -->
-    <div class="pet-hero">
-        <span class="paw-dot">🐾</span>
-        <span class="paw-dot">🐾</span>
-        <span class="paw-dot">🐾</span>
+    <div class="ph-hero">
+        <div class="blob-hot1"></div>
+        <div class="blob-hot2"></div>
 
-        <div class="brand-badge">🐾 Pets &amp; Care</div>
+        <div class="ph-badge">🐾 Pets &amp; Care</div>
 
-        <div class="hero-img-ring">
+        <div class="ph-img-ring">
             <img src="{{ url_for('static', filename='images/pin3.jpeg') }}"
-                 class="hero-pet" alt="Pets">
+                 class="ph-hero-img" alt="Pets">
+        </div>
+
+        <div class="ph-hero-text">
+            <h2>Happy Pets,<br>Happy You 🧡</h2>
+            <p>Keep your pets healthy, active &amp; cared for.</p>
         </div>
     </div>
 
-    <!-- STATS STRIP -->
-    <div class="stats-strip">
-        <div class="stat-pill">
-            <span class="s-icon">🐶</span>
-            <span class="s-num">120+</span>
-            <span class="s-lbl">Pets</span>
-        </div>
-        <div class="stat-pill">
-            <span class="s-icon">🏠</span>
-            <span class="s-num">85+</span>
-            <span class="s-lbl">Adopted</span>
-        </div>
-        <div class="stat-pill">
-            <span class="s-icon">🩺</span>
-            <span class="s-num">50+</span>
-            <span class="s-lbl">Vets</span>
-        </div>
+    <div class="ph-chips">
+        <div class="ph-chip cool1"><span>🩺</span> Vet Care</div>
+        <div class="ph-chip hot1"><span>❤️</span> Adopt</div>
+        <div class="ph-chip cool2"><span>🛒</span> Shop</div>
+        <div class="ph-chip hot2"><span>💊</span> Health</div>
     </div>
 
-    <!-- TAGLINE -->
-    <div class="tagline-block">
-        <h2>Happy Pets,<br>Happy You 🧡</h2>
-        <p>Keep your pets healthy, active &amp; cared for with smart services.</p>
-    </div>
+    <div class="ph-tiles">
 
-    <!-- ACTION TILES -->
-    <div class="action-grid">
-
-        <a href="{{ url_for('shop') }}" class="action-tile tile-shop">
-            <span class="tile-icon">🛒</span>
-            <span class="tile-label">Pet Shop</span>
-            <span class="tile-sub">Browse products</span>
+        <a href="{{ url_for('shop') }}" class="ph-tile tile-shop">
+            <span class="t-icon">🛒</span>
+            <span class="t-label">Pet Shop</span>
+            <span class="t-sub">Browse products</span>
         </a>
 
-        <a href="{{ url_for('adopt') }}" class="action-tile tile-adopt">
-            <span class="tile-icon">❤️</span>
-            <span class="tile-label">Adopt</span>
-            <span class="tile-sub">Find a friend</span>
+        <a href="{{ url_for('adopt') }}" class="ph-tile tile-adopt">
+            <span class="t-icon">❤️</span>
+            <span class="t-label">Adopt</span>
+            <span class="t-sub">Find a friend</span>
         </a>
 
-        <a href="{{ url_for('pets_list') }}" class="action-tile tile-pets">
+        <a href="{{ url_for('pets_list') }}" class="ph-tile tile-pets">
             <div>
-                <span class="tile-icon">🐾</span>
-                <span class="tile-label" style="display:block;margin-top:4px;">Browse All Pets</span>
-                <span class="tile-sub">See every pet available</span>
+                <span class="t-icon">🐾</span>
+                <span class="t-label" style="display:block;margin-top:5px;">Browse All Pets</span>
+                <span class="t-sub">See every pet available</span>
             </div>
-            <div class="tile-arrow">→</div>
+            <div class="t-arrow">→</div>
         </a>
 
     </div>
 
-    <!-- WHY US FEATURES -->
-    <div class="features-row">
-        <div class="features-title">Why Pet Owners Love Us</div>
-        <div class="features-list">
-            <div class="feature-item">
-                <div class="feat-icon-wrap" style="background:#FFF0E6;">🏥</div>
-                <div>
-                    <p class="feat-title">Vet Appointments</p>
-                    <p class="feat-sub">Book online in under 60 seconds</p>
-                </div>
-            </div>
-            <div class="feature-item">
-                <div class="feat-icon-wrap" style="background:#E8F5E9;">💊</div>
-                <div>
-                    <p class="feat-title">Health Reminders</p>
-                    <p class="feat-sub">Vaccines, checkups &amp; medicine alerts</p>
-                </div>
-            </div>
-            <div class="feature-item">
-                <div class="feat-icon-wrap" style="background:#FCE4EC;">🍖</div>
-                <div>
-                    <p class="feat-title">Smart Diet Plans</p>
-                    <p class="feat-sub">Personalised nutrition for every breed</p>
-                </div>
-            </div>
-        </div>
-    </div>
+ 
 
 </div>
 

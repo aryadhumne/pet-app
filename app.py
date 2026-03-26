@@ -960,8 +960,9 @@ def login():
         # ── Store in session ─────────────────────────────────────────────
         session['user_id']  = user.id
         session['username'] = user.username
-        session['role']     = user.role        # NEW — used everywhere for guards
- 
+        session['role']     = user.role
+        session['email']    = user.email or ''    # ← ADD
+        session['mobile']   = user.mobile or ''   # ← ADD
         # ── Role-based redirect ──────────────────────────────────────────
         if user.role == 'doctor':
             return redirect(url_for('doctor_portal'))   # → doctor_portal.html
@@ -970,7 +971,13 @@ def login():
  
     return render_template('login.html')
  
- 
+@app.context_processor
+def inject_sidebar_user():
+    from files.models import User
+    if 'user_id' in session:
+        user = db.session.get(User, session['user_id'])
+        return dict(sidebar_user=user)
+    return dict(sidebar_user=None)
 @app.route("/test-db")
 def test_db():
     from models import User, db
@@ -992,7 +999,7 @@ def register():
         confirm         = request.form.get('confirmpassword', '')
         email           = request.form.get('email', '').strip()
         role            = request.form.get('role', 'pet_owner')
-
+        mobile          = request.form.get('mobile', '').strip()
         # Doctor-specific fields
         doctor_fullname = request.form.get('doctor_fullname', '').strip()
         specialization  = request.form.get('specialization', '').strip()
@@ -1012,19 +1019,22 @@ def register():
         if role == 'doctor' and not license_number:
             flash('Veterinary license number is required for doctors.', 'danger')
             return redirect(url_for('register'))
-
+      
         new_user = User(
-            username        = username,
-            email           = email or f"{username}@placeholder.com",
-            password_hash   = generate_password_hash(password),
-            role            = role,
-            doctor_fullname = doctor_fullname if role == 'doctor' else None,
-            specialization  = specialization  if role == 'doctor' else None,
-            clinic_name     = clinic_name     if role == 'doctor' else None,
-            clinic_address  = clinic_address  if role == 'doctor' else None,
-            experience      = int(experience) if experience else None,
-            license_number  = license_number  if role == 'doctor' else None,
-        )
+          
+        username        = username,
+        email           = email or f"{username}@placeholder.com",
+        password_hash   = generate_password_hash(password),
+        role            = role,
+        mobile          = mobile or None,   # ✅ ADD THIS LINE
+        doctor_fullname = doctor_fullname if role == 'doctor' else None,
+        specialization  = specialization  if role == 'doctor' else None,
+        clinic_name     = clinic_name     if role == 'doctor' else None,
+        clinic_address  = clinic_address  if role == 'doctor' else None,
+        experience      = int(experience) if experience else None,
+        license_number  = license_number  if role == 'doctor' else None,
+)
+        
         db.session.add(new_user)
         db.session.commit()
 
@@ -1165,11 +1175,16 @@ def adopt_pet(pet_id):
     return jsonify({"success": True})
 @app.route("/user_info")
 def user_info():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user = db.session.get(User, session['user_id'])
+
     return render_template(
         "user_info.html",
-        username=session.get("username"),
-        mobile=session.get("mobile"),
-        email=session.get("email")
+        username = user.username        if user and user.username else 'N/A',
+        mobile   = user.mobile          if user and user.mobile   else 'Not added',
+        email    = user.email           if user and user.email    else 'Not added'
     )
 @app.route('/logout')
 def logout():
